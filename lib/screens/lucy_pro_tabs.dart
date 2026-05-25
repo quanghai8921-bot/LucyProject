@@ -150,7 +150,7 @@ class TeachingTrendsPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     final labelStyle = TextStyle(color: Colors.grey.shade400, fontSize: 9, fontWeight: FontWeight.bold);
-    final valueStyle = const TextStyle(color: AppColors.textPrimary, fontSize: 9, fontWeight: FontWeight.bold);
+    const valueStyle = TextStyle(color: AppColors.textPrimary, fontSize: 9, fontWeight: FontWeight.bold);
 
     final List<double> data = [88, 76, 62, 45];
     final List<String> topics = ['E.Cafe', 'LISA', 'Keigo', 'HSK 4'];

@@ -55,7 +55,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 14,
         'level': 'Level 1-5: Survival',
         'color': const Color(0xFF64C3A5),
-        'bgColors': [Color(0xFFECFDF5), Color(0xFFD1FAE5)],
+        'bgColors': [const Color(0xFFECFDF5), const Color(0xFFD1FAE5)],
       },
       {
         'title': 'Job Interview Pitch: Gen Z Slangs & Etiquette 💼',
@@ -64,7 +64,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 28,
         'level': 'Level 6-10: Advanced',
         'color': const Color(0xFF6366F1),
-        'bgColors': [Color(0xFFEEF2FF), Color(0xFFE0E7FF)],
+        'bgColors': [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
       },
       {
         'title': 'Movie Review Lounge: Discussing Marvel films 🎬',
@@ -73,7 +73,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 9,
         'level': 'Level 3-7: Intermediate',
         'color': const Color(0xFFEC4899),
-        'bgColors': [Color(0xFFFDF2F8), Color(0xFFFCE7F3)],
+        'bgColors': [const Color(0xFFFDF2F8), const Color(0xFFFCE7F3)],
       },
     ],
     'Trung': [
@@ -84,7 +84,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 18,
         'level': 'Level 11-15: Beginners',
         'color': const Color(0xFFF59E0B),
-        'bgColors': [Color(0xFFFFF7ED), Color(0xFFFFEDD5)],
+        'bgColors': [const Color(0xFFFFF7ED), const Color(0xFFFFEDD5)],
       },
       {
         'title': 'Dimsum & Tea culture vocabulary 🥟',
@@ -93,7 +93,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 12,
         'level': 'Level 16-20: Intermediate',
         'color': const Color(0xFFEF4444),
-        'bgColors': [Color(0xFFFEF2F2), Color(0xFFFEE2E2)],
+        'bgColors': [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)],
       },
     ],
     'Nhật': [
@@ -104,7 +104,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 22,
         'level': 'Level 21-25: Beginners',
         'color': const Color(0xFF8B5CF6),
-        'bgColors': [Color(0xFFF5F3FF), Color(0xFFEDE9FE)],
+        'bgColors': [const Color(0xFFF5F3FF), const Color(0xFFEDE9FE)],
       },
       {
         'title': 'Anime Slang: Talking like Naruto & Jujutsu Kaisen 🦊',
@@ -113,7 +113,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'listeners': 35,
         'level': 'Level 26-30: Intermediate',
         'color': const Color(0xFFEC4899),
-        'bgColors': [Color(0xFFFFF1F2), Color(0xFFFFE4E6)],
+        'bgColors': [const Color(0xFFFFF1F2), const Color(0xFFFFE4E6)],
       },
     ]
   };

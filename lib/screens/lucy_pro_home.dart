@@ -12,9 +12,9 @@ class LucyProHome extends StatefulWidget {
 
 class _LucyProHomeState extends State<LucyProHome> {
   // Mock balance and stats (mutable for realistic dynamic updates)
-  double _totalEarnings = 4280.50;
-  int _giftsReceived = 128;
-  int _weeklyRank = 4;
+  final double _totalEarnings = 4280.50;
+  final int _giftsReceived = 128;
+  final int _weeklyRank = 4;
 
   // Stateful LMS curriculum documents list
   final List<Map<String, dynamic>> _curriculumDocs = [
@@ -1323,7 +1323,7 @@ class LiveStudioRoomDialog extends StatefulWidget {
   final bool aiEnabled;
   final List<Map<String, dynamic>> curriculumDocs;
 
-  const LiveStudioRoomDialog({
+  const LiveStudioRoomDialog({super.key, 
     required this.language,
     required this.curriculum,
     required this.duration,

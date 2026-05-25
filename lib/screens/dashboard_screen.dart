@@ -160,7 +160,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         : _currentRole == LucyRole.proMentor
                             ? "LVL 12 • 98% Uy tín"
                             : "Super Creator Tier ✪",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -778,7 +778,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           const SizedBox(height: 2),
           Text(
             level,
-            style: TextStyle(
+            style: const TextStyle(
               color: AppColors.textSecondary,
               fontSize: 12,
             ),
@@ -902,7 +902,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 Text(
                   subject,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11,
                   ),
@@ -1088,8 +1088,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ElevatedButton.icon(
           onPressed: () {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Đang khởi tạo phòng Live mới cho Mentor...'),
+              const SnackBar(
+                content: Text('Đang khởi tạo phòng Live mới cho Mentor...'),
                 backgroundColor: AppColors.primary,
                 behavior: SnackBarBehavior.floating,
               ),
@@ -1153,10 +1153,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         const SizedBox(height: 24),
 
         // Today's Schedule
-        Row(
+        const Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Lịch trình dạy học hôm nay 📅",
               style: TextStyle(
                 color: AppColors.textPrimary,
@@ -1300,7 +1300,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
                 Text(
                   label,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11,
                   ),
@@ -1414,7 +1414,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 4),
                 Text(
                   subTitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 11,
                   ),
@@ -1810,7 +1810,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     child: OutlinedButton(
                       onPressed: () {},
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: AppColors.inputBorder),
+                        side: const BorderSide(color: AppColors.inputBorder),
                         foregroundColor: AppColors.textPrimary,
                         minimumSize: const Size(0, 46),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -1991,7 +1991,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   children: [
                     Text(
                       views,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 11,
                       ),

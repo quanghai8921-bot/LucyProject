@@ -1215,7 +1215,7 @@ class RevenueBarChartPainter extends CustomPainter {
       ..strokeWidth = 1;
 
     final labelStyle = TextStyle(color: Colors.grey.shade400, fontSize: 9, fontWeight: FontWeight.bold);
-    final valueStyle = const TextStyle(color: AppColors.textPrimary, fontSize: 8.5, fontWeight: FontWeight.w900);
+    const valueStyle = TextStyle(color: AppColors.textPrimary, fontSize: 8.5, fontWeight: FontWeight.w900);
 
     final List<double> data = [1200, 1800, 2400, 3100, 3800, 4280];
     final List<String> months = ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6'];
@@ -1239,8 +1239,8 @@ class RevenueBarChartPainter extends CustomPainter {
 
       // Render vertical gradient fill for premium look
       final rect = Rect.fromLTWH(x, y, barWidth, barHeight);
-      final gradient = LinearGradient(
-        colors: [AppColors.primary, const Color(0xFF6366F1)],
+      final gradient = const LinearGradient(
+        colors: [AppColors.primary, Color(0xFF6366F1)],
         begin: Alignment.bottomCenter,
         end: Alignment.topCenter,
       );
