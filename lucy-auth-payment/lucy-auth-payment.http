@@ -1,0 +1,6 @@
+@lucy_auth_payment_HostAddress = http://localhost:5032
+
+GET {{lucy_auth_payment_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
