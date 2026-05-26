@@ -1,8 +1,0 @@
-com\lucy\lms\controller\HealthController.class
-com\lucy\lms\service\CourseService.class
-com\lucy\lms\service\CourseServiceImpl.class
-com\lucy\lms\model\Course.class
-com\lucy\lms\controller\HomeController.class
-com\lucy\lms\repository\CourseRepository.class
-com\lucy\lms\LucyContentLmsApplication.class
-com\lucy\lms\repository\InMemoryCourseRepository.class
