@@ -35,14 +35,14 @@ namespace lucy_auth_payment.Modules.Payment.Services
                         WalletId = Guid.NewGuid().ToString(),
                         UserId = userId,
                         Balance = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
                     _context.Wallets.Add(wallet);
                 }
 
                 wallet.Balance += amount;
-                wallet.UpdatedAt = DateTime.UtcNow;
+                wallet.UpdatedAt = DateTime.Now;
 
                 var tx = new Transaction
                 {
@@ -51,7 +51,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                     Amount = amount,
                     TransactionType = "Deposit",
                     Status = "Success",
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     Fee = 0
                 };
                 _context.Transactions.Add(tx);
@@ -110,8 +110,8 @@ namespace lucy_auth_payment.Modules.Payment.Services
                         WalletId = Guid.NewGuid().ToString(),
                         UserId = toUserId,
                         Balance = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
                     _context.Wallets.Add(receiverWallet);
                 }
@@ -125,23 +125,23 @@ namespace lucy_auth_payment.Modules.Payment.Services
                         WalletId = "W-ADMIN-001",
                         UserId = "U-ADMIN-001",
                         Balance = 0,
-                        CreatedAt = DateTime.UtcNow,
-                        UpdatedAt = DateTime.UtcNow
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
                     };
                     _context.Wallets.Add(adminWallet);
                 }
 
                 // 6. Thực hiện chuyển tiền
                 senderWallet.Balance -= amount;
-                senderWallet.UpdatedAt = DateTime.UtcNow;
+                senderWallet.UpdatedAt = DateTime.Now;
 
                 receiverWallet.Balance += netAmount;
-                receiverWallet.UpdatedAt = DateTime.UtcNow;
+                receiverWallet.UpdatedAt = DateTime.Now;
 
                 if (feeAmount > 0)
                 {
                     adminWallet.Balance += feeAmount;
-                    adminWallet.UpdatedAt = DateTime.UtcNow;
+                    adminWallet.UpdatedAt = DateTime.Now;
                 }
 
                 // 7. Ghi nhận giao dịch của người gửi
@@ -152,7 +152,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                     Amount = -amount,
                     TransactionType = transferType,
                     Status = "Success",
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     Fee = 0
                 };
                 _context.Transactions.Add(senderTx);
@@ -165,7 +165,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                     Amount = netAmount,
                     TransactionType = transferType,
                     Status = "Success",
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     Fee = feeAmount
                 };
                 _context.Transactions.Add(receiverTx);
@@ -180,7 +180,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                         Amount = feeAmount,
                         TransactionType = "Commission",
                         Status = "Success",
-                        CreatedAt = DateTime.UtcNow,
+                        CreatedAt = DateTime.Now,
                         Fee = 0
                     };
                     _context.Transactions.Add(adminTx);
@@ -208,7 +208,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                 if (wallet == null || wallet.Balance < amount) return false;
 
                 wallet.Balance -= amount;
-                wallet.UpdatedAt = DateTime.UtcNow;
+                wallet.UpdatedAt = DateTime.Now;
 
                 var tx = new Transaction
                 {
@@ -217,7 +217,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
                     Amount = -amount, // Lưu số âm biểu thị tiền bị trừ/đóng băng
                     TransactionType = "Withdraw",
                     Status = "Pending", // Trạng thái ban đầu chờ duyệt
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.Now,
                     Fee = 0
                 };
                 _context.Transactions.Add(tx);
@@ -262,7 +262,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
 
                 // Hoàn lại số xu đã bị khóa (giá trị tx.Amount lưu âm nên chúng ta lấy trị tuyệt đối cộng lại)
                 wallet.Balance += Math.Abs(tx.Amount);
-                wallet.UpdatedAt = DateTime.UtcNow;
+                wallet.UpdatedAt = DateTime.Now;
 
                 tx.Status = "Failed";
 
