@@ -1,0 +1,256 @@
+{
+	"info": {
+		"_postman_id": "c62fb91d-bf2e-4b4d-9f4a-fa681f9b36d7",
+		"name": "Lucy Project - Payment",
+		"description": "Bộ sưu tập các API test Module Payment của LucyProject",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1a. Get User Wallet Balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/payment/wallet",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"wallet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1b. Get Admin Wallet Balance",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-ADMIN-001",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/payment/wallet",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"wallet"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. Deposit Coins",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 200.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/payment/deposit",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"deposit"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3a. Transfer Money to Normal Creator (10% Fee)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"toUserId\": \"U-CREATOR-002\",\n  \"amount\": 100.0,\n  \"transferType\": \"BuyPodcast\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/payment/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3b. Transfer Money to Super Mentor (10% Fee instead of 20% Donate)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"toUserId\": \"U-SUPER-MENTOR-003\",\n  \"amount\": 100.0,\n  \"transferType\": \"Donate\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/payment/transfer",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"transfer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. Withdraw Money (Lock Balance as Pending)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 100.0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/payment/withdraw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"withdraw"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5a. Admin Approve Withdraw",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/payment/admin/withdraw/approve/REPLACE_WITH_TRANSACTION_ID",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"admin",
+						"withdraw",
+						"approve",
+						"REPLACE_WITH_TRANSACTION_ID"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5b. Admin Reject Withdraw",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/payment/admin/withdraw/reject/REPLACE_WITH_TRANSACTION_ID",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"payment",
+						"admin",
+						"withdraw",
+						"reject",
+						"REPLACE_WITH_TRANSACTION_ID"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

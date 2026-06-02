@@ -1,6 +1,44 @@
-@lucy_auth_payment_HostAddress = http://localhost:5032
+@HostAddress = http://localhost:5000
+@TestUserId = U-LINH-001
 
-GET {{lucy_auth_payment_HostAddress}}/weatherforecast/
+### 1. Lấy thông tin ví của người dùng
+GET {{HostAddress}}/api/payment/wallet
+X-User-Id: {{TestUserId}}
 Accept: application/json
+
+###
+
+### 2. Nạp tiền (cộng xu) vào ví
+POST {{HostAddress}}/api/payment/deposit
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "amount": 200.0
+}
+
+###
+
+### 3. Chuyển tiền (donate/thanh toán) sang ví khác
+POST {{HostAddress}}/api/payment/transfer
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "toUserId": "U-DAT-002",
+  "amount": 150.0,
+  "transferType": "Donate"
+}
+
+###
+
+### 4. Yêu cầu rút tiền mặt (ở trạng thái Pending chờ duyệt)
+POST {{HostAddress}}/api/payment/withdraw
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "amount": 100.0
+}
 
 ###
