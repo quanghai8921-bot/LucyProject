@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lucy.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1543266e9b3ca892e7fedaf1aeffe05cde9e5ec3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0fd15b1e72a45e20f8ab4142ab2ef825a8f2fa3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lucy.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lucy.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
