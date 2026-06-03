@@ -35,4 +35,15 @@ public sealed class AdminUsersController(AdminService adminService) : Controller
             total
         });
     }
+
+    // PUT /api/admin/users/{userId}/status
+    [HttpPut("{userId}/status")]
+    public async Task<IActionResult> UpdateUserStatus(string userId, [FromBody] UpdateStatusRequest request)
+    {
+        var (ok, error) = await adminService.UpdateUserStatusAsync(userId, request.IsStatus);
+        if (!ok) return BadRequest(new { success = false, message = error });
+        return Ok(new { success = true, message = "Cap nhat trang thai thanh cong." });
+    }
 }
+
+public sealed record UpdateStatusRequest(int IsStatus);

@@ -1,13 +1,18 @@
 using System.Text;
 using Lucy.Auth.Api.Data;
+using Lucy.Auth.Api.Entities;
 using Lucy.Auth.Api.Services;
+using Lucy.Shared.Constants;
 using Lucy.Shared.Dtos;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // ── Database: EF Core + Pomelo MySQL ────────────────────────────────────────
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
@@ -105,18 +110,39 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// ── Auto migrate database ─────────────────────────────────────────────────────
+// ── Ensure database for local development ─────────────────────────────────────
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
     try
     {
-        await db.Database.MigrateAsync();
+        await db.Database.EnsureCreatedAsync();
+
+        // Seed default Admin if not exists
+        if (!await db.Users.AnyAsync(u => u.Email == "admin@lucy.app"))
+        {
+            var adminUser = new User
+            {
+                UserId = "Uadmin",
+                FullName = "System Admin",
+                Email = "admin@lucy.app",
+                PhoneNumber = "0999999999",
+                Passwords = BCrypt.Net.BCrypt.HashPassword("admin123"),
+                IsStatus = 1
+            };
+            db.Users.Add(adminUser);
+            db.UserRoles.Add(new UserRole
+            {
+                UserId = adminUser.UserId,
+                RoleId = RoleCodes.AdminId
+            });
+            await db.SaveChangesAsync();
+        }
     }
     catch (Exception ex)
     {
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Lỗi khi migrate database. Tiếp tục chạy...");
+        logger.LogError(ex, "Loi khi tao/kiem tra database. Tiep tuc chay...");
     }
 }
 
@@ -134,6 +160,15 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 app.UseHttpsRedirection();
+
+var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
+Directory.CreateDirectory(uploadsPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsPath),
+    RequestPath = "/uploads"
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 

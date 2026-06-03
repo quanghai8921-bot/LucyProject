@@ -1,29 +1,31 @@
 namespace Lucy.Auth.Api.Dtos;
 
-/// <summary>
-/// Thông tin user trả về trong AuthTokenResponse và UserProfileResponse
-/// </summary>
 public sealed record UserDto(
     string UserId,
     string FullName,
-    string? PhoneNumber,
+    string PhoneNumber,
     string Email,
-    string? AvatarPersonaUrl,
-    bool IsActive,
-    DateTimeOffset CreatedAt
+    string? AvatarUrl,
+    int IsStatus,
+    DateTime CreatedAt
 );
 
-/// <summary>
-/// Thông tin role trả về
-/// </summary>
+public sealed record AdminUserDto(
+    string UserId,
+    string FullName,
+    string PhoneNumber,
+    string Email,
+    string? AvatarUrl,
+    int IsStatus,
+    DateTime CreatedAt,
+    IReadOnlyList<RoleDto> Roles
+);
+
 public sealed record RoleDto(
-    string RoleCode,
+    string RoleId,
     string RoleName
 );
 
-/// <summary>
-/// Data bên trong AuthTokenResponse
-/// </summary>
 public sealed record AuthTokenData(
     string AccessToken,
     string TokenType,
@@ -31,31 +33,22 @@ public sealed record AuthTokenData(
     IReadOnlyList<RoleDto> Roles
 );
 
-/// <summary>
-/// AuthTokenResponse (khớp với OpenAPI schema AuthTokenResponse)
-/// </summary>
 public sealed record AuthTokenResponse(
     bool Success,
     string Message,
     AuthTokenData Data
 );
 
-/// <summary>
-/// UserProfileResponse
-/// </summary>
 public sealed record UserProfileData(
     UserDto User,
     IReadOnlyList<RoleDto> Roles
 );
 
-/// <summary>
-/// ApplicationResponse data
-/// </summary>
 public sealed record ApplicationDto(
     string ApplicationId,
     string UserId,
     string Type,
     string Status,
     string? RejectReason,
-    DateTimeOffset SubmittedAt
+    DateTime SubmittedAt
 );

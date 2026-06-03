@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lucy.Auth.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d0fd15b1e72a45e20f8ab4142ab2ef825a8f2fa3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+040c22cc2527a9ebf12ae168dd8a239cfbb69fc6")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lucy.Auth.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lucy.Auth.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

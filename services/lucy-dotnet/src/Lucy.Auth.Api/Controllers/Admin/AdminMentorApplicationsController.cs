@@ -13,7 +13,6 @@ namespace Lucy.Auth.Api.Controllers.Admin;
 [Produces("application/json")]
 public sealed class AdminMentorApplicationsController(AdminService adminService) : ControllerBase
 {
-    // GET /api/admin/mentor-applications?status=PENDING
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<List<ApplicationDto>>), 200)]
     public async Task<IActionResult> GetMentorApplications([FromQuery] string? status)
@@ -22,7 +21,6 @@ public sealed class AdminMentorApplicationsController(AdminService adminService)
         return Ok(ApiResponse<List<ApplicationDto>>.Ok(list));
     }
 
-    // PATCH /api/admin/mentor-applications/{applicationId}/approve
     [HttpPatch("{applicationId}/approve")]
     [ProducesResponseType(typeof(ApiResponse<object>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -31,20 +29,14 @@ public sealed class AdminMentorApplicationsController(AdminService adminService)
         [FromRoute] string applicationId,
         [FromBody] AdminDecisionRequest request)
     {
-        var adminId = GetCurrentUserId();
-        var (ok, error) = await adminService.ApproveMentorApplicationAsync(applicationId, request, adminId);
+        var (ok, error) = await adminService.ApproveMentorApplicationAsync(applicationId, request, GetCurrentUserId());
 
         if (!ok)
-        {
-            if (error!.Contains("không tìm thấy"))
-                return NotFound(ApiResponse<object>.Fail(error));
-            return BadRequest(ApiResponse<object>.Fail(error));
-        }
+            return error!.Contains("tim thay") ? NotFound(ApiResponse<object>.Fail(error)) : BadRequest(ApiResponse<object>.Fail(error));
 
-        return Ok(ApiResponse<object>.Ok(new { }, "Đã duyệt hồ sơ mentor thành công"));
+        return Ok(ApiResponse<object>.Ok(new { }, "Da duyet ho so mentor thanh cong"));
     }
 
-    // PATCH /api/admin/mentor-applications/{applicationId}/reject
     [HttpPatch("{applicationId}/reject")]
     [ProducesResponseType(typeof(ApiResponse<object>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -53,23 +45,14 @@ public sealed class AdminMentorApplicationsController(AdminService adminService)
         [FromRoute] string applicationId,
         [FromBody] AdminDecisionRequest request)
     {
-        var adminId = GetCurrentUserId();
-        var (ok, error) = await adminService.RejectMentorApplicationAsync(applicationId, request, adminId);
+        var (ok, error) = await adminService.RejectMentorApplicationAsync(applicationId, request, GetCurrentUserId());
 
         if (!ok)
-        {
-            if (error!.Contains("không tìm thấy"))
-                return NotFound(ApiResponse<object>.Fail(error));
-            return BadRequest(ApiResponse<object>.Fail(error));
-        }
+            return error!.Contains("tim thay") ? NotFound(ApiResponse<object>.Fail(error)) : BadRequest(ApiResponse<object>.Fail(error));
 
-        return Ok(ApiResponse<object>.Ok(new { }, "Đã từ chối hồ sơ mentor"));
+        return Ok(ApiResponse<object>.Ok(new { }, "Da tu choi ho so mentor"));
     }
 
-    private Guid GetCurrentUserId()
-    {
-        var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
-               ?? User.FindFirstValue("sub");
-        return Guid.TryParse(sub, out var id) ? id : Guid.Empty;
-    }
+    private string GetCurrentUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub") ?? string.Empty;
 }

@@ -2,171 +2,231 @@ using Lucy.Auth.Api.Data;
 using Lucy.Auth.Api.Dtos;
 using Lucy.Auth.Api.Entities;
 using Lucy.Shared.Constants;
-using Lucy.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace Lucy.Auth.Api.Services;
 
 public sealed class AuthService(AuthDbContext db, JwtService jwtService)
 {
-    // ────────────────────────────────────────────────────────────────────────
-    // Đăng ký tài khoản Lucy ẩn danh (Learner)
-    // ────────────────────────────────────────────────────────────────────────
     public async Task<(AuthTokenResponse? Response, string? Error)> RegisterAsync(RegisterRequest request)
     {
-        if (await db.Users.AnyAsync(u => u.Email == request.Email))
-            return (null, "Email đã được sử dụng.");
+        var normalizedEmail = request.Email.Trim();
+        var phoneNumber = request.PhoneNumber.Trim();
 
-        if (request.PhoneNumber != null && await db.Users.AnyAsync(u => u.PhoneNumber == request.PhoneNumber))
-            return (null, "Số điện thoại đã được sử dụng.");
+        if (await db.Users.AnyAsync(u => u.Email == normalizedEmail))
+            return (null, "Email da duoc su dung.");
 
-        var learnerRole = await db.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Learner)
-            ?? throw new InvalidOperationException("Role LEARNER không tìm thấy trong DB.");
+        if (await db.Users.AnyAsync(u => u.PhoneNumber == phoneNumber))
+            return (null, "So dien thoai da duoc su dung.");
+
+        var learnerRole = await db.Roles.FindAsync(RoleCodes.LearnerId)
+            ?? throw new InvalidOperationException("Role R002 khong ton tai trong DB.");
 
         var user = new User
         {
-            FullName = request.FullName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            BirthDate = request.BirthDate != null ? DateOnly.Parse(request.BirthDate) : null,
-            AvatarPersonaUrl = request.AvatarPersonaUrl
+            UserId = NewId("U"),
+            FullName = request.FullName.Trim(),
+            Email = normalizedEmail,
+            PhoneNumber = phoneNumber,
+            Passwords = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            IsStatus = 1
         };
 
+        var avatarPersona = new AvatarPersona
+        {
+            UserId = user.UserId,
+            DisplayName = string.IsNullOrWhiteSpace(request.AvatarDisplayName)
+                ? user.FullName
+                : request.AvatarDisplayName.Trim(),
+            AvatarUrl = request.AvatarUrl,
+            IsAnonymous = 1
+        };
+        user.AvatarPersona = avatarPersona;
+
         db.Users.Add(user);
-        db.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = learnerRole.Id });
+        db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = learnerRole.RoleId });
+        db.AvatarPersonas.Add(avatarPersona);
+
         await db.SaveChangesAsync();
 
-        return (BuildAuthTokenResponse(user, [learnerRole], "Đăng ký thành công"), null);
+        user.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = learnerRole.RoleId, Role = learnerRole });
+        return (BuildAuthTokenResponse(user, [learnerRole], "Dang ky thanh cong"), null);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Đăng ký Mentor (cần admin phê duyệt)
-    // ────────────────────────────────────────────────────────────────────────
     public async Task<(ApplicationDto? Application, string? Error)> RegisterMentorAsync(
-        MentorRegisterRequest request, string? certificateFileUrl)
+        MentorRegisterRequest request, string? certificateUrl)
     {
-        if (await db.Users.AnyAsync(u => u.Email == request.Email))
-            return (null, "Email đã được sử dụng.");
+        var normalizedEmail = request.Email.Trim();
+        var phoneNumber = request.PhoneNumber.Trim();
 
-        var learnerRole = await db.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Learner)
-            ?? throw new InvalidOperationException("Role LEARNER không tìm thấy.");
+        if (await db.Users.AnyAsync(u => u.Email == normalizedEmail))
+            return (null, "Email da duoc su dung.");
+
+        if (await db.Users.AnyAsync(u => u.PhoneNumber == phoneNumber))
+            return (null, "So dien thoai da duoc su dung.");
+
+        if (!string.IsNullOrWhiteSpace(request.LanguageId)
+            && !await db.Languages.AnyAsync(l => l.LanguageId == request.LanguageId))
+        {
+            return (null, "LanguageId khong ton tai.");
+        }
+
+        var learnerRole = await db.Roles.FindAsync(RoleCodes.LearnerId)
+            ?? throw new InvalidOperationException("Role R002 khong ton tai trong DB.");
 
         var user = new User
         {
-            FullName = request.FullName,
-            Email = request.Email,
-            PhoneNumber = request.PhoneNumber,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            BirthDate = request.BirthDate != null ? DateOnly.Parse(request.BirthDate) : null
+            UserId = NewId("U"),
+            FullName = request.FullName.Trim(),
+            Email = normalizedEmail,
+            PhoneNumber = phoneNumber,
+            Passwords = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            IsStatus = 1
         };
 
         var application = new MentorApplication
         {
-            UserId = user.Id,
-            LanguageId = request.LanguageId,
-            ExperienceDescription = request.ExperienceDescription,
-            CertificateFileUrl = certificateFileUrl,
+            ApplicationId = NewId("MA"),
+            UserId = user.UserId,
+            LanguageId = string.IsNullOrWhiteSpace(request.LanguageId) ? null : request.LanguageId,
+            CertificateUrl = certificateUrl,
             Status = CommonStatus.Pending
         };
 
+        var avatarPersona = new AvatarPersona
+        {
+            UserId = user.UserId,
+            DisplayName = string.IsNullOrWhiteSpace(request.AvatarDisplayName)
+                ? user.FullName
+                : request.AvatarDisplayName.Trim(),
+            AvatarUrl = request.AvatarUrl,
+            IsAnonymous = 1
+        };
+        user.AvatarPersona = avatarPersona;
+
         db.Users.Add(user);
-        db.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = learnerRole.Id });
+        db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = learnerRole.RoleId });
+        db.AvatarPersonas.Add(avatarPersona);
         db.MentorApplications.Add(application);
         await db.SaveChangesAsync();
 
-        return (MapApplication(application, "MENTOR"), null);
+        return (MapApplication(application, RoleCodes.Mentor), null);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Đăng nhập
-    // ────────────────────────────────────────────────────────────────────────
     public async Task<(AuthTokenResponse? Response, string? Error)> LoginAsync(LoginRequest request)
     {
         var user = await db.Users
+            .Include(u => u.AvatarPersona)
             .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.Email == request.Email);
 
-        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            return (null, "Email hoặc mật khẩu không đúng.");
+        if (user is null || !BCrypt.Net.BCrypt.Verify(request.Password, user.Passwords))
+            return (null, "Email hoac mat khau khong dung.");
 
-        if (!user.IsActive)
-            return (null, "Tài khoản đã bị khóa.");
+        if (user.IsStatus == 0)
+            return (null, "Tai khoan da bi khoa.");
 
         var roles = user.UserRoles.Select(ur => ur.Role).ToList();
-        return (BuildAuthTokenResponse(user, roles, "Đăng nhập thành công"), null);
+        return (BuildAuthTokenResponse(user, roles, "Dang nhap thanh cong"), null);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Lấy thông tin user hiện tại
-    // ────────────────────────────────────────────────────────────────────────
-    public async Task<UserProfileData?> GetMeAsync(Guid userId)
+    public async Task<UserProfileData?> GetMeAsync(string userId)
     {
         var user = await db.Users
+            .Include(u => u.AvatarPersona)
             .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
-            .FirstOrDefaultAsync(u => u.Id == userId);
+            .FirstOrDefaultAsync(u => u.UserId == userId);
 
         if (user is null) return null;
 
-        var roles = user.UserRoles.Select(ur => new RoleDto(ur.Role.Code, ur.Role.Name)).ToList();
+        var roles = user.UserRoles.Select(ur => new RoleDto(ur.Role.RoleId, ur.Role.RoleName)).ToList();
         return new UserProfileData(MapUserDto(user), roles);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Lấy danh sách roles của user hiện tại
-    // ────────────────────────────────────────────────────────────────────────
-    public async Task<List<RoleDto>> GetMyRolesAsync(Guid userId)
+    public async Task<List<RoleDto>> GetMyRolesAsync(string userId)
     {
         return await db.UserRoles
             .Where(ur => ur.UserId == userId)
             .Include(ur => ur.Role)
-            .Select(ur => new RoleDto(ur.Role.Code, ur.Role.Name))
+            .Select(ur => new RoleDto(ur.Role.RoleId, ur.Role.RoleName))
             .ToListAsync();
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Mentor gửi yêu cầu nâng cấp lên Creator
-    // ────────────────────────────────────────────────────────────────────────
-    public async Task<(ApplicationDto? Application, string? Error)> CreateCreatorUpgradeRequestAsync(
-        Guid userId, CreatorUpgradeRequestCreateDto request)
+    public async Task<(UserProfileData? Profile, string? Error)> UpdateAvatarAsync(
+        string userId, string? displayName, string? avatarUrl, int? isAnonymous)
     {
-        // Kiểm tra user có role MENTOR chưa
+        var user = await db.Users
+            .Include(u => u.AvatarPersona)
+            .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+            .FirstOrDefaultAsync(u => u.UserId == userId);
+
+        if (user is null)
+            return (null, "Nguoi dung khong ton tai.");
+
+        var avatar = user.AvatarPersona;
+        if (avatar is null)
+        {
+            avatar = new AvatarPersona
+            {
+                UserId = user.UserId,
+                DisplayName = string.IsNullOrWhiteSpace(displayName) ? user.FullName : displayName.Trim(),
+                IsAnonymous = isAnonymous ?? 1
+            };
+            db.AvatarPersonas.Add(avatar);
+            user.AvatarPersona = avatar;
+        }
+
+        if (!string.IsNullOrWhiteSpace(displayName))
+            avatar.DisplayName = displayName.Trim();
+
+        if (!string.IsNullOrWhiteSpace(avatarUrl))
+            avatar.AvatarUrl = avatarUrl.Trim();
+
+        if (isAnonymous is not null)
+            avatar.IsAnonymous = isAnonymous.Value;
+
+        await db.SaveChangesAsync();
+
+        var roles = user.UserRoles.Select(ur => new RoleDto(ur.Role.RoleId, ur.Role.RoleName)).ToList();
+        return (new UserProfileData(MapUserDto(user), roles), null);
+    }
+
+    public async Task<(ApplicationDto? Application, string? Error)> CreateCreatorUpgradeRequestAsync(
+        string userId, CreatorUpgradeRequestCreateDto request)
+    {
         var isMentor = await db.UserRoles
-            .Include(ur => ur.Role)
-            .AnyAsync(ur => ur.UserId == userId && ur.Role.Code == RoleCodes.Mentor);
+            .AnyAsync(ur => ur.UserId == userId && ur.RoleId == RoleCodes.MentorId);
 
         if (!isMentor)
-            return (null, "Chỉ Mentor mới có thể gửi yêu cầu nâng cấp Creator.");
+            return (null, "Chi Mentor moi co the gui yeu cau nang cap Creator.");
 
-        // Kiểm tra đã có yêu cầu PENDING chưa
         var hasPending = await db.CreatorUpgradeRequests
             .AnyAsync(r => r.UserId == userId && r.Status == CommonStatus.Pending);
 
         if (hasPending)
-            return (null, "Bạn đã có yêu cầu đang chờ xét duyệt.");
+            return (null, "Ban da co yeu cau dang cho xet duyet.");
 
         var upgradeRequest = new CreatorUpgradeRequest
         {
+            UpgradeRequestId = NewId("CU"),
             UserId = userId,
-            Reason = request.Reason,
-            EvidenceUrl = request.EvidenceUrl,
+            TotalTeachingMinutes = request.TotalTeachingMinutes,
+            AverageRating = request.AverageRating,
+            LearnerCount = request.LearnerCount,
             Status = CommonStatus.Pending
         };
 
         db.CreatorUpgradeRequests.Add(upgradeRequest);
         await db.SaveChangesAsync();
 
-        return (MapApplication(upgradeRequest, "CREATOR"), null);
+        return (MapApplication(upgradeRequest, RoleCodes.Creator), null);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ────────────────────────────────────────────────────────────────────────
     private AuthTokenResponse BuildAuthTokenResponse(User user, IEnumerable<Role> roles, string message)
     {
-        var roleDtos = roles.Select(r => new RoleDto(r.Code, r.Name)).ToList();
-        var roleCodes = roles.Select(r => r.Code);
-        var token = jwtService.CreateToken(user, roleCodes);
+        var roleDtos = roles.Select(r => new RoleDto(r.RoleId, r.RoleName)).ToList();
+        var tokenRoles = roles.Select(ToAuthorizationRole);
+        var token = jwtService.CreateToken(user, tokenRoles);
 
         return new AuthTokenResponse(
             Success: true,
@@ -181,14 +241,25 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
     }
 
     private static UserDto MapUserDto(User user) =>
-        new(user.Id.ToString(), user.FullName, user.PhoneNumber, user.Email,
-            user.AvatarPersonaUrl, user.IsActive, user.CreatedAt);
+        new(user.UserId, 
+            !string.IsNullOrWhiteSpace(user.AvatarPersona?.DisplayName) ? user.AvatarPersona.DisplayName : user.FullName, 
+            user.PhoneNumber, user.Email,
+            user.AvatarPersona?.AvatarUrl, user.IsStatus, user.CreatedAt);
 
     private static ApplicationDto MapApplication(MentorApplication app, string type) =>
-        new(app.Id.ToString(), app.UserId.ToString(), type, app.Status,
-            app.RejectReason, app.CreatedAt);
+        new(app.ApplicationId, app.UserId, type, app.Status, app.RejectReason, app.SubmittedAt);
 
     private static ApplicationDto MapApplication(CreatorUpgradeRequest req, string type) =>
-        new(req.Id.ToString(), req.UserId.ToString(), type, req.Status,
-            req.RejectReason, req.CreatedAt);
+        new(req.UpgradeRequestId, req.UserId, type, req.Status, req.RejectReason, req.SubmittedAt);
+
+    private static string ToAuthorizationRole(Role role) => role.RoleId switch
+    {
+        RoleCodes.AdminId => RoleCodes.Admin,
+        RoleCodes.LearnerId => RoleCodes.Learner,
+        RoleCodes.MentorId => RoleCodes.Mentor,
+        RoleCodes.CreatorId => RoleCodes.Creator,
+        _ => role.RoleName
+    };
+
+    private static string NewId(string prefix) => $"{prefix}{Guid.NewGuid():N}"[..Math.Min(prefix.Length + 32, 50)];
 }

@@ -2,10 +2,9 @@ namespace Lucy.Auth.Api.Entities;
 
 public sealed class Role
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public required string Code { get; set; }  // LEARNER, MENTOR, CREATOR, ADMIN
-    public required string Name { get; set; }  // Tên hiển thị
+    public string RoleId { get; set; } = default!;
+    public required string RoleName { get; set; }
+    public byte IsActive { get; set; } = 1;
 
-    // Navigation
     public ICollection<UserRole> UserRoles { get; set; } = [];
 }

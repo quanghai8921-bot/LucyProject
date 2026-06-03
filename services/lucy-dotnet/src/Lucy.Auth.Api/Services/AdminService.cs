@@ -8,13 +8,11 @@ namespace Lucy.Auth.Api.Services;
 
 public sealed class AdminService(AuthDbContext db)
 {
-    // ────────────────────────────────────────────────────────────────────────
-    // Danh sách tài khoản
-    // ────────────────────────────────────────────────────────────────────────
-    public async Task<(List<UserDto> Users, int Total)> GetUsersAsync(
+    public async Task<(List<AdminUserDto> Users, int Total)> GetUsersAsync(
         string? keyword, string? role, int page, int size)
     {
         var query = db.Users
+            .Include(u => u.AvatarPersona)
             .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
             .AsQueryable();
 
@@ -24,12 +22,14 @@ public sealed class AdminService(AuthDbContext db)
             query = query.Where(u =>
                 u.FullName.ToLower().Contains(kw) ||
                 u.Email.ToLower().Contains(kw) ||
-                (u.PhoneNumber != null && u.PhoneNumber.Contains(kw)));
+                u.PhoneNumber.Contains(kw));
         }
 
         if (!string.IsNullOrWhiteSpace(role))
         {
-            query = query.Where(u => u.UserRoles.Any(ur => ur.Role.Code == role.ToUpper()));
+            var normalizedRole = NormalizeRoleFilter(role);
+            query = query.Where(u => u.UserRoles.Any(ur =>
+                ur.RoleId == normalizedRole || ur.Role.RoleName == normalizedRole));
         }
 
         var total = await query.CountAsync();
@@ -37,17 +37,18 @@ public sealed class AdminService(AuthDbContext db)
             .OrderByDescending(u => u.CreatedAt)
             .Skip((page - 1) * size)
             .Take(size)
-            .Select(u => new UserDto(
-                u.Id.ToString(), u.FullName, u.PhoneNumber,
-                u.Email, u.AvatarPersonaUrl, u.IsActive, u.CreatedAt))
+            .Select(u => new AdminUserDto(
+                u.UserId, u.FullName, u.PhoneNumber, u.Email,
+                u.AvatarPersona == null ? null : u.AvatarPersona.AvatarUrl,
+                u.IsStatus, u.CreatedAt,
+                u.UserRoles
+                    .Select(ur => new RoleDto(ur.Role.RoleId, ur.Role.RoleName))
+                    .ToList()))
             .ToListAsync();
 
         return (users, total);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Hồ sơ đăng ký Mentor
-    // ────────────────────────────────────────────────────────────────────────
     public async Task<List<ApplicationDto>> GetMentorApplicationsAsync(string? status)
     {
         var query = db.MentorApplications.AsQueryable();
@@ -56,63 +57,41 @@ public sealed class AdminService(AuthDbContext db)
             query = query.Where(a => a.Status == status.ToUpper());
 
         return await query
-            .OrderByDescending(a => a.CreatedAt)
+            .OrderByDescending(a => a.SubmittedAt)
             .Select(a => new ApplicationDto(
-                a.Id.ToString(), a.UserId.ToString(), "MENTOR",
-                a.Status, a.RejectReason, a.CreatedAt))
+                a.ApplicationId, a.UserId, RoleCodes.Mentor,
+                a.Status, a.RejectReason, a.SubmittedAt))
             .ToListAsync();
     }
 
     public async Task<(bool Ok, string? Error)> ApproveMentorApplicationAsync(
-        string applicationId, AdminDecisionRequest request, Guid adminUserId)
+        string applicationId, AdminDecisionRequest request, string adminUserId)
     {
-        if (!Guid.TryParse(applicationId, out var appGuid))
-            return (false, "applicationId không hợp lệ.");
+        var app = await db.MentorApplications.FindAsync(applicationId);
+        if (app is null) return (false, "Khong tim thay ho so.");
+        if (app.Status != CommonStatus.Pending) return (false, "Ho so nay da duoc xu ly.");
 
-        var app = await db.MentorApplications.FindAsync(appGuid);
-        if (app is null) return (false, "Không tìm thấy hồ sơ.");
-        if (app.Status != CommonStatus.Pending) return (false, "Hồ sơ này đã được xử lý.");
-
-        // Assign MENTOR role
-        var mentorRole = await db.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Mentor)
-            ?? throw new InvalidOperationException("Role MENTOR không tồn tại.");
-
-        var alreadyMentor = await db.UserRoles
-            .AnyAsync(ur => ur.UserId == app.UserId && ur.RoleId == mentorRole.Id);
-
-        if (!alreadyMentor)
-            db.UserRoles.Add(new UserRole { UserId = app.UserId, RoleId = mentorRole.Id });
-
+        await AssignRoleAsync(app.UserId, RoleCodes.MentorId);
         app.Status = CommonStatus.Approved;
-        app.ReviewedAt = DateTimeOffset.UtcNow;
-        app.ReviewedByUserId = adminUserId;
 
         await db.SaveChangesAsync();
         return (true, null);
     }
 
     public async Task<(bool Ok, string? Error)> RejectMentorApplicationAsync(
-        string applicationId, AdminDecisionRequest request, Guid adminUserId)
+        string applicationId, AdminDecisionRequest request, string adminUserId)
     {
-        if (!Guid.TryParse(applicationId, out var appGuid))
-            return (false, "applicationId không hợp lệ.");
-
-        var app = await db.MentorApplications.FindAsync(appGuid);
-        if (app is null) return (false, "Không tìm thấy hồ sơ.");
-        if (app.Status != CommonStatus.Pending) return (false, "Hồ sơ này đã được xử lý.");
+        var app = await db.MentorApplications.FindAsync(applicationId);
+        if (app is null) return (false, "Khong tim thay ho so.");
+        if (app.Status != CommonStatus.Pending) return (false, "Ho so nay da duoc xu ly.");
 
         app.Status = CommonStatus.Rejected;
         app.RejectReason = request.Reason;
-        app.ReviewedAt = DateTimeOffset.UtcNow;
-        app.ReviewedByUserId = adminUserId;
 
         await db.SaveChangesAsync();
         return (true, null);
     }
 
-    // ────────────────────────────────────────────────────────────────────────
-    // Yêu cầu nâng cấp Creator
-    // ────────────────────────────────────────────────────────────────────────
     public async Task<List<ApplicationDto>> GetCreatorUpgradeRequestsAsync(string? status)
     {
         var query = db.CreatorUpgradeRequests.AsQueryable();
@@ -121,56 +100,66 @@ public sealed class AdminService(AuthDbContext db)
             query = query.Where(r => r.Status == status.ToUpper());
 
         return await query
-            .OrderByDescending(r => r.CreatedAt)
+            .OrderByDescending(r => r.SubmittedAt)
             .Select(r => new ApplicationDto(
-                r.Id.ToString(), r.UserId.ToString(), "CREATOR",
-                r.Status, r.RejectReason, r.CreatedAt))
+                r.UpgradeRequestId, r.UserId, RoleCodes.Creator,
+                r.Status, r.RejectReason, r.SubmittedAt))
             .ToListAsync();
     }
 
     public async Task<(bool Ok, string? Error)> ApproveCreatorUpgradeRequestAsync(
-        string requestId, AdminDecisionRequest request, Guid adminUserId)
+        string requestId, AdminDecisionRequest request, string adminUserId)
     {
-        if (!Guid.TryParse(requestId, out var reqGuid))
-            return (false, "requestId không hợp lệ.");
+        var upgradeReq = await db.CreatorUpgradeRequests.FindAsync(requestId);
+        if (upgradeReq is null) return (false, "Khong tim thay yeu cau.");
+        if (upgradeReq.Status != CommonStatus.Pending) return (false, "Yeu cau nay da duoc xu ly.");
 
-        var upgradeReq = await db.CreatorUpgradeRequests.FindAsync(reqGuid);
-        if (upgradeReq is null) return (false, "Không tìm thấy yêu cầu.");
-        if (upgradeReq.Status != CommonStatus.Pending) return (false, "Yêu cầu này đã được xử lý.");
-
-        var creatorRole = await db.Roles.FirstOrDefaultAsync(r => r.Code == RoleCodes.Creator)
-            ?? throw new InvalidOperationException("Role CREATOR không tồn tại.");
-
-        var alreadyCreator = await db.UserRoles
-            .AnyAsync(ur => ur.UserId == upgradeReq.UserId && ur.RoleId == creatorRole.Id);
-
-        if (!alreadyCreator)
-            db.UserRoles.Add(new UserRole { UserId = upgradeReq.UserId, RoleId = creatorRole.Id });
-
+        await AssignRoleAsync(upgradeReq.UserId, RoleCodes.CreatorId);
         upgradeReq.Status = CommonStatus.Approved;
-        upgradeReq.ReviewedAt = DateTimeOffset.UtcNow;
-        upgradeReq.ReviewedByUserId = adminUserId;
 
         await db.SaveChangesAsync();
         return (true, null);
     }
 
     public async Task<(bool Ok, string? Error)> RejectCreatorUpgradeRequestAsync(
-        string requestId, AdminDecisionRequest request, Guid adminUserId)
+        string requestId, AdminDecisionRequest request, string adminUserId)
     {
-        if (!Guid.TryParse(requestId, out var reqGuid))
-            return (false, "requestId không hợp lệ.");
-
-        var upgradeReq = await db.CreatorUpgradeRequests.FindAsync(reqGuid);
-        if (upgradeReq is null) return (false, "Không tìm thấy yêu cầu.");
-        if (upgradeReq.Status != CommonStatus.Pending) return (false, "Yêu cầu này đã được xử lý.");
+        var upgradeReq = await db.CreatorUpgradeRequests.FindAsync(requestId);
+        if (upgradeReq is null) return (false, "Khong tim thay yeu cau.");
+        if (upgradeReq.Status != CommonStatus.Pending) return (false, "Yeu cau nay da duoc xu ly.");
 
         upgradeReq.Status = CommonStatus.Rejected;
         upgradeReq.RejectReason = request.Reason;
-        upgradeReq.ReviewedAt = DateTimeOffset.UtcNow;
-        upgradeReq.ReviewedByUserId = adminUserId;
 
         await db.SaveChangesAsync();
         return (true, null);
     }
+
+    public async Task<(bool Ok, string? Error)> UpdateUserStatusAsync(string userId, int isStatus)
+    {
+        var user = await db.Users.FindAsync(userId);
+        if (user is null) return (false, "Khong tim thay nguoi dung.");
+        user.IsStatus = isStatus;
+        await db.SaveChangesAsync();
+        return (true, null);
+    }
+
+    private async Task AssignRoleAsync(string userId, string roleId)
+    {
+        if (!await db.Roles.AnyAsync(r => r.RoleId == roleId))
+            throw new InvalidOperationException($"Role {roleId} khong ton tai.");
+
+        var alreadyAssigned = await db.UserRoles.AnyAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+        if (!alreadyAssigned)
+            db.UserRoles.Add(new UserRole { UserId = userId, RoleId = roleId });
+    }
+
+    private static string NormalizeRoleFilter(string role) => role.Trim().ToUpper() switch
+    {
+        RoleCodes.Admin => RoleCodes.AdminId,
+        RoleCodes.Learner => RoleCodes.LearnerId,
+        RoleCodes.Mentor => RoleCodes.MentorId,
+        RoleCodes.Creator => RoleCodes.CreatorId,
+        _ => role.Trim().ToUpper()
+    };
 }

@@ -4,17 +4,14 @@ namespace Lucy.Auth.Api.Entities;
 
 public sealed class MentorApplication
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid UserId { get; set; }
+    public string ApplicationId { get; set; } = default!;
+    public string UserId { get; set; } = default!;
     public string? LanguageId { get; set; }
-    public string? ExperienceDescription { get; set; }
-    public string? CertificateFileUrl { get; set; }
+    public string? CertificateUrl { get; set; }
     public string Status { get; set; } = CommonStatus.Pending;
     public string? RejectReason { get; set; }
-    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-    public DateTimeOffset? ReviewedAt { get; set; }
-    public Guid? ReviewedByUserId { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
 
-    // Navigation
     public User User { get; set; } = null!;
+    public Language? Language { get; set; }
 }

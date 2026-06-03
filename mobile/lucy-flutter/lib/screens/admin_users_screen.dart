@@ -1,0 +1,981 @@
+import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/auth_api.dart';
+import 'package:lucy_app/theme/app_colors.dart';
+
+class AdminUsersScreen extends StatefulWidget {
+  const AdminUsersScreen({super.key});
+
+  @override
+  State<AdminUsersScreen> createState() => _AdminUsersScreenState();
+}
+
+class _AdminUsersScreenState extends State<AdminUsersScreen> {
+  final _authApi = AuthApi();
+  final _searchController = TextEditingController();
+  bool _isLoading = false;
+  String? _error;
+  
+  // Tab index: 0 = Tài khoản, 1 = Đơn Mentor, 2 = Yêu cầu Creator
+  int _currentTab = 0;
+
+  // Tab 0: Tài khoản state
+  String? _selectedRole = 'R002';
+  int _currentPage = 1;
+  AdminUsersPage? _page;
+
+  // Tab 1 & 2: Applications state
+  List<AdminApplication> _mentorApps = [];
+  List<AdminApplication> _creatorRequests = [];
+  String? _selectedAppStatus;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTabCachedData();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _loadTabCachedData() {
+    if (_currentTab == 0) {
+      _loadUsers();
+    } else if (_currentTab == 1) {
+      _loadMentorApplications();
+    } else if (_currentTab == 2) {
+      _loadCreatorUpgradeRequests();
+    }
+  }
+
+  void _switchTab(int tabIndex) {
+    setState(() {
+      _currentTab = tabIndex;
+      _error = null;
+      _selectedAppStatus = null;
+    });
+    _loadTabCachedData();
+  }
+
+  Future<void> _loadUsers() async {
+    final session = AppSession.current;
+    if (session == null) {
+      setState(() => _error = 'Chưa có phiên đăng nhập admin.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final page = await _authApi.getAdminUsers(
+        token: session.accessToken,
+        keyword: _searchController.text,
+        role: _selectedRole,
+        page: _currentPage,
+      );
+      if (!mounted) return;
+      setState(() => _page = page);
+    } on AuthApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Không kết nối được Lucy.Auth.Api.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadMentorApplications() async {
+    final session = AppSession.current;
+    if (session == null) {
+      setState(() => _error = 'Chưa có phiên đăng nhập admin.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final apps = await _authApi.getMentorApplications(
+        token: session.accessToken,
+        status: _selectedAppStatus,
+      );
+      if (!mounted) return;
+      setState(() => _mentorApps = apps);
+    } on AuthApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Không kết nối được Lucy.Auth.Api.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadCreatorUpgradeRequests() async {
+    final session = AppSession.current;
+    if (session == null) {
+      setState(() => _error = 'Chưa có phiên đăng nhập admin.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final reqs = await _authApi.getCreatorUpgradeRequests(
+        token: session.accessToken,
+        status: _selectedAppStatus,
+      );
+      if (!mounted) return;
+      setState(() => _creatorRequests = reqs);
+    } on AuthApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Không kết nối được Lucy.Auth.Api.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  String _formatDate(String dateStr) {
+    try {
+      final dt = DateTime.parse(dateStr);
+      return '${dt.day.toString().padLeft(2, '0')}/${dt.month.toString().padLeft(2, '0')}/${dt.year}';
+    } catch (_) {
+      return dateStr;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final users = _page?.users ?? [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          'Quản trị hệ thống',
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 4),
+        const Text(
+          'Theo dõi tài khoản, phê duyệt Mentor ứng tuyển và nâng cấp Creator.',
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+        ),
+        const SizedBox(height: 18),
+        _buildTabBar(),
+        if (_currentTab == 0) ...[
+          _buildSearchBar(),
+          const SizedBox(height: 12),
+          _buildRoleFilters(),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _buildMetricCard('Tổng tài khoản', '${_page?.total ?? users.length}', AppColors.primary)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildMetricCard('Đang hoạt động', '${users.where((u) => u.isStatus != 0).length}', Colors.orange.shade400)),
+            ],
+          ),
+          const SizedBox(height: 18),
+        ] else ...[
+          _buildStatusFilters(),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildMetricCard(
+                  'Tổng số đơn',
+                  '${_currentTab == 1 ? _mentorApps.length : _creatorRequests.length}',
+                  AppColors.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildMetricCard(
+                  'Chờ duyệt',
+                  '${_currentTab == 1 ? _mentorApps.where((a) => a.status == "PENDING").length : _creatorRequests.where((a) => a.status == "PENDING").length}',
+                  Colors.orange.shade400,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 18),
+        ],
+        if (_isLoading)
+          const Center(child: CircularProgressIndicator(color: AppColors.primary))
+        else if (_error != null)
+          _buildErrorCard(_error!)
+        else if (_currentTab == 0 && users.isEmpty)
+          _buildEmptyCard()
+        else if (_currentTab == 1 && _mentorApps.isEmpty)
+          _buildEmptyCard()
+        else if (_currentTab == 2 && _creatorRequests.isEmpty)
+          _buildEmptyCard()
+        else ...[
+          if (_currentTab == 0) ...[
+            ...users.map(_buildUserCard),
+            _buildPager(),
+          ] else if (_currentTab == 1) ...[
+            ..._mentorApps.map(_buildApplicationCard),
+          ] else if (_currentTab == 2) ...[
+            ..._creatorRequests.map(_buildApplicationCard),
+          ],
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTabBar() {
+    final tabs = [
+      (label: 'Tài khoản', index: 0, icon: Icons.people_outline),
+      (label: 'Đơn Mentor', index: 1, icon: Icons.school_outlined),
+      (label: 'Yêu cầu Creator', index: 2, icon: Icons.workspace_premium_outlined),
+    ];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: tabs.map((tab) {
+          final isSelected = _currentTab == tab.index;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => _switchTab(tab.index),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          )
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      tab.icon,
+                      size: 16,
+                      color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      tab.label,
+                      style: TextStyle(
+                        color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _searchController,
+              decoration: const InputDecoration(
+                hintText: 'Tìm theo tên, email hoặc số điện thoại',
+                prefixIcon: Icon(Icons.search, color: AppColors.textSecondary),
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              ),
+              onChanged: (_) {
+                setState(() {
+                  _currentPage = 1;
+                });
+                _loadUsers();
+              },
+              onSubmitted: (_) {
+                _currentPage = 1;
+                _loadUsers();
+              },
+            ),
+          ),
+          IconButton(
+            onPressed: () {
+              _currentPage = 1;
+              _loadUsers();
+            },
+            icon: const Icon(Icons.refresh, color: AppColors.primaryDark),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleFilters() {
+    final filters = <({String label, String? role, Color color})>[
+      (label: 'Người học', role: 'R002', color: AppColors.primary),
+      (label: 'Admin', role: 'R001', color: Colors.indigo),
+      (label: 'Mentor', role: 'R003', color: Colors.orange),
+      (label: 'Creator', role: 'R004', color: Colors.purple),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filters.map((filter) {
+          final selected = _selectedRole == filter.role;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              selected: selected,
+              label: Text(filter.label),
+              onSelected: (_) {
+                setState(() {
+                  _selectedRole = filter.role;
+                  _currentPage = 1;
+                });
+                _loadUsers();
+              },
+              selectedColor: filter.color.withOpacity(0.15),
+              backgroundColor: Colors.white,
+              side: BorderSide(color: selected ? filter.color : AppColors.inputBorder),
+              labelStyle: TextStyle(
+                color: selected ? filter.color : AppColors.textSecondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildStatusFilters() {
+    final filters = <({String label, String? status, Color color})>[
+      (label: 'Tất cả', status: null, color: AppColors.textSecondary),
+      (label: 'Chờ duyệt', status: 'PENDING', color: Colors.orange),
+      (label: 'Đã duyệt', status: 'APPROVED', color: Colors.green),
+      (label: 'Từ chối', status: 'REJECTED', color: Colors.red),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filters.map((filter) {
+          final selected = _selectedAppStatus == filter.status;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              selected: selected,
+              label: Text(filter.label),
+              onSelected: (_) {
+                setState(() {
+                  _selectedAppStatus = filter.status;
+                });
+                if (_currentTab == 1) {
+                  _loadMentorApplications();
+                } else {
+                  _loadCreatorUpgradeRequests();
+                }
+              },
+              selectedColor: filter.color.withOpacity(0.15),
+              backgroundColor: Colors.white,
+              side: BorderSide(color: selected ? filter.color : AppColors.inputBorder),
+              labelStyle: TextStyle(
+                color: selected ? filter.color : AppColors.textSecondary,
+                fontWeight: FontWeight.bold,
+                fontSize: 11,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildMetricCard(String title, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.35)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          Text(value, style: TextStyle(color: color, fontSize: 24, fontWeight: FontWeight.w900)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorCard(String message) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.red.shade50,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.red.shade100),
+      ),
+      child: Text(message, style: TextStyle(color: Colors.red.shade700, fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget _buildEmptyCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: const Column(
+        children: [
+          Icon(Icons.manage_search, color: AppColors.textSecondary, size: 32),
+          SizedBox(height: 8),
+          Text(
+            'Chưa có dữ liệu phù hợp.',
+            style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _toggleUserStatus(AdminUser user) async {
+    final session = AppSession.current;
+    if (session == null) return;
+
+    if (user.userId == session.userId) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Bạn không thể tự khóa tài khoản của chính mình!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    final nextStatus = user.isStatus == 0 ? 1 : 0;
+    final actionText = nextStatus == 0 ? 'khóa' : 'mở khóa';
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: Text('Xác nhận $actionText', style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text('Bạn có chắc chắn muốn $actionText tài khoản ${user.fullName}?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: nextStatus == 0 ? Colors.red.shade400 : AppColors.primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(nextStatus == 0 ? 'Khóa' : 'Mở khóa', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await _authApi.updateUserStatus(
+        token: session.accessToken,
+        userId: user.userId,
+        isStatus: nextStatus,
+      );
+      _loadUsers();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Đã $actionText tài khoản thành công!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } on AuthApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Không kết nối được Lucy.Auth.Api.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Widget _buildUserCard(AdminUser user) {
+    final avatarUrl = _absoluteAvatarUrl(user.avatarUrl);
+    final isSelf = user.userId == AppSession.current?.userId;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.015), blurRadius: 8, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.primary.withOpacity(0.12),
+            backgroundImage: avatarUrl == null ? null : NetworkImage(avatarUrl),
+            child: avatarUrl == null
+                ? Text(
+                    user.fullName.isEmpty ? '?' : user.fullName.characters.first.toUpperCase(),
+                    style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold),
+                  )
+                : null,
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.fullName, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
+                const SizedBox(height: 3),
+                Text(user.email, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const SizedBox(height: 3),
+                Text(user.phoneNumber, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const SizedBox(height: 3),
+                Text('Đăng ký: ${_formatDate(user.createdAt)}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 6,
+                  children: user.roles.map(_buildRoleChip).toList(),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                user.isStatus == 0 ? Icons.lock_outline : Icons.verified_user_outlined,
+                color: user.isStatus == 0 ? Colors.red.shade300 : AppColors.primary,
+              ),
+              if (!isSelf) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => _toggleUserStatus(user),
+                  icon: Icon(
+                    user.isStatus == 0 ? Icons.lock_open_outlined : Icons.lock_outline,
+                    color: user.isStatus == 0 ? Colors.green.shade600 : Colors.red.shade400,
+                    size: 20,
+                  ),
+                  tooltip: user.isStatus == 0 ? 'Mở khóa tài khoản' : 'Khóa tài khoản',
+                  style: IconButton.styleFrom(
+                    backgroundColor: user.isStatus == 0 ? Colors.green.shade50 : Colors.red.shade50,
+                    padding: const EdgeInsets.all(6),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildApplicationCard(AdminApplication app) {
+    final statusColor = switch (app.status) {
+      'PENDING' => Colors.orange,
+      'APPROVED' => Colors.green,
+      'REJECTED' => Colors.red,
+      _ => AppColors.textSecondary,
+    };
+
+    final statusText = switch (app.status) {
+      'PENDING' => 'Chờ duyệt',
+      'APPROVED' => 'Đã duyệt',
+      'REJECTED' => 'Đã từ chối',
+      _ => app.status,
+    };
+
+    final isPending = app.status == 'PENDING';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.015), blurRadius: 8, offset: const Offset(0, 4)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Mã: ${app.applicationId}',
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  statusText,
+                  style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              const Icon(Icons.person_outline, size: 16, color: AppColors.textSecondary),
+              const SizedBox(width: 8),
+              Text(
+                'ID người dùng: ${app.userId}',
+                style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              const Icon(Icons.calendar_today_outlined, size: 16, color: AppColors.textSecondary),
+              const SizedBox(width: 8),
+              Text(
+                'Ngày nộp: ${_formatDate(app.submittedAt)}',
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              ),
+            ],
+          ),
+          if (app.rejectReason != null && app.rejectReason!.trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.shade100),
+              ),
+              child: Text(
+                'Lý do từ chối: ${app.rejectReason}',
+                style: TextStyle(color: Colors.red.shade700, fontSize: 12, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+          if (isPending) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _showRejectDialog(app),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.red,
+                      side: BorderSide(color: Colors.red.shade200),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    child: const Text('Từ chối', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _handleApprove(app),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                    child: const Text('Phê duyệt', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _handleApprove(AdminApplication app) async {
+    final session = AppSession.current;
+    if (session == null) return;
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Xác nhận duyệt', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Text('Bạn có chắc chắn muốn duyệt đơn này không? Người dùng sẽ được cấp quyền ${_currentTab == 1 ? "Mentor" : "Creator"}.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Hủy', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Duyệt', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      if (_currentTab == 1) {
+        await _authApi.approveMentorApplication(
+          token: session.accessToken,
+          applicationId: app.applicationId,
+        );
+      } else {
+        await _authApi.approveCreatorUpgradeRequest(
+          token: session.accessToken,
+          requestId: app.applicationId,
+        );
+      }
+      _showSuccessSnack('Phê duyệt đơn thành công.');
+      _loadTabCachedData();
+    } on AuthApiException catch (error) {
+      setState(() => _error = error.message);
+    } catch (_) {
+      setState(() => _error = 'Có lỗi xảy ra khi gọi API.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _showRejectDialog(AdminApplication app) async {
+    final session = AppSession.current;
+    if (session == null) return;
+
+    final reasonController = TextEditingController();
+
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text('Từ chối đơn', style: TextStyle(fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text('Vui lòng nhập lý do từ chối:'),
+            const SizedBox(height: 8),
+            TextField(
+              controller: reasonController,
+              decoration: const InputDecoration(
+                hintText: 'Lý do từ chối...',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 3,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Hủy', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () {
+              final val = reasonController.text.trim();
+              if (val.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Vui lòng nhập lý do.'), behavior: SnackBarBehavior.floating),
+                );
+                return;
+              }
+              Navigator.pop(context, val);
+            },
+            child: const Text('Từ chối', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (result == null) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      if (_currentTab == 1) {
+        await _authApi.rejectMentorApplication(
+          token: session.accessToken,
+          applicationId: app.applicationId,
+          reason: result,
+        );
+      } else {
+        await _authApi.rejectCreatorUpgradeRequest(
+          token: session.accessToken,
+          requestId: app.applicationId,
+          reason: result,
+        );
+      }
+      _showSuccessSnack('Đã từ chối đơn.');
+      _loadTabCachedData();
+    } on AuthApiException catch (error) {
+      setState(() => _error = error.message);
+    } catch (_) {
+      setState(() => _error = 'Có lỗi xảy ra khi gọi API.');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showSuccessSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.green.shade600,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  String? _absoluteAvatarUrl(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final url = value.trim();
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    final baseUrl = _authApi.baseUrl.endsWith('/') ? _authApi.baseUrl.substring(0, _authApi.baseUrl.length - 1) : _authApi.baseUrl;
+    return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+  }
+
+  Widget _buildRoleChip(RoleInfo role) {
+    final color = switch (role.roleId) {
+      'R001' => Colors.indigo,
+      'R002' => AppColors.primary,
+      'R003' => Colors.orange,
+      'R004' => Colors.purple,
+      _ => AppColors.textSecondary,
+    };
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(0.25)),
+      ),
+      child: Text(
+        '${role.roleId} • ${role.roleName}',
+        style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildPager() {
+    final page = _page;
+    if (page == null) return const SizedBox.shrink();
+    final hasPrevious = _currentPage > 1;
+    final hasNext = _currentPage * page.size < page.total;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: hasPrevious
+              ? () {
+                  setState(() => _currentPage -= 1);
+                  _loadUsers();
+                }
+              : null,
+          icon: const Icon(Icons.chevron_left),
+          color: AppColors.primaryDark,
+        ),
+        Text(
+          'Trang $_currentPage',
+          style: const TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          onPressed: hasNext
+              ? () {
+                  setState(() => _currentPage += 1);
+                  _loadUsers();
+                }
+              : null,
+          icon: const Icon(Icons.chevron_right),
+          color: AppColors.primaryDark,
+        ),
+      ],
+    );
+  }
+}

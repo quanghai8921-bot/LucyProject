@@ -13,7 +13,6 @@ namespace Lucy.Auth.Api.Controllers.Admin;
 [Produces("application/json")]
 public sealed class AdminCreatorUpgradeRequestsController(AdminService adminService) : ControllerBase
 {
-    // GET /api/admin/creator-upgrade-requests?status=PENDING
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<List<ApplicationDto>>), 200)]
     public async Task<IActionResult> GetCreatorUpgradeRequests([FromQuery] string? status)
@@ -22,7 +21,6 @@ public sealed class AdminCreatorUpgradeRequestsController(AdminService adminServ
         return Ok(ApiResponse<List<ApplicationDto>>.Ok(list));
     }
 
-    // PATCH /api/admin/creator-upgrade-requests/{requestId}/approve
     [HttpPatch("{requestId}/approve")]
     [ProducesResponseType(typeof(ApiResponse<object>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -31,20 +29,14 @@ public sealed class AdminCreatorUpgradeRequestsController(AdminService adminServ
         [FromRoute] string requestId,
         [FromBody] AdminDecisionRequest request)
     {
-        var adminId = GetCurrentUserId();
-        var (ok, error) = await adminService.ApproveCreatorUpgradeRequestAsync(requestId, request, adminId);
+        var (ok, error) = await adminService.ApproveCreatorUpgradeRequestAsync(requestId, request, GetCurrentUserId());
 
         if (!ok)
-        {
-            if (error!.Contains("không tìm thấy"))
-                return NotFound(ApiResponse<object>.Fail(error));
-            return BadRequest(ApiResponse<object>.Fail(error));
-        }
+            return error!.Contains("tim thay") ? NotFound(ApiResponse<object>.Fail(error)) : BadRequest(ApiResponse<object>.Fail(error));
 
-        return Ok(ApiResponse<object>.Ok(new { }, "Đã duyệt yêu cầu nâng cấp Creator thành công"));
+        return Ok(ApiResponse<object>.Ok(new { }, "Da duyet yeu cau nang cap Creator thanh cong"));
     }
 
-    // PATCH /api/admin/creator-upgrade-requests/{requestId}/reject
     [HttpPatch("{requestId}/reject")]
     [ProducesResponseType(typeof(ApiResponse<object>), 200)]
     [ProducesResponseType(typeof(ApiResponse<object>), 400)]
@@ -53,23 +45,14 @@ public sealed class AdminCreatorUpgradeRequestsController(AdminService adminServ
         [FromRoute] string requestId,
         [FromBody] AdminDecisionRequest request)
     {
-        var adminId = GetCurrentUserId();
-        var (ok, error) = await adminService.RejectCreatorUpgradeRequestAsync(requestId, request, adminId);
+        var (ok, error) = await adminService.RejectCreatorUpgradeRequestAsync(requestId, request, GetCurrentUserId());
 
         if (!ok)
-        {
-            if (error!.Contains("không tìm thấy"))
-                return NotFound(ApiResponse<object>.Fail(error));
-            return BadRequest(ApiResponse<object>.Fail(error));
-        }
+            return error!.Contains("tim thay") ? NotFound(ApiResponse<object>.Fail(error)) : BadRequest(ApiResponse<object>.Fail(error));
 
-        return Ok(ApiResponse<object>.Ok(new { }, "Đã từ chối yêu cầu nâng cấp Creator"));
+        return Ok(ApiResponse<object>.Ok(new { }, "Da tu choi yeu cau nang cap Creator"));
     }
 
-    private Guid GetCurrentUserId()
-    {
-        var sub = User.FindFirstValue(ClaimTypes.NameIdentifier)
-               ?? User.FindFirstValue("sub");
-        return Guid.TryParse(sub, out var id) ? id : Guid.Empty;
-    }
+    private string GetCurrentUserId() =>
+        User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("sub") ?? string.Empty;
 }

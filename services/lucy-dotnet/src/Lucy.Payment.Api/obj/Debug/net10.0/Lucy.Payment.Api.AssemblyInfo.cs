@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lucy.Payment.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1543266e9b3ca892e7fedaf1aeffe05cde9e5ec3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+040c22cc2527a9ebf12ae168dd8a239cfbb69fc6")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lucy.Payment.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lucy.Payment.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

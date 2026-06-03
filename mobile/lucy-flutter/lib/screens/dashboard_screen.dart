@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lucy_app/screens/admin_users_screen.dart';
+import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 import 'package:lucy_app/screens/lucy_anonymous_home.dart';
 import 'package:lucy_app/screens/lucy_pro_home.dart';
@@ -10,12 +12,18 @@ import 'package:lucy_app/screens/lucy_super_tabs.dart';
 enum LucyRole {
   anonymous, // LUCY (Anonymous User)
   proMentor, // LUCY Pro (Mentor)
-  superCreator // LUCY Super (Content Creator)
+  superCreator, // LUCY Super (Content Creator)
+  admin // LUCY Admin
 }
 
 class DashboardScreen extends StatefulWidget {
   final LucyRole role;
-  const DashboardScreen({super.key, required this.role});
+  final Set<LucyRole> allowedRoles;
+  const DashboardScreen({
+    super.key,
+    required this.role,
+    required this.allowedRoles,
+  });
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -36,6 +44,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       SharedAudioState.currentTitle.value = "Weekly Mentor Brief - Lvl 12";
     } else if (_currentRole == LucyRole.superCreator) {
       SharedAudioState.currentTitle.value = "Weekly Analytics Brief - Live";
+    } else if (_currentRole == LucyRole.admin) {
+      SharedAudioState.currentTitle.value = "Lucy Administrator Console";
     }
   }
 
@@ -76,7 +86,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBarWithMiniPlayer(),
+      bottomNavigationBar: _currentRole == LucyRole.admin
+          ? null
+          : _buildBottomNavigationBarWithMiniPlayer(),
     );
   }
 
@@ -93,6 +105,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     } else if (_currentRole == LucyRole.proMentor) {
       roleAvatarText = "M";
       avatarColor = Colors.purple.shade300;
+    } else if (_currentRole == LucyRole.admin) {
+      roleAvatarText = "A";
+      avatarColor = Colors.indigo.shade300;
     }
 
     return Padding(
@@ -144,9 +159,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _currentRole == LucyRole.anonymous
-                        ? "Persona Ẩn Danh"
-                        : "Alex Rivera",
+                    _currentRole == LucyRole.admin
+                        ? "Admin"
+                        : (AppSession.current?.fullName ?? (_currentRole == LucyRole.anonymous ? "Persona Ẩn Danh" : "Alex Rivera")),
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -212,7 +227,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
+            icon: const Icon(Icons.logout, color: AppColors.textPrimary),
             style: IconButton.styleFrom(
               backgroundColor: Colors.white,
               elevation: 2,
@@ -225,6 +240,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildRoleSelector() {
+    if (widget.allowedRoles.length <= 1) {
+      return const SizedBox.shrink();
+    }
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(4),
@@ -241,7 +259,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       child: Row(
-        children: LucyRole.values.map((role) {
+        children: LucyRole.values
+            .where((role) => widget.allowedRoles.contains(role))
+            .map((role) {
           bool isSelected = _currentRole == role;
           String label = "";
           IconData icon = Icons.person;
@@ -259,6 +279,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               label = "Super Creator";
               icon = Icons.workspace_premium_outlined;
               break;
+            case LucyRole.admin:
+              label = "Admin";
+              icon = Icons.admin_panel_settings_outlined;
+              break;
           }
 
           return Expanded(
@@ -272,6 +296,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     SharedAudioState.currentTitle.value = "Weekly Mentor Brief - Lvl 12";
                   } else if (role == LucyRole.superCreator) {
                     SharedAudioState.currentTitle.value = "Weekly Analytics Brief - Live";
+                  } else if (role == LucyRole.admin) {
+                    SharedAudioState.currentTitle.value = "Lucy Administrator Console";
                   }
                 });
               },
@@ -316,6 +342,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // ==========================================
 
   Widget _buildRoleSpecificBody() {
+    if (_currentRole == LucyRole.admin) {
+      return const AdminUsersScreen();
+    }
     switch (_navIndex) {
       case 0: // Bảng tin (Home)
         switch (_currentRole) {
@@ -325,6 +354,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return const LucyProHome();
           case LucyRole.superCreator:
             return const LucySuperHome();
+          case LucyRole.admin:
+            return const AdminUsersScreen();
         }
       case 1: // Khám phá (Explore)
         switch (_currentRole) {
@@ -334,6 +365,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return const LucyProExplore();
           case LucyRole.superCreator:
             return const LucySuperExplore();
+          case LucyRole.admin:
+            return const AdminUsersScreen();
         }
       case 2: // Central Action
         return _buildCentralQuickActionView();
@@ -345,6 +378,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return const LucyProLibrary();
           case LucyRole.superCreator:
             return const LucySuperLibrary();
+          case LucyRole.admin:
+            return const AdminUsersScreen();
         }
       case 4: // Cá nhân (Profile)
         switch (_currentRole) {
@@ -354,6 +389,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return const LucyProProfile();
           case LucyRole.superCreator:
             return const LucySuperProfile();
+          case LucyRole.admin:
+            return const AdminUsersScreen();
         }
       default:
         return const LucyAnonymousHome();
@@ -599,7 +636,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               _buildLiveRoomCard(
                 language: "English",
-                level: "Level 1-5 (Survival)",
+                level: "Level 1",
                 participantsCount: 14,
                 gradientColors: [const Color(0xFFECFDF5), const Color(0xFFD1FAE5)],
                 borderColor: AppColors.primary,
@@ -607,7 +644,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(width: 16),
               _buildLiveRoomCard(
                 language: "Chinese (中文)",
-                level: "Level 11-15 (HSK 1-2)",
+                level: "Level 11",
                 participantsCount: 8,
                 gradientColors: [const Color(0xFFFFF7ED), const Color(0xFFFFEDD5)],
                 borderColor: Colors.orange.shade300,
@@ -615,7 +652,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               const SizedBox(width: 16),
               _buildLiveRoomCard(
                 language: "Japanese (日本語)",
-                level: "Level 21-25 (JLPT N5)",
+                level: "Level 21",
                 participantsCount: 6,
                 gradientColors: [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
                 borderColor: Colors.purple.shade200,

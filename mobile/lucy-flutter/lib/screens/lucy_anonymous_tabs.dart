@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/auth_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -531,6 +534,25 @@ class LucyAnonymousProfile extends StatefulWidget {
 class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
   // Accessory state: 0 = none, 1 = crown 👑, 2 = glasses 🕶️, 3 = headphones 🎧
   int _activeAccessory = 0;
+  final _authApi = AuthApi();
+  final _displayNameController = TextEditingController();
+  PlatformFile? _avatarFile;
+  String? _avatarUrl;
+  bool _isSavingProfile = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final session = AppSession.current;
+    _displayNameController.text = session?.fullName ?? '';
+    _avatarUrl = session?.avatarUrl;
+  }
+
+  @override
+  void dispose() {
+    _displayNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -550,6 +572,8 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
         const SizedBox(height: 20),
 
         // 1. Avatar personalization studio
+        _buildProfileCard(),
+        const SizedBox(height: 24),
         _buildAvatarCustomiserStudio(),
         const SizedBox(height: 24),
 
@@ -560,6 +584,169 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
         // 3. Learning Time Statistics (CustomPaint Pie Chart)
         _buildSpeakingAnalyticsCard(),
       ],
+    );
+  }
+
+  Widget _buildProfileCard() {
+    final avatarUrl = _absoluteAvatarUrl(_avatarUrl);
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.inputBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.01),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const Text(
+            'AvatarPersona',
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 9.5, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: 76,
+                height: 76,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primary.withOpacity(0.1),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.25), width: 2),
+                ),
+                child: avatarUrl == null
+                    ? const Icon(Icons.person, color: AppColors.primaryDark, size: 42)
+                    : Image.network(
+                        avatarUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.person, color: AppColors.primaryDark, size: 42),
+                      ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: _displayNameController,
+                      decoration: InputDecoration(
+                        labelText: 'Tên hiển thị',
+                        hintText: 'Nhập tên sẽ hiển thị',
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.inputBorder)),
+                        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.inputBorder)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: const BorderSide(color: AppColors.primary, width: 1.4)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _isSavingProfile ? null : _pickAvatar,
+            icon: const Icon(Icons.upload_file, color: AppColors.primaryDark),
+            label: Text(
+              _avatarFile?.name ?? 'Upload ảnh đại diện',
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold),
+            ),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+              side: const BorderSide(color: AppColors.inputBorder),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: _isSavingProfile ? null : _saveProfile,
+            icon: _isSavingProfile
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                : const Icon(Icons.save_alt, color: Colors.white),
+            label: Text(
+              _isSavingProfile ? 'Đang lưu...' : 'Lưu hồ sơ',
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? _absoluteAvatarUrl(String? value) {
+    if (value == null || value.trim().isEmpty) return null;
+    final url = value.trim();
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    final baseUrl = _authApi.baseUrl.endsWith('/') ? _authApi.baseUrl.substring(0, _authApi.baseUrl.length - 1) : _authApi.baseUrl;
+    return url.startsWith('/') ? '$baseUrl$url' : '$baseUrl/$url';
+  }
+
+  Future<void> _pickAvatar() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'webp'],
+      withData: true,
+    );
+    if (result == null || result.files.isEmpty) return;
+    setState(() => _avatarFile = result.files.single);
+  }
+
+  Future<void> _saveProfile() async {
+    final session = AppSession.current;
+    if (session == null) {
+      _showProfileMessage('Bạn cần đăng nhập lại để cập nhật hồ sơ.');
+      return;
+    }
+
+    if (_displayNameController.text.trim().isEmpty) {
+      _showProfileMessage('Vui lòng nhập tên hiển thị.');
+      return;
+    }
+
+    setState(() => _isSavingProfile = true);
+    try {
+      final updated = await _authApi.updateAvatar(
+        token: session.accessToken,
+        displayName: _displayNameController.text,
+        avatarFile: _avatarFile,
+      );
+      AppSession.set(updated);
+      if (!mounted) return;
+      setState(() {
+        _avatarUrl = updated.avatarUrl;
+        _avatarFile = null;
+      });
+      _showProfileMessage('Đã cập nhật hồ sơ avatar.');
+    } on AuthApiException catch (error) {
+      _showProfileMessage(error.message);
+    } catch (_) {
+      _showProfileMessage('Không kết nối được Lucy.Auth.Api.');
+    } finally {
+      if (mounted) setState(() => _isSavingProfile = false);
+    }
+  }
+
+  void _showProfileMessage(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
     );
   }
 

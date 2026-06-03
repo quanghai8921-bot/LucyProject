@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 class LucyAnonymousHome extends StatefulWidget {
@@ -11,7 +12,7 @@ class LucyAnonymousHome extends StatefulWidget {
 
 class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProviderStateMixin {
   late TabController _tabController;
-  final String _userLevel = "Sơ cấp (Level 1-5)";
+  final String _userLevel = "Level 1";
   bool _isJoiningRandom = false;
 
   // Pulse animation for Live indicator
@@ -53,7 +54,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Professor K',
         'mentorRep': '4,982 REP',
         'listeners': 14,
-        'level': 'Level 1-5: Survival',
+        'level': 'Level 1',
         'color': const Color(0xFF64C3A5),
         'bgColors': [const Color(0xFFECFDF5), const Color(0xFFD1FAE5)],
       },
@@ -62,7 +63,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Sarah Jenkins',
         'mentorRep': '2,150 REP',
         'listeners': 28,
-        'level': 'Level 6-10: Advanced',
+        'level': 'Level 6',
         'color': const Color(0xFF6366F1),
         'bgColors': [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
       },
@@ -71,7 +72,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Austin Miller',
         'mentorRep': '1,890 REP',
         'listeners': 9,
-        'level': 'Level 3-7: Intermediate',
+        'level': 'Level 3',
         'color': const Color(0xFFEC4899),
         'bgColors': [const Color(0xFFFDF2F8), const Color(0xFFFCE7F3)],
       },
@@ -82,7 +83,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Juan Rivera',
         'mentorRep': '2,845 REP',
         'listeners': 18,
-        'level': 'Level 11-15: Beginners',
+        'level': 'Level 11',
         'color': const Color(0xFFF59E0B),
         'bgColors': [const Color(0xFFFFF7ED), const Color(0xFFFFEDD5)],
       },
@@ -91,7 +92,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Mei Ling',
         'mentorRep': '3,450 REP',
         'listeners': 12,
-        'level': 'Level 16-20: Intermediate',
+        'level': 'Level 16',
         'color': const Color(0xFFEF4444),
         'bgColors': [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)],
       },
@@ -102,7 +103,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Mina-san',
         'mentorRep': '3,211 REP',
         'listeners': 22,
-        'level': 'Level 21-25: Beginners',
+        'level': 'Level 21',
         'color': const Color(0xFF8B5CF6),
         'bgColors': [const Color(0xFFF5F3FF), const Color(0xFFEDE9FE)],
       },
@@ -111,7 +112,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         'mentor': 'Takuya Sato',
         'mentorRep': '1,990 REP',
         'listeners': 35,
-        'level': 'Level 26-30: Intermediate',
+        'level': 'Level 26',
         'color': const Color(0xFFEC4899),
         'bgColors': [const Color(0xFFFFF1F2), const Color(0xFFFFE4E6)],
       },
@@ -215,9 +216,9 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  "Polyglot Ẩn Danh ✨",
-                  style: TextStyle(
+                Text(
+                  "${AppSession.current?.fullName ?? 'Polyglot Ẩn Danh'} ✨",
+                  style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,

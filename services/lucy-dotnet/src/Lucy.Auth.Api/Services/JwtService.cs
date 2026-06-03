@@ -21,13 +21,13 @@ public sealed class JwtService(IConfiguration configuration)
 
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.UserId),
+            new(ClaimTypes.NameIdentifier, user.UserId),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Name, user.FullName),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        // Thêm từng role thành một claim riêng để [Authorize(Roles="...")] hoạt động
         foreach (var role in roleCodes)
             claims.Add(new Claim(ClaimTypes.Role, role));
 
