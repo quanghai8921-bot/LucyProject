@@ -11,4 +11,6 @@ public interface SubLevelRepository extends JpaRepository<SubLevel, String> {
     long countByLevelIdIn(Collection<String> levelIds);
 
     List<SubLevel> findByLevelIdIn(Collection<String> levelIds);
+
+    List<SubLevel> findByLevelId(String levelId);
 }

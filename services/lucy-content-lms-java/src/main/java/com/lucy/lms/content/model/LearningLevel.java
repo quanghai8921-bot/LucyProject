@@ -45,4 +45,24 @@ public class LearningLevel {
     public String getLevelId() {
         return levelId;
     }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public String getStageId() {
+        return stageId;
+    }
+
+    public String getLevelTitle() {
+        return levelTitle;
+    }
+
+    public Integer getLevelNumber() {
+        return levelNumber;
+    }
+
+    public String getLevelDescription() {
+        return levelDescription;
+    }
 }

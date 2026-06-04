@@ -12,4 +12,9 @@ public interface LearningLevelRepository extends JpaRepository<LearningLevel, St
     long countByStageIdAndGroupIdIsNotNull(String stageId);
 
     List<LearningLevel> findByStageId(String stageId);
+
+    @org.springframework.data.jpa.repository.Query("SELECT l FROM LearningLevel l WHERE l.levelNumber = :levelNumber AND l.stageId LIKE CONCAT(:languageId, '_STAGE_%')")
+    List<LearningLevel> findByLanguageAndLevelNumber(
+            @org.springframework.data.repository.query.Param("languageId") String languageId,
+            @org.springframework.data.repository.query.Param("levelNumber") Integer levelNumber);
 }

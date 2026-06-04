@@ -47,4 +47,28 @@ public class SubLevel {
     public String getSubLevelId() {
         return subLevelId;
     }
+
+    public String getLevelId() {
+        return levelId;
+    }
+
+    public Integer getSubLevelNumber() {
+        return subLevelNumber;
+    }
+
+    public String getSublevelTitle() {
+        return sublevelTitle;
+    }
+
+    public String getMainTask() {
+        return mainTask;
+    }
+
+    public String getPromptHint() {
+        return promptHint;
+    }
+
+    public Integer getSubDurationMins() {
+        return subDurationMins;
+    }
 }

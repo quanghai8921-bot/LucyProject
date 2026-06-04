@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "spring.thymeleaf.cache",
+      "type": "java.lang.Boolean",
+      "description": "Whether Thymeleaf template caching is enabled."
+    },
+    {
+      "name": "lucy.import-docx.path",
+      "type": "java.lang.String",
+      "description": "Folder path that contains DOCX files for content import."
+    },
+    {
+      "name": "lucy.import-docx.auto-run",
+      "type": "java.lang.Boolean",
+      "description": "Whether DOCX files should be scanned and imported when the Spring Boot application starts."
+    }
+  ]
+}
