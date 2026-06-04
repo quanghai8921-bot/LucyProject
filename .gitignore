@@ -1,0 +1,17 @@
+# .NET
+bin/
+obj/
+.vs/
+
+# Java / Maven
+target/
+
+# IDE
+.vscode/
+*.user
+*.suo
+*.rsuser
+
+# OS
+.DS_Store
+Thumbs.db
