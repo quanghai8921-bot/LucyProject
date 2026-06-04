@@ -38,7 +38,62 @@ X-User-Id: {{TestUserId}}
 Content-Type: application/json
 
 {
-  "amount": 100.0
+  "amount": 100.0,
+  "bankAccountId": "ID_CU_THE_NGAN_HANG_(COPY_TU_BUOC_2.2)"
 }
+
+###
+
+### 5. (Admin) Duyệt lệnh rút tiền
+POST {{HostAddress}}/api/payment/admin/withdraw/approve/ID_CUA_TRANSACTION_(XEM_TRONG_DB)
+Content-Type: application/json
+
+###
+
+### 6. (Admin) Từ chối lệnh rút tiền
+POST {{HostAddress}}/api/payment/admin/withdraw/reject/ID_CUA_TRANSACTION_(XEM_TRONG_DB)
+Content-Type: application/json
+
+###
+=============================================
+=== LUỒNG QUẢN LÝ THẺ NGÂN HÀNG (MỚI) ===
+=============================================
+
+### 2.1 Tra cứu tên chủ thẻ (Mock)
+POST {{HostAddress}}/api/payment/lookup-account
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "bankCode": "VCB",
+  "accountNumber": "123456789"
+}
+
+###
+
+### 2.2 Lưu thẻ ngân hàng mới
+POST {{HostAddress}}/api/payment/bank-accounts
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "bankCode": "VCB",
+  "bankName": "Vietcombank",
+  "accountNumber": "123456789",
+  "accountName": "NGUYEN VAN A",
+  "isDefault": true
+}
+
+###
+
+### 2.3 Xem danh sách thẻ đã lưu
+GET {{HostAddress}}/api/payment/bank-accounts
+X-User-Id: {{TestUserId}}
+
+###
+
+### 2.4 Xóa một thẻ đã lưu
+DELETE {{HostAddress}}/api/payment/bank-accounts/ID_CUA_THE_NGAN_HANG
+X-User-Id: {{TestUserId}}
 
 ###

@@ -2,7 +2,10 @@ using System;
 using System.Threading.Tasks;
 using lucy_auth_payment.Data;
 using lucy_auth_payment.Modules.Payment.Models;
+using lucy_auth_payment.Modules.Payment.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace lucy_auth_payment.Modules.Payment.Services
 {
@@ -197,28 +200,33 @@ namespace lucy_auth_payment.Modules.Payment.Services
             }
         }
 
-        public async Task<bool> WithdrawAsync(string userId, decimal amount)
+        public async Task<bool> WithdrawAsync(string userId, WithdrawRequest request)
         {
-            if (amount <= 0) return false;
+            if (request.Amount <= 0) return false;
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var wallet = await _context.Wallets.FirstOrDefaultAsync(w => w.UserId == userId);
-                if (wallet == null || wallet.Balance < amount) return false;
+                if (wallet == null || wallet.Balance < request.Amount) return false;
 
-                wallet.Balance -= amount;
+                var bankAccount = await _context.UserBankAccounts.FirstOrDefaultAsync(b => b.Id == request.BankAccountId && b.UserId == userId);
+                if (bankAccount == null) return false;
+
+                wallet.Balance -= request.Amount;
                 wallet.UpdatedAt = DateTime.Now;
 
                 var tx = new Transaction
                 {
                     TransactionId = Guid.NewGuid().ToString(),
                     WalletId = wallet.WalletId,
-                    Amount = -amount, // Lưu số âm biểu thị tiền bị trừ/đóng băng
+                    Amount = -request.Amount, // Lưu số âm biểu thị tiền bị trừ/đóng băng
                     TransactionType = "Withdraw",
                     Status = "Pending", // Trạng thái ban đầu chờ duyệt
                     CreatedAt = DateTime.Now,
-                    Fee = 0
+                    Fee = 0,
+                    RecipientBankAccountId = bankAccount.Id,
+                    Note = $"{bankAccount.BankName} - {bankAccount.AccountNumber} - {bankAccount.AccountName}"
                 };
                 _context.Transactions.Add(tx);
 
@@ -275,6 +283,50 @@ namespace lucy_auth_payment.Modules.Payment.Services
                 await transaction.RollbackAsync();
                 return false;
             }
+        }
+
+        // CRUD Bank Account
+        public async Task<UserBankAccount?> AddBankAccountAsync(string userId, CreateBankAccountRequest request)
+        {
+            var newAccount = new UserBankAccount
+            {
+                UserId = userId,
+                BankCode = request.BankCode,
+                BankName = request.BankName,
+                AccountNumber = request.AccountNumber,
+                AccountName = request.AccountName,
+                IsDefault = request.IsDefault,
+                CreatedAt = DateTime.Now
+            };
+
+            // Nếu set thẻ này là mặc định, bỏ mặc định các thẻ cũ
+            if (request.IsDefault)
+            {
+                var existingAccounts = await _context.UserBankAccounts.Where(b => b.UserId == userId).ToListAsync();
+                foreach (var acc in existingAccounts)
+                {
+                    acc.IsDefault = false;
+                }
+            }
+
+            _context.UserBankAccounts.Add(newAccount);
+            await _context.SaveChangesAsync();
+            return newAccount;
+        }
+
+        public async Task<List<UserBankAccount>> GetUserBankAccountsAsync(string userId)
+        {
+            return await _context.UserBankAccounts.Where(b => b.UserId == userId).ToListAsync();
+        }
+
+        public async Task<bool> DeleteBankAccountAsync(string userId, string bankAccountId)
+        {
+            var account = await _context.UserBankAccounts.FirstOrDefaultAsync(b => b.Id == bankAccountId && b.UserId == userId);
+            if (account == null) return false;
+
+            _context.UserBankAccounts.Remove(account);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

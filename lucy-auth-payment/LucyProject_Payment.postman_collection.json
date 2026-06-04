@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "c62fb91d-bf2e-4b4d-9f4a-fa681f9b36d7",
 		"name": "Lucy Project - Payment",
-		"description": "Bộ sưu tập các API test Module Payment của LucyProject",
+		"description": "Bộ sưu tập các API test Module Payment của LucyProject (Đã tích hợp API Ngân hàng)",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -18,12 +18,12 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5000/api/payment/wallet",
+					"raw": "http://localhost:5005/api/payment/wallet",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -45,12 +45,12 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:5000/api/payment/wallet",
+					"raw": "http://localhost:5005/api/payment/wallet",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -81,12 +81,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/payment/deposit",
+					"raw": "http://localhost:5005/api/payment/deposit",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -117,12 +117,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/payment/transfer",
+					"raw": "http://localhost:5005/api/payment/transfer",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -153,12 +153,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/payment/transfer",
+					"raw": "http://localhost:5005/api/payment/transfer",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -168,8 +168,8 @@
 			},
 			"response": []
 		},
-		{
-			"name": "4. Withdraw Money (Lock Balance as Pending)",
+        {
+			"name": "4a. Lookup Account Name (Mock)",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -181,7 +181,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"amount\": 100.0\n}",
+					"raw": "{\n  \"bankCode\": \"VCB\",\n  \"accountNumber\": \"123456789\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -189,12 +189,139 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:5000/api/payment/withdraw",
+					"raw": "http://localhost:5005/api/payment/lookup-account",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
+					"path": [
+						"api",
+						"payment",
+						"lookup-account"
+					]
+				}
+			},
+			"response": []
+		},
+        {
+			"name": "4b. Add Bank Account",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"bankCode\": \"VCB\",\n  \"bankName\": \"Vietcombank\",\n  \"accountNumber\": \"123456789\",\n  \"accountName\": \"NGUYEN VAN A\",\n  \"isDefault\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5005/api/payment/bank-accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"api",
+						"payment",
+						"bank-accounts"
+					]
+				}
+			},
+			"response": []
+		},
+        {
+			"name": "4c. Get Bank Accounts",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/api/payment/bank-accounts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"api",
+						"payment",
+						"bank-accounts"
+					]
+				}
+			},
+			"response": []
+		},
+        {
+			"name": "4d. Delete Bank Account",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5005/api/payment/bank-accounts/REPLACE_WITH_BANK_ACCOUNT_ID",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
+					"path": [
+						"api",
+						"payment",
+						"bank-accounts",
+                        "REPLACE_WITH_BANK_ACCOUNT_ID"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4e. Withdraw Money (Lock Balance as Pending)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-User-Id",
+						"value": "U-LINH-001",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"amount\": 100.0,\n  \"bankAccountId\": \"REPLACE_WITH_BANK_ACCOUNT_ID\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5005/api/payment/withdraw",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -210,12 +337,12 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/payment/admin/withdraw/approve/REPLACE_WITH_TRANSACTION_ID",
+					"raw": "http://localhost:5005/api/payment/admin/withdraw/approve/REPLACE_WITH_TRANSACTION_ID",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",
@@ -234,12 +361,12 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/payment/admin/withdraw/reject/REPLACE_WITH_TRANSACTION_ID",
+					"raw": "http://localhost:5005/api/payment/admin/withdraw/reject/REPLACE_WITH_TRANSACTION_ID",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
-					"port": "5000",
+					"port": "5005",
 					"path": [
 						"api",
 						"payment",

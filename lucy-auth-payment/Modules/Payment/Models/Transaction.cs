@@ -12,7 +12,11 @@ namespace lucy_auth_payment.Modules.Payment.Models
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public decimal Fee { get; set; }
 
+        public string? RecipientBankAccountId { get; set; }
+        public string? Note { get; set; }
+
         // Navigation Property
         public Wallet Wallet { get; set; } = null!;
+        public UserBankAccount? RecipientBankAccount { get; set; }
     }
 }

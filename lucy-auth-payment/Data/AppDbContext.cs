@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Wallet> Wallets { get; set; } = null!;
     public DbSet<Transaction> Transactions { get; set; } = null!;
+    public DbSet<UserBankAccount> UserBankAccounts { get; set; } = null!;
 
     public async Task EnsureAdminWalletExistsAsync()
     {
@@ -57,6 +58,23 @@ public class AppDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(d => d.WalletId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.RecipientBankAccount)
+                .WithMany()
+                .HasForeignKey(d => d.RecipientBankAccountId)
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<UserBankAccount>(entity =>
+        {
+            entity.ToTable("UserBankAccounts");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasMaxLength(50);
+            entity.Property(e => e.UserId).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.BankCode).HasMaxLength(20).IsRequired();
+            entity.Property(e => e.BankName).HasMaxLength(255);
+            entity.Property(e => e.AccountNumber).HasMaxLength(50).IsRequired();
+            entity.Property(e => e.AccountName).HasMaxLength(255).IsRequired();
         });
     }
 }
