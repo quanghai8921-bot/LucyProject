@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -388,9 +389,9 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 28,
                 backgroundColor: Color(0xFF6366F1),
                 child: Text("S", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
@@ -400,9 +401,9 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Alex Rivera", style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                    Text(AppSession.current?.fullName.trim().isNotEmpty == true ? AppSession.current!.fullName : 'Creator', style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
                     SizedBox(height: 4),
-                    Text("Super Creator Tier ✪ (24.8k Fans)", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                    Text("Creator", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
                   ],
                 ),
               ),
@@ -414,9 +415,9 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildHubMetric("24.8k", "Người theo dõi"),
-              _buildHubMetric("4 Chuỗi", "Premium Series"),
-              _buildHubMetric("4.95 ⭐", "Đánh giá Avg"),
+              _buildHubMetric("0", "Người theo dõi"),
+              _buildHubMetric("0", "Premium Series"),
+              _buildHubMetric("Chưa có", "Đánh giá Avg"),
             ],
           ),
         ],

@@ -40,8 +40,12 @@ async function leaveRoom(req, res, next) {
 
 async function getRoomState(req, res, next) {
   try {
-    const state = socketStateService.getRoomState(req.params.roomId);
-    res.json(successResponse(state));
+    const memoryState = socketStateService.getRoomState(req.params.roomId);
+    const participants = await roomService.getParticipants(req.params.roomId);
+    res.json(successResponse({
+      ...memoryState,
+      participants,
+    }));
   } catch (error) {
     next(error);
   }

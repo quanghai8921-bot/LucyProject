@@ -31,4 +31,14 @@ public class RoomController {
     public List<Room> getRoomsByMentor(@PathVariable String hostUserId) {
         return roomService.getRoomsByMentor(hostUserId);
     }
+
+    @PostMapping("/{roomId}/end")
+    public Room endRoom(@PathVariable String roomId) {
+        return roomService.endRoom(roomId);
+    }
+
+    @PostMapping("/{roomId}/open")
+    public Room openRoom(@PathVariable String roomId) {
+        return roomService.openRoom(roomId);
+    }
 }

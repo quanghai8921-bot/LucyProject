@@ -10,69 +10,9 @@ class LucySuperHome extends StatefulWidget {
 }
 
 class _LucySuperHomeState extends State<LucySuperHome> {
-  // Mock data for recorded Podcasts (mutable for realistic prototype updates)
-  final List<Map<String, dynamic>> _podcasts = [
-    {
-      'id': 'pod1',
-      'title': 'Digital Nomads: Ep. 42 • Remote work tips 💻',
-      'views': '14.2k listens',
-      'price': 0.0, // Free
-      'status': 'Nháp',
-      'color': const Color(0xFF64C3A5),
-    },
-    {
-      'id': 'pod2',
-      'title': 'The Future of AI in Art: ChatGPT & Midjourney 🎨',
-      'views': '8.9k listens',
-      'price': 5.0, // Premium $5.00
-      'status': 'Đã xuất bản',
-      'color': const Color(0xFF6366F1),
-    },
-    {
-      'id': 'pod3',
-      'title': 'Business Negotiations in Mandarin: Ep. 11 🇨🇳',
-      'views': '4.5k listens',
-      'price': 12.0, // Premium $12.00
-      'status': 'Nháp',
-      'color': Colors.orange.shade300,
-    },
-  ];
-
-  // Stateful Premium Content Series List
-  final List<Map<String, dynamic>> _premiumSeries = [
-    {
-      'title': 'Gen Z Slang Mastery Course 💬',
-      'episodes': 12,
-      'price': 49.00,
-      'students': 128,
-    },
-    {
-      'title': 'Advanced HSK Speaking Blueprint 🇨🇳',
-      'episodes': 18,
-      'price': 79.00,
-      'students': 85,
-    },
-  ];
-
-  // Simple mock LMS curriculum documents to pass to the Live Studio Dialog
-  final List<Map<String, dynamic>> _mockCurriculumDocs = [
-    {
-      'id': 'doc1',
-      'title': 'LISA Level 3: Coffee Shop Conversations ☕',
-      'category': 'LISA Core',
-      'isPinned': true,
-      'status': 'Đã duyệt',
-      'color': const Color(0xFF64C3A5),
-    },
-    {
-      'id': 'doc2',
-      'title': 'JLPT N4: Keigo - Polite Japanese in Business 🙇',
-      'category': 'Japanese Prep',
-      'isPinned': false,
-      'status': 'Đã duyệt',
-      'color': Colors.purple.shade200,
-    },
-  ];
+  final List<Map<String, dynamic>> _podcasts = [];
+  final List<Map<String, dynamic>> _premiumSeries = [];
+  final List<Map<String, dynamic>> _curriculumDocs = [];
 
   @override
   Widget build(BuildContext context) {
@@ -465,7 +405,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
           curriculum: curriculum,
           duration: duration,
           aiEnabled: aiEnabled,
-          curriculumDocs: _mockCurriculumDocs,
+          curriculumDocs: _curriculumDocs,
         );
       },
     );
@@ -1217,9 +1157,10 @@ class RevenueBarChartPainter extends CustomPainter {
     final labelStyle = TextStyle(color: Colors.grey.shade400, fontSize: 9, fontWeight: FontWeight.bold);
     const valueStyle = TextStyle(color: AppColors.textPrimary, fontSize: 8.5, fontWeight: FontWeight.w900);
 
-    final List<double> data = [1200, 1800, 2400, 3100, 3800, 4280];
+    final List<double> data = [];
     final List<String> months = ['Th 1', 'Th 2', 'Th 3', 'Th 4', 'Th 5', 'Th 6'];
     const maxVal = 5000.0;
+    if (data.isEmpty) return;
 
     // Draw horizontal grid lines
     for (int i = 1; i <= 4; i++) {

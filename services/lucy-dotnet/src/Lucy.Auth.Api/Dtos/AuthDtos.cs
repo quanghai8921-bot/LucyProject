@@ -5,6 +5,7 @@ public sealed record UserDto(
     string FullName,
     string PhoneNumber,
     string Email,
+    string? DisplayName,
     string? AvatarUrl,
     int IsStatus,
     DateTime CreatedAt

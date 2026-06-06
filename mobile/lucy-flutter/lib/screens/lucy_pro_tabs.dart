@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -13,11 +14,7 @@ class LucyProExplore extends StatefulWidget {
 }
 
 class _LucyProExploreState extends State<LucyProExplore> {
-  final List<Map<String, dynamic>> _topMentors = [
-    {'name': 'Kenji Sato', 'rating': '4.95', 'hours': '410 hrs', 'avatar': '👨‍🏫', 'color': Colors.purple.shade200},
-    {'name': 'Mina Nguyễn', 'rating': '4.91', 'hours': '380 hrs', 'avatar': '👩‍🏫', 'color': Colors.orange.shade300},
-    {'name': 'Lyly Lê', 'rating': '4.88', 'hours': '320 hrs', 'avatar': '👩‍🏫', 'color': Colors.teal.shade300},
-  ];
+  final List<Map<String, dynamic>> _topMentors = [];
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +87,22 @@ class _LucyProExploreState extends State<LucyProExplore> {
           style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
+        if (_topMentors.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.inputBorder),
+            ),
+            child: const Text(
+              "Chưa có dữ liệu xếp hạng mentor.",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
         SizedBox(
           height: 110,
           child: ListView.builder(
@@ -346,13 +359,15 @@ class LucyProProfile extends StatefulWidget {
 }
 
 class _LucyProProfileState extends State<LucyProProfile> {
-  double _balance = 4280.50;
+  double _balance = 0.0;
   bool _isWithdrawing = false;
 
-  final List<Map<String, String>> _testimonials = [
-    {'name': 'Lyly Lê', 'review': 'Thầy dạy Keigo rất chuẩn, chỉnh phát âm siêu kỹ.'},
-    {'name': 'Minh Phạm', 'review': 'Các buổi học Agora của thầy mượt, bài học sinh động.'},
-  ];
+  final List<Map<String, String>> _testimonials = [];
+
+  String get _mentorDisplayName {
+    final fullName = AppSession.current?.fullName.trim();
+    return fullName == null || fullName.isEmpty ? 'Mentor' : fullName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -403,7 +418,7 @@ class _LucyProProfileState extends State<LucyProProfile> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      "Yêu cầu rút \$1,000.00 USD",
+                      "Đang xử lý yêu cầu rút tiền...",
                       style: TextStyle(color: Colors.orange.shade300, fontSize: 12, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -425,21 +440,21 @@ class _LucyProProfileState extends State<LucyProProfile> {
       ),
       child: Column(
         children: [
-          const Row(
+          Row(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 radius: 28,
                 backgroundColor: AppColors.primary,
                 child: Text("👨‍🏫", style: TextStyle(fontSize: 32)),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Alex Rivera", style: TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text("Mentor chính thức • Lvl 12 (98% Uy tín)", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                    Text(_mentorDisplayName, style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    const Text("Mentor chính thức", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
                   ],
                 ),
               ),
@@ -451,9 +466,9 @@ class _LucyProProfileState extends State<LucyProProfile> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildRosterMetric("320 giờ", "Dạy học"),
-              _buildRosterMetric("TEFL, TCSOL", "Chứng chỉ"),
-              _buildRosterMetric("4.9 / 5.0 ⭐", "Đánh giá"),
+              _buildRosterMetric("0 giờ", "Dạy học"),
+              _buildRosterMetric("Chưa có", "Chứng chỉ"),
+              _buildRosterMetric("Chưa có", "Đánh giá"),
             ],
           ),
         ],
@@ -512,19 +527,22 @@ class _LucyProProfileState extends State<LucyProProfile> {
               children: [
                 Icon(Icons.credit_card, size: 16, color: AppColors.textSecondary),
                 SizedBox(width: 10),
-                Text("Chase Bank •••• 9823", style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
+                Text("Chưa liên kết tài khoản ngân hàng", style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
               ],
             ),
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _balance >= 1000 ? _simulateBankWithdraw : null,
+            onPressed: _balance > 0 ? _simulateBankWithdraw : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange.shade600,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
               minimumSize: const Size(double.infinity, 46),
             ),
-            child: const Text("YÊU CẦU RÚT \$1,000.00 USD", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+            child: Text(
+              _balance > 0 ? "YÊU CẦU RÚT SỐ DƯ HIỆN CÓ" : "CHƯA CÓ SỐ DƯ ĐỂ RÚT",
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
           ),
         ],
       ),
@@ -540,7 +558,7 @@ class _LucyProProfileState extends State<LucyProProfile> {
       if (mounted) {
         setState(() {
           _isWithdrawing = false;
-          _balance -= 1000.00;
+          _balance = 0.0;
         });
 
         showDialog(
@@ -556,7 +574,7 @@ class _LucyProProfileState extends State<LucyProProfile> {
               ],
             ),
             content: const Text(
-              "Yêu cầu rút \$1,000.00 USD đã được ngân hàng phê duyệt thành công! Tiền sẽ được cộng vào tài khoản liên kết Chase Bank trong 5 phút.",
+              "Yêu cầu rút tiền đã được ghi nhận.",
               style: TextStyle(fontSize: 12, height: 1.4),
             ),
             actions: [
@@ -580,6 +598,22 @@ class _LucyProProfileState extends State<LucyProProfile> {
           style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 10),
+        if (_testimonials.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.inputBorder),
+            ),
+            child: const Text(
+              "Chưa có đánh giá học viên.",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+          )
+        else
         SizedBox(
           height: 100,
           child: ListView.builder(

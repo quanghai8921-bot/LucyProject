@@ -544,7 +544,7 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
   void initState() {
     super.initState();
     final session = AppSession.current;
-    _displayNameController.text = session?.fullName ?? '';
+    _displayNameController.text = session?.displayName ?? '';
     _avatarUrl = session?.avatarUrl;
   }
 

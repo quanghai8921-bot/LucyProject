@@ -10,6 +10,7 @@ public class CreateMentorRoomRequest {
     private String roomTitle;
     private LocalDateTime scheduledStartAt;
     private Integer maxParticipants;
+    private String roomStatus;
 
     public String getHostUserId() {
         return hostUserId;
@@ -33,5 +34,9 @@ public class CreateMentorRoomRequest {
 
     public Integer getMaxParticipants() {
         return maxParticipants;
+    }
+
+    public String getRoomStatus() {
+        return roomStatus;
     }
 }

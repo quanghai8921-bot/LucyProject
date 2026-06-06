@@ -1,5 +1,6 @@
 package com.lucy.lms.mentor.service;
 
+import com.lucy.lms.learner.repository.RoomParticipantRepository;
 import com.lucy.lms.mentor.dto.CreateMentorRoomRequest;
 import com.lucy.lms.mentor.entity.Room;
 import com.lucy.lms.mentor.repository.RoomRepository;
@@ -14,9 +15,11 @@ import java.util.UUID;
 public class RoomService {
 
     private final RoomRepository roomRepository;
+    private final RoomParticipantRepository participantRepository;
 
-    public RoomService(RoomRepository roomRepository) {
+    public RoomService(RoomRepository roomRepository, RoomParticipantRepository participantRepository) {
         this.roomRepository = roomRepository;
+        this.participantRepository = participantRepository;
     }
 
     public Room createRoom(CreateMentorRoomRequest request) {
@@ -32,18 +35,52 @@ public class RoomService {
                 "FREE",
                 BigDecimal.ZERO,
                 request.getScheduledStartAt(),
-                "SCHEDULED",
+                request.getRoomStatus() != null ? request.getRoomStatus() : "SCHEDULED",
                 request.getMaxParticipants(),
                 LocalDateTime.now());
 
-        return roomRepository.save(room);
+        Room saved = roomRepository.save(room);
+        enrichRoom(saved);
+        return saved;
     }
 
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();
+        List<Room> rooms = roomRepository.findAll();
+        rooms.forEach(this::enrichRoom);
+        return rooms;
     }
 
     public List<Room> getRoomsByMentor(String hostUserId) {
-        return roomRepository.findByHostUserId(hostUserId);
+        List<Room> rooms = roomRepository.findByHostUserId(hostUserId);
+        rooms.forEach(this::enrichRoom);
+        return rooms;
+    }
+
+    public Room endRoom(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
+        room.setRoomStatus("ENDED");
+        room.setEndedAt(LocalDateTime.now());
+        Room saved = roomRepository.save(room);
+        enrichRoom(saved);
+        return saved;
+    }
+
+    public Room openRoom(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
+        room.setRoomStatus("OPEN");
+        if (room.getStudyStartedAt() == null) {
+            room.setStudyStartedAt(LocalDateTime.now());
+        }
+        Room saved = roomRepository.save(room);
+        enrichRoom(saved);
+        return saved;
+    }
+
+    private void enrichRoom(Room room) {
+        String mentorName = roomRepository.findMentorFullNameByUserId(room.getHostUserId());
+        room.setHostUserName(mentorName != null ? mentorName : room.getHostUserId());
+        room.setParticipantCount(participantRepository.countByRoomIdAndParticipantStatus(room.getRoomId(), "JOINED"));
     }
 }

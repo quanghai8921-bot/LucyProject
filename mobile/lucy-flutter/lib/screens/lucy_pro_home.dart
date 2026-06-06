@@ -1,7 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math' as math;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/theme/app_colors.dart';
+import 'package:lucy_app/services/agora_audio_service.dart';
+import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/realtime_socket_service.dart';
 
 class LucyProHome extends StatefulWidget {
   const LucyProHome({super.key});
@@ -11,54 +17,67 @@ class LucyProHome extends StatefulWidget {
 }
 
 class _LucyProHomeState extends State<LucyProHome> {
-  // Mock balance and stats (mutable for realistic dynamic updates)
-  final double _totalEarnings = 4280.50;
-  final int _giftsReceived = 128;
-  final int _weeklyRank = 4;
+  final LmsApi _lmsApi = LmsApi();
+  List<LearnerRoom> _mentorRooms = [];
+  bool _isMentorRoomsLoading = false;
+  String? _mentorRoomsError;
 
-  // Stateful LMS curriculum documents list
-  final List<Map<String, dynamic>> _curriculumDocs = [
-    {
-      'id': 'doc1',
-      'title': 'LISA Level 3: Coffee Shop Conversations ☕',
-      'category': 'LISA Core',
-      'isPinned': true,
-      'status': 'Đã duyệt',
-      'color': const Color(0xFF64C3A5),
-    },
-    {
-      'id': 'doc2',
-      'title': 'HSK 2: Job Interview & Office Vocabulary 💼',
-      'category': 'Chinese Standard',
-      'isPinned': false,
-      'status': 'Đã duyệt',
-      'color': Colors.orange.shade300,
-    },
-    {
-      'id': 'doc3',
-      'title': 'JLPT N4: Keigo - Polite Japanese in Business 🙇',
-      'category': 'Japanese Prep',
-      'isPinned': false,
-      'status': 'Đang chờ duyệt',
-      'color': Colors.purple.shade200,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _fetchMentorRooms();
+  }
 
-  // Stateful Student Progress List
-  final List<Map<String, dynamic>> _studentsProgress = [
-    {'id': 'std1', 'name': 'Phạm Văn Minh', 'level': 'Lvl 4', 'progress': 0.80, 'avatar': '👦'},
-    {'id': 'std2', 'name': 'Mina Nguyễn', 'level': 'Lvl 5', 'progress': 0.95, 'avatar': '👩'},
-    {'id': 'std3', 'name': 'John Doe', 'level': 'Lvl 2', 'progress': 0.30, 'avatar': '👱'},
-    {'id': 'std4', 'name': 'Kenji Sato', 'level': 'Lvl 3', 'progress': 0.65, 'avatar': '👨'},
-  ];
+  String get _mentorDisplayName {
+    final fullName = AppSession.current?.fullName.trim();
+    return fullName == null || fullName.isEmpty ? 'Mentor' : fullName;
+  }
 
-  // Stateful storage for teacher notes (keyed by student id)
-  final Map<String, String> _studentNotes = {
-    'std1': 'Phát âm tốt, cần thêm tự tin nói trước đám đông.',
-    'std2': 'Cực kỳ năng nổ trong các chủ đề Cafe. Gần đạt điều kiện thăng cấp.',
-    'std3': 'Cần ôn tập từ vựng chủ đề gia đình.',
-    'std4': 'Nắm chắc ngữ pháp, phản xạ hơi chậm nhưng rất chuẩn xác.',
-  };
+  int get _openRoomCount => _mentorRooms.where((room) => room.roomStatus.toUpperCase() == 'OPEN').length;
+
+  int get _scheduledRoomCount => _mentorRooms.where((room) => room.roomStatus.toUpperCase() == 'SCHEDULED').length;
+
+  String _formatScheduledAt(DateTime value) {
+    final day = value.day.toString().padLeft(2, '0');
+    final month = value.month.toString().padLeft(2, '0');
+    final hour = value.hour.toString().padLeft(2, '0');
+    final minute = value.minute.toString().padLeft(2, '0');
+    return '$day/$month/${value.year} $hour:$minute';
+  }
+
+  Future<void> _fetchMentorRooms() async {
+    final session = AppSession.current;
+    if (session == null || session.userId.isEmpty) return;
+    if (mounted) {
+      setState(() {
+        _isMentorRoomsLoading = true;
+        _mentorRoomsError = null;
+      });
+    }
+    try {
+      final rooms = await _lmsApi.getMentorRooms(session.userId);
+      rooms.sort((a, b) => (b.scheduledStartAt ?? '').compareTo(a.scheduledStartAt ?? ''));
+      if (mounted) {
+        setState(() {
+          _mentorRooms = rooms;
+          _isMentorRoomsLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isMentorRoomsLoading = false;
+          _mentorRoomsError = '$e';
+        });
+      }
+    }
+  }
+
+  final List<Map<String, dynamic>> _curriculumDocs = [];
+
+  final List<Map<String, dynamic>> _studentsProgress = [];
+
+  final Map<String, String> _studentNotes = {};
 
   @override
   Widget build(BuildContext context) {
@@ -77,8 +96,8 @@ class _LucyProHomeState extends State<LucyProHome> {
         _buildLmsDocumentsSection(),
         const SizedBox(height: 24),
 
-        // 4. Student Learning Progress Dashboard
-        _buildStudentProgressSection(),
+        // 4. Mentor room history and schedules from database
+        _buildMentorRoomsSection(),
       ],
     );
   }
@@ -124,9 +143,9 @@ class _LucyProHomeState extends State<LucyProHome> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Alex Rivera",
-                      style: TextStyle(
+                    Text(
+                      _mentorDisplayName,
+                      style: const TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -154,7 +173,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                         const Icon(Icons.star, color: Colors.amber, size: 12),
                         const SizedBox(width: 2),
                         const Text(
-                          "98% Uy tín (Lvl 12)",
+                          "Mentor chính thức",
                           style: TextStyle(
                             color: AppColors.textSecondary,
                             fontSize: 11,
@@ -204,7 +223,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "\$${_totalEarnings.toStringAsFixed(2)}",
+                        _openRoomCount.toString(),
                         style: TextStyle(
                           color: Colors.orange.shade400,
                           fontSize: 20,
@@ -213,7 +232,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        "$_giftsReceived Quà tặng học viên",
+                        "Phòng đang mở",
                         style: const TextStyle(
                           color: AppColors.primaryDark,
                           fontSize: 10,
@@ -255,7 +274,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "Top #$_weeklyRank",
+                        _scheduledRoomCount.toString(),
                         style: TextStyle(
                           color: Colors.amber.shade700,
                           fontSize: 20,
@@ -264,7 +283,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ),
                       const SizedBox(height: 2),
                       const Text(
-                        "Đứng đầu Bảng tuần",
+                        "Phòng đã lên lịch",
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 10,
@@ -327,6 +346,8 @@ class _LucyProHomeState extends State<LucyProHome> {
             String selectedCurriculum = 'LISA';
             double roomDuration = 60.0;
             bool isAiModeratorEnabled = true;
+            bool openNow = true;
+            DateTime scheduledAt = DateTime.now().add(const Duration(hours: 1));
 
             return StatefulBuilder(builder: (context, setInnerState) {
               return Padding(
@@ -492,16 +513,96 @@ class _LucyProHomeState extends State<LucyProHome> {
                     ),
                     const SizedBox(height: 24),
 
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment<bool>(
+                          value: true,
+                          icon: Icon(Icons.play_circle_outline),
+                          label: Text('Mở ngay'),
+                        ),
+                        ButtonSegment<bool>(
+                          value: false,
+                          icon: Icon(Icons.schedule),
+                          label: Text('Lên lịch'),
+                        ),
+                      ],
+                      selected: {openNow},
+                      onSelectionChanged: (values) {
+                        setInnerState(() {
+                          openNow = values.first;
+                        });
+                      },
+                    ),
+                    if (!openNow) ...[
+                      const SizedBox(height: 10),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: scheduledAt,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(const Duration(days: 365)),
+                          );
+                          if (pickedDate == null || !context.mounted) return;
+                          final pickedTime = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay.fromDateTime(scheduledAt),
+                          );
+                          if (pickedTime == null) return;
+                          setInnerState(() {
+                            scheduledAt = DateTime(
+                              pickedDate.year,
+                              pickedDate.month,
+                              pickedDate.day,
+                              pickedTime.hour,
+                              pickedTime.minute,
+                            );
+                          });
+                        },
+                        icon: const Icon(Icons.event),
+                        label: Text('Thời gian: ${_formatScheduledAt(scheduledAt)}'),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+
                     // Confirm button
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context); // Close BottomSheet
-                        _showLiveStudioRoomSimulation(
-                          language: selectedLang,
-                          curriculum: selectedCurriculum,
-                          duration: roomDuration.toInt(),
-                          aiEnabled: isAiModeratorEnabled,
-                        );
+                        try {
+                          final session = AppSession.current;
+                          if (session != null) {
+                            final room = await _lmsApi.createMentorRoom(
+                              hostUserId: session.userId,
+                              roomTitle: selectedCurriculum,
+                              languageId: selectedLang == 'Anh' ? 'ENG' : selectedLang == 'Trung' ? 'CHI' : 'JAP',
+                              maxParticipants: 30,
+                              roomStatus: openNow ? 'OPEN' : 'SCHEDULED',
+                              scheduledStartAt: openNow ? DateTime.now() : scheduledAt,
+                            );
+                            await _fetchMentorRooms();
+                            
+                            if (openNow) {
+                              _showLiveStudioRoomSimulation(
+                                roomId: room.roomId,
+                                language: selectedLang,
+                                curriculum: selectedCurriculum,
+                                duration: roomDuration.toInt(),
+                                aiEnabled: isAiModeratorEnabled,
+                              );
+                            } else if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Đã lên lịch phòng live.')),
+                              );
+                            }
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Không thể khởi tạo phòng trên server: $e')),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -522,6 +623,7 @@ class _LucyProHomeState extends State<LucyProHome> {
   }
 
   void _showLiveStudioRoomSimulation({
+    required String roomId,
     required String language,
     required String curriculum,
     required int duration,
@@ -534,6 +636,7 @@ class _LucyProHomeState extends State<LucyProHome> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return LiveStudioRoomDialog(
+          roomId: roomId,
           language: language,
           curriculum: curriculum,
           duration: duration,
@@ -575,6 +678,10 @@ class _LucyProHomeState extends State<LucyProHome> {
           ],
         ),
         const SizedBox(height: 8),
+
+        if (_curriculumDocs.isEmpty)
+          _buildEmptyPanel('Chưa có tài liệu LMS được tải lên.')
+        else
 
         ListView.builder(
           shrinkWrap: true,
@@ -695,6 +802,7 @@ class _LucyProHomeState extends State<LucyProHome> {
   void _showAddLmsDocumentDialog() {
     final titleController = TextEditingController();
     String category = 'LISA Core';
+    PlatformFile? selectedFile;
 
     showDialog(
       context: context,
@@ -748,6 +856,29 @@ class _LucyProHomeState extends State<LucyProHome> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                     ),
                   ),
+                  const SizedBox(height: 16),
+                  OutlinedButton.icon(
+                    onPressed: () async {
+                      final result = await FilePicker.platform.pickFiles(
+                        allowMultiple: false,
+                        withData: true,
+                        type: FileType.any,
+                      );
+                      final file = result?.files.single;
+                      if (file == null) return;
+                      setDialogState(() {
+                        selectedFile = file;
+                        if (titleController.text.trim().isEmpty) {
+                          titleController.text = file.name;
+                        }
+                      });
+                    },
+                    icon: const Icon(Icons.attach_file, size: 16),
+                    label: Text(
+                      selectedFile?.name ?? 'Chọn file từ máy local',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
               actions: [
@@ -775,6 +906,9 @@ class _LucyProHomeState extends State<LucyProHome> {
                         'isPinned': false,
                         'status': 'Đang chờ duyệt',
                         'color': customColor,
+                        'fileName': selectedFile?.name ?? titleController.text.trim(),
+                        'fileType': selectedFile?.extension == null ? 'application/octet-stream' : 'application/${selectedFile!.extension}',
+                        'fileBase64': selectedFile?.bytes == null ? '' : base64Encode(selectedFile!.bytes!),
                       });
                     });
 
@@ -798,6 +932,165 @@ class _LucyProHomeState extends State<LucyProHome> {
         );
       },
     );
+  }
+
+  Widget _buildMentorRoomsSection() {
+    if (_isMentorRoomsLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    if (_mentorRoomsError != null) {
+      return _buildEmptyPanel('Không tải được danh sách phòng: $_mentorRoomsError');
+    }
+
+    if (_mentorRooms.isEmpty) {
+      return _buildEmptyPanel('Bạn chưa tạo phòng live nào.');
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.meeting_room_outlined, color: AppColors.primary, size: 20),
+                  SizedBox(width: 6),
+                  Text(
+                    'Phòng live đã tạo',
+                    style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              IconButton(
+                onPressed: _fetchMentorRooms,
+                icon: const Icon(Icons.refresh, color: AppColors.primary),
+                tooltip: 'Tải lại',
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _mentorRooms.length,
+            itemBuilder: (context, index) => _buildMentorRoomRow(_mentorRooms[index]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyPanel(String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Text(
+        message,
+        style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildMentorRoomRow(LearnerRoom room) {
+    final status = room.roomStatus.toUpperCase();
+    final isOpen = status == 'OPEN';
+    final isScheduled = status == 'SCHEDULED';
+    final statusColor = isOpen ? AppColors.primary : isScheduled ? Colors.blue : Colors.grey;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Icon(isOpen ? Icons.podcasts : Icons.event_note, color: statusColor),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  room.roomTitle.isEmpty ? 'Phòng live' : room.roomTitle,
+                  style: const TextStyle(color: AppColors.textPrimary, fontSize: 12.5, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '${room.participantCount} học viên • ${room.scheduledStartAt ?? 'Chưa có lịch'}',
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          if (isScheduled)
+            TextButton(
+              onPressed: () => _openScheduledRoom(room),
+              child: const Text('Mở bây giờ', style: TextStyle(fontWeight: FontWeight.bold)),
+            )
+          else if (isOpen)
+            TextButton(
+              onPressed: () => _showLiveStudioRoomSimulation(
+                roomId: room.roomId,
+                language: room.languageId ?? 'Anh',
+                curriculum: room.roomTitle,
+                duration: 60,
+                aiEnabled: true,
+              ),
+              child: const Text('Vào phòng', style: TextStyle(fontWeight: FontWeight.bold)),
+            )
+          else
+            Text(status, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openScheduledRoom(LearnerRoom room) async {
+    try {
+      final opened = await _lmsApi.openMentorRoom(room.roomId);
+      await _fetchMentorRooms();
+      if (!mounted) return;
+      _showLiveStudioRoomSimulation(
+        roomId: opened.roomId,
+        language: opened.languageId ?? room.languageId ?? 'Anh',
+        curriculum: opened.roomTitle,
+        duration: 60,
+        aiEnabled: true,
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không mở được phòng: $e')),
+      );
+    }
   }
 
   // ==========================================
@@ -843,8 +1136,8 @@ class _LucyProHomeState extends State<LucyProHome> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildProgressMetricCol("Học viên", "${_studentsProgress.length} hoạt động"),
-              _buildProgressMetricCol("Hoàn thành", "84.5%"),
-              _buildProgressMetricCol("Điểm thi Avg", "92/100"),
+              _buildProgressMetricCol("Hoàn thành", "0%"),
+              _buildProgressMetricCol("Điểm thi Avg", "Chưa có"),
             ],
           ),
           const SizedBox(height: 20),
@@ -1317,6 +1610,7 @@ class _LucyProHomeState extends State<LucyProHome> {
 // HIGH-FIDELITY LIVE STUDIO DIALOG SIMULATOR
 // ==========================================
 class LiveStudioRoomDialog extends StatefulWidget {
+  final String? roomId;
   final String language;
   final String curriculum;
   final int duration;
@@ -1324,6 +1618,7 @@ class LiveStudioRoomDialog extends StatefulWidget {
   final List<Map<String, dynamic>> curriculumDocs;
 
   const LiveStudioRoomDialog({super.key, 
+    this.roomId,
     required this.language,
     required this.curriculum,
     required this.duration,
@@ -1336,11 +1631,15 @@ class LiveStudioRoomDialog extends StatefulWidget {
 }
 
 class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerProviderStateMixin {
+  final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
+  final AgoraAudioService _agoraAudio = AgoraAudioService();
+  int _participantCount = 0;
   int _secondsElapsed = 0;
   Timer? _stopwatchTimer;
-  Timer? _chatTimer;
 
   bool _isMuted = false;
+  bool _isAgoraConnected = false;
+  String? _agoraError;
   String _currentlyPinnedTitle = 'Chưa chọn slide nào';
 
   int _promptIndex = 0;
@@ -1352,21 +1651,22 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
     "Business Talk: Giới thiệu ngắn gọn bản thân và 3 thế mạnh lớn nhất của bạn trong buổi phỏng vấn?",
   ];
 
-  final List<Map<String, String>> _allMockChatTemplates = [
-    {'name': 'Minh Phạm', 'avatar': '👦', 'text': 'Chào thầy Alex Rivera ạ! 🤩'},
-    {'name': 'Mina Nguyễn', 'avatar': '👩', 'text': 'Giáo trình LISA gợi ý câu này hay và tự nhiên quá!'},
-    {'name': 'John Doe', 'avatar': '👱', 'text': 'Agora stream tiếng rõ mượt lắm thầy ơi 🎤'},
-    {'name': 'Kenji Sato', 'avatar': '👨', 'text': 'Em mới dùng thử tính năng Gen Z Slang này, cuốn thật sự'},
-    {'name': 'Lyly Lê', 'avatar': '👧', 'text': 'Thầy giải thích chỗ Keigo dễ hiểu hơn trên lớp nhiều'},
-    {'name': 'Duy Nguyễn', 'avatar': '👦', 'text': 'Vibe phòng học chill ghê, không bị áp lực nói sai'},
-    {'name': 'Emma Watson', 'avatar': '👱‍♀️', 'text': 'Robot LISA sửa phát âm chuẩn đét luôn!'},
-    {'name': 'Yuki Chan', 'avatar': '👩‍🦰', 'text': 'Học kiểu roleplay thế này vui hơn nhiều!'},
-    {'name': 'Leo Baker', 'avatar': '👨‍🦱', 'text': 'Đã share phòng cho mấy đứa bạn học cùng, mượt ghê!'},
-  ];
-
   final List<Map<String, String>> _chatMessages = [];
   final ScrollController _chatScrollController = ScrollController();
+  final TextEditingController _mentorChatInputController = TextEditingController();
   late AnimationController _waveformController;
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_chatScrollController.hasClients) {
+        _chatScrollController.animateTo(
+          _chatScrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
 
   @override
   void initState() {
@@ -1390,15 +1690,163 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
       vsync: this,
       duration: const Duration(seconds: 2),
     )..repeat();
+
+    // Setup realtime socket listeners for Mentor
+    final mentorId = AppSession.current?.userId;
+    if (mentorId != null && mentorId.isNotEmpty) {
+      _realtimeSocket.connect();
+      _realtimeSocket.watchMentor(mentorId);
+      if (widget.roomId != null && widget.roomId!.isNotEmpty) {
+        _realtimeSocket.watchRoom(widget.roomId!);
+      }
+      _joinAgoraAudio(mentorId);
+      _realtimeSocket.onMentorRoomUpdated((payload) {
+        final roomId = '${payload['roomId'] ?? ''}';
+        if (roomId != widget.roomId) return;
+        
+        final participants = payload['participants'];
+        if (participants is List) {
+          if (mounted) {
+            setState(() {
+              _participantCount = participants.length;
+            });
+          }
+        }
+
+        final joinedParticipant = payload['joinedParticipant'];
+        if (joinedParticipant is Map) {
+          final displayName = '${joinedParticipant['displayName'] ?? ''}'.trim();
+          if (displayName.isNotEmpty && mounted) {
+            setState(() {
+              _chatMessages.add({
+                'name': 'Hệ thống LUCY',
+                'avatar': '🤖',
+                'text': '$displayName vừa tham gia phòng',
+                'time': _formatCurrentTime(),
+                'isSystem': 'true'
+              });
+            });
+            _scrollToBottom();
+          }
+        }
+
+        final leftParticipant = payload['leftParticipant'];
+        if (leftParticipant is Map) {
+          final displayName = '${leftParticipant['displayName'] ?? ''}'.trim();
+          if (displayName.isNotEmpty && mounted) {
+            setState(() {
+              _chatMessages.add({
+                'name': 'Hệ thống LUCY',
+                'avatar': '🤖',
+                'text': '$displayName đã rời phòng',
+                'time': _formatCurrentTime(),
+                'isSystem': 'true'
+              });
+            });
+            _scrollToBottom();
+          }
+        }
+      });
+
+      _realtimeSocket.onMicChanged((payload) {
+        final userId = '${payload['userId'] ?? ''}';
+        if (userId == mentorId) return; // Skip self mic updates
+        final micEnabled = payload['micEnabled'] == true || '${payload['micStatus']}' == 'ON';
+        final displayName = '${payload['displayName'] ?? 'Học viên'}';
+        if (mounted) {
+          setState(() {
+            _chatMessages.add({
+              'name': 'Hệ thống LUCY',
+              'avatar': '🤖',
+              'text': '$displayName đã ${micEnabled ? "bật" : "tắt"} micro 🎤',
+              'time': _formatCurrentTime(),
+              'isSystem': 'true'
+            });
+          });
+          _scrollToBottom();
+        }
+      });
+
+      _realtimeSocket.onChatMessage((payload) {
+        if ('${payload['roomId'] ?? ''}' != widget.roomId) return;
+        if (!mounted) return;
+        setState(() {
+          _chatMessages.add({
+            'name': '${payload['displayName'] ?? 'Học viên'}',
+            'avatar': '!',
+            'text': '${payload['text'] ?? ''}',
+            'time': _formatCurrentTime(),
+            'isSystem': 'false'
+          });
+        });
+        _scrollToBottom();
+      });
+
+      _realtimeSocket.onHandRaised((payload) {
+        if ('${payload['roomId'] ?? ''}' != widget.roomId) return;
+        if (!mounted) return;
+        final raised = payload['raised'] == true;
+        setState(() {
+          _chatMessages.add({
+            'name': 'Hệ thống LUCY',
+            'avatar': '!',
+            'text': '${payload['displayName'] ?? 'Học viên'} đã ${raised ? 'giơ tay phát biểu' : 'bỏ giơ tay'}',
+            'time': _formatCurrentTime(),
+            'isSystem': 'true'
+          });
+        });
+        _scrollToBottom();
+      });
+    }
   }
 
   @override
   void dispose() {
     _stopwatchTimer?.cancel();
-    _chatTimer?.cancel();
     _chatScrollController.dispose();
+    _mentorChatInputController.dispose();
     _waveformController.dispose();
+    _agoraAudio.leave();
+    if (widget.roomId != null && widget.roomId!.isNotEmpty) {
+      _realtimeSocket.unwatchRoom(widget.roomId!);
+    }
+    _realtimeSocket.offMicChanged();
+    _realtimeSocket.offChatMessage();
+    _realtimeSocket.offHandRaised();
+    _realtimeSocket.disconnect();
     super.dispose();
+  }
+
+  Future<void> _joinAgoraAudio(String mentorId) async {
+    final roomId = widget.roomId;
+    if (roomId == null || roomId.isEmpty) return;
+    try {
+      await _agoraAudio.join(
+        roomId: roomId,
+        userId: mentorId,
+        publishMicrophone: !_isMuted,
+      );
+      if (mounted) {
+        setState(() {
+          _isAgoraConnected = true;
+          _agoraError = null;
+        });
+      }
+    } catch (error) {
+      if (mounted) {
+        setState(() {
+          _isAgoraConnected = false;
+          _agoraError = '$error';
+          _chatMessages.add({
+            'name': 'He thong LUCY',
+            'avatar': '!',
+            'text': 'Agora RTC loi: $error',
+            'time': _formatCurrentTime(),
+            'isSystem': 'true'
+          });
+        });
+      }
+    }
   }
 
   void _startStopwatch() {
@@ -1421,32 +1869,6 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
       'isSystem': 'true'
     });
 
-    _chatTimer = Timer.periodic(const Duration(milliseconds: 3500), (timer) {
-      if (mounted) {
-        final random = math.Random();
-        final template = _allMockChatTemplates[random.nextInt(_allMockChatTemplates.length)];
-        setState(() {
-          _chatMessages.add({
-            'name': template['name']!,
-            'avatar': template['avatar']!,
-            'text': template['text']!,
-            'time': _formatCurrentTime(),
-            'isSystem': 'false'
-          });
-        });
-
-        // Scroll to bottom smoothly
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_chatScrollController.hasClients) {
-            _chatScrollController.animateTo(
-              _chatScrollController.position.maxScrollExtent,
-              duration: const Duration(milliseconds: 300),
-              curve: Curves.easeOut,
-            );
-          }
-        });
-      }
-    });
   }
 
   String _formatCurrentTime() {
@@ -1460,6 +1882,83 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
     final seconds = totalSeconds % 60;
 
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void _pinDocumentToRoom(Map<String, dynamic> doc) {
+    final mentorId = AppSession.current?.userId;
+    final roomId = widget.roomId;
+    final title = '${doc['title'] ?? doc['fileName'] ?? 'Tài liệu'}';
+    if (mentorId == null || mentorId.isEmpty || roomId == null || roomId.isEmpty) return;
+
+    _realtimeSocket.pinSlide(
+      roomId: roomId,
+      userId: mentorId,
+      filename: title,
+      fileBase64: '${doc['fileBase64'] ?? ''}',
+      fileType: '${doc['fileType'] ?? 'application/octet-stream'}',
+    );
+  }
+
+  void _sendMentorChat() {
+    final text = _mentorChatInputController.text.trim();
+    final session = AppSession.current;
+    final roomId = widget.roomId;
+    if (text.isEmpty || session == null || roomId == null || roomId.isEmpty) return;
+
+    _realtimeSocket.sendMessage(
+      roomId: roomId,
+      userId: session.userId,
+      text: text,
+      displayName: session.fullName,
+    );
+    _mentorChatInputController.clear();
+  }
+
+  Future<void> _pickAndPinLiveMaterial() async {
+    final messenger = ScaffoldMessenger.of(context);
+    final result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      withData: true,
+      type: FileType.any,
+    );
+    final file = result?.files.single;
+    if (file == null) return;
+
+    final bytes = file.bytes;
+    if (bytes == null || bytes.isEmpty) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Không đọc được nội dung file để ghim.')),
+      );
+      return;
+    }
+    if (!mounted) return;
+
+    final doc = <String, dynamic>{
+      'id': 'live_doc_${DateTime.now().millisecondsSinceEpoch}',
+      'title': file.name,
+      'category': 'Live room',
+      'isPinned': true,
+      'status': 'Đang chiếu',
+      'color': AppColors.primary,
+      'fileName': file.name,
+      'fileType': file.extension == null ? 'application/octet-stream' : 'application/${file.extension}',
+      'fileBase64': base64Encode(bytes),
+    };
+
+    setState(() {
+      _currentlyPinnedTitle = file.name;
+      for (final item in widget.curriculumDocs) {
+        item['isPinned'] = false;
+      }
+      widget.curriculumDocs.insert(0, doc);
+    });
+    _pinDocumentToRoom(doc);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text('Đã ghim tài liệu: ${file.name}'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -1578,9 +2077,23 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
                         backgroundColor: Colors.redAccent,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      onPressed: () {
-                        Navigator.pop(ctx); // Close dialog
-                        Navigator.pop(context); // Exit full screen studio
+                      onPressed: () async {
+                        final dialogNavigator = Navigator.of(ctx);
+                        final studioNavigator = Navigator.of(context);
+                        try {
+                          if (widget.roomId != null && widget.roomId!.isNotEmpty) {
+                            final lmsApi = LmsApi();
+                            await lmsApi.endMentorRoom(widget.roomId!);
+                            
+                            final realtimeSocket = RealtimeSocketService();
+                            realtimeSocket.endRoom(widget.roomId!);
+                            realtimeSocket.disconnect();
+                          }
+                        } catch (_) {}
+                        if (mounted) {
+                          dialogNavigator.pop();
+                          studioNavigator.pop();
+                        }
                       },
                       child: const Text("KẾT THÚC", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     )
@@ -1634,7 +2147,9 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  widget.language == 'Anh' ? "🇬🇧 English" : widget.language == 'Trung' ? "🇨🇳 Chinese" : "🇯🇵 Japanese",
+                  _isAgoraConnected
+                      ? (widget.language == 'Anh' ? "🇬🇧 English" : widget.language == 'Trung' ? "🇨🇳 Chinese" : "🇯🇵 Japanese")
+                      : 'Audio dang ket noi',
                   style: const TextStyle(color: AppColors.primaryDark, fontSize: 9, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -1650,6 +2165,13 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
             "Học viên sẽ nghe thấy giọng nói của bạn kết hợp với nội dung slide này.",
             style: TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
           ),
+          if (_agoraError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _agoraError!,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 10.5, fontWeight: FontWeight.w600),
+            ),
+          ],
           const SizedBox(height: 16),
 
           // Custom Painted Animated waveform visualizer inside active board
@@ -1670,6 +2192,7 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
                     painter: AudioWaveformPainter(
                       animationValue: _waveformController.value,
                       color: _isMuted ? Colors.red.shade400.withOpacity(0.5) : AppColors.primary,
+                      isMuted: _isMuted,
                     ),
                   );
                 },
@@ -1754,11 +2277,39 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
     return Column(
       children: [
         GestureDetector(
-          onTap: () {
+          onTap: () async {
+            final messenger = ScaffoldMessenger.of(context);
+            final nextMuted = !_isMuted;
             setState(() {
-              _isMuted = !_isMuted;
+              _isMuted = nextMuted;
             });
-            ScaffoldMessenger.of(context).showSnackBar(
+            final mentorId = AppSession.current?.userId;
+            if (mentorId != null && mentorId.isNotEmpty && widget.roomId != null) {
+              try {
+                await _realtimeSocket.toggleMic(
+                  roomId: widget.roomId!,
+                  userId: mentorId,
+                  enabled: !nextMuted,
+                  displayName: AppSession.current?.fullName,
+                );
+                await _agoraAudio.setMicrophoneEnabled(!nextMuted);
+                if (mounted) {
+                  setState(() {
+                    _isAgoraConnected = true;
+                    _agoraError = null;
+                  });
+                }
+              } catch (error) {
+                if (mounted) {
+                  setState(() {
+                    _isMuted = !nextMuted;
+                    _agoraError = '$error';
+                  });
+                }
+                return;
+              }
+            }
+            messenger.showSnackBar(
               SnackBar(
                 content: Text(_isMuted ? '🎤 Đã tắt tiếng Micro!' : '🎤 Đã bật tiếng Micro!'),
                 duration: const Duration(seconds: 1),
@@ -1803,7 +2354,7 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
 
   Widget _buildLiveChatContainer() {
     return Container(
-      height: 240,
+      height: 300,
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1837,7 +2388,7 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
                   color: AppColors.primary.withOpacity(0.12),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Text("12 Đang Nghe", style: TextStyle(color: AppColors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
+                child: Text("$_participantCount Đang Nghe", style: const TextStyle(color: AppColors.primary, fontSize: 9, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -1917,6 +2468,52 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
               },
             ),
           ),
+          const Divider(height: 1, color: AppColors.inputBorder),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _mentorChatInputController,
+                    minLines: 1,
+                    maxLines: 2,
+                    decoration: InputDecoration(
+                      hintText: 'Nhắn tin cho học viên...',
+                      hintStyle: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                      filled: true,
+                      fillColor: Colors.grey.shade50,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: const BorderSide(color: AppColors.inputBorder),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: const BorderSide(color: AppColors.inputBorder),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        borderSide: const BorderSide(color: AppColors.primary),
+                      ),
+                    ),
+                    style: const TextStyle(fontSize: 12, color: AppColors.textPrimary),
+                    onSubmitted: (_) => _sendMentorChat(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton.filled(
+                  onPressed: _sendMentorChat,
+                  icon: const Icon(Icons.send, size: 16),
+                  style: IconButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  tooltip: 'Gửi tin nhắn',
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -1926,13 +2523,47 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "GHIM TÀI LIỆU KHÁC LÊN SLIDE CHIẾU 📌",
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "GHIM TÀI LIỆU KHÁC LÊN SLIDE CHIẾU 📌",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.8),
+            ),
+            TextButton.icon(
+              onPressed: _pickAndPinLiveMaterial,
+              icon: const Icon(Icons.attach_file, size: 14),
+              label: const Text(
+                'Chọn tài liệu',
+                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 10),
-        SizedBox(
-          height: 100,
+        if (widget.curriculumDocs.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.inputBorder),
+            ),
+            child: const Text(
+              'Chưa có tài liệu. Bấm "Chọn tài liệu" để ghim file từ máy local.',
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.w600),
+            ),
+          )
+        else
+          SizedBox(
+            height: 100,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
@@ -1946,7 +2577,12 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
                 onTap: () {
                   setState(() {
                     _currentlyPinnedTitle = title;
+                    for (final item in widget.curriculumDocs) {
+                      item['isPinned'] = false;
+                    }
+                    doc['isPinned'] = true;
                   });
+                  _pinDocumentToRoom(doc);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("📌 Đã chiếu Slide: $title"),
@@ -2019,8 +2655,9 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog> with TickerP
 class AudioWaveformPainter extends CustomPainter {
   final double animationValue;
   final Color color;
+  final bool isMuted;
 
-  AudioWaveformPainter({required this.animationValue, required this.color});
+  AudioWaveformPainter({required this.animationValue, required this.color, this.isMuted = false});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -2036,8 +2673,8 @@ class AudioWaveformPainter extends CustomPainter {
     for (int i = 0; i < barCount; i++) {
       final baseHeight = size.height * (0.3 + random.nextDouble() * 0.5);
       // Generate waving motion
-      final pulse = math.sin(animationValue * 2 * math.pi + i * 0.8) * 0.35;
-      final currentHeight = baseHeight * (1.0 + pulse);
+      final pulse = isMuted ? 0.0 : math.sin(animationValue * 2 * math.pi + i * 0.8) * 0.35;
+      final currentHeight = isMuted ? 4.0 : baseHeight * (1.0 + pulse);
       
       final x = i * (barWidth + gap) + gap;
       final y = size.height - currentHeight;
@@ -2052,6 +2689,6 @@ class AudioWaveformPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant AudioWaveformPainter oldDelegate) {
-    return oldDelegate.animationValue != animationValue || oldDelegate.color != color;
+    return oldDelegate.animationValue != animationValue || oldDelegate.color != color || oldDelegate.isMuted != isMuted;
   }
 }

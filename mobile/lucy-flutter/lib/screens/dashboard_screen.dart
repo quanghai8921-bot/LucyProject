@@ -34,19 +34,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _navIndex = 0;
   String? _selectedLanguageFilter = 'LISA';
 
+  String get _displayName {
+    final session = AppSession.current;
+    final displayName = session?.displayName?.trim();
+    if (_currentRole == LucyRole.anonymous) {
+      if (displayName != null && displayName.isNotEmpty) return displayName;
+      return "Persona Ẩn Danh";
+    }
+    final fullName = session?.fullName.trim();
+    if (fullName != null && fullName.isNotEmpty) return fullName;
+    if (_currentRole == LucyRole.admin) return "Admin";
+    if (_currentRole == LucyRole.proMentor) return "Mentor";
+    if (_currentRole == LucyRole.superCreator) return "Creator";
+    return "Persona Ẩn Danh";
+  }
+
+  String _audioTitleForRole(LucyRole role) {
+    if (role == LucyRole.anonymous) return "LISTENING IN: French Cafe Vibe...";
+    if (role == LucyRole.proMentor) return "Mentor Live Dashboard";
+    if (role == LucyRole.superCreator) return "Weekly Analytics Brief - Live";
+    return "Lucy Administrator Console";
+  }
+
   @override
   void initState() {
     super.initState();
     _currentRole = widget.role;
-    if (_currentRole == LucyRole.anonymous) {
-      SharedAudioState.currentTitle.value = "LISTENING IN: French Cafe Vibe...";
-    } else if (_currentRole == LucyRole.proMentor) {
-      SharedAudioState.currentTitle.value = "Weekly Mentor Brief - Lvl 12";
-    } else if (_currentRole == LucyRole.superCreator) {
-      SharedAudioState.currentTitle.value = "Weekly Analytics Brief - Live";
-    } else if (_currentRole == LucyRole.admin) {
-      SharedAudioState.currentTitle.value = "Lucy Administrator Console";
-    }
+    SharedAudioState.currentTitle.value = _audioTitleForRole(_currentRole);
   }
 
   @override
@@ -159,9 +173,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _currentRole == LucyRole.admin
-                        ? "Admin"
-                        : (AppSession.current?.fullName ?? (_currentRole == LucyRole.anonymous ? "Persona Ẩn Danh" : "Alex Rivera")),
+                    _displayName,
                     style: const TextStyle(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
@@ -172,7 +184,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     _currentRole == LucyRole.anonymous
                         ? "Học tập ẩn danh"
                         : _currentRole == LucyRole.proMentor
-                            ? "LVL 12 • 98% Uy tín"
+                            ? "Mentor chính thức"
                             : "Super Creator Tier ✪",
                     style: const TextStyle(
                       color: AppColors.textSecondary,
@@ -290,15 +302,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               onTap: () {
                 setState(() {
                   _currentRole = role;
-                  if (role == LucyRole.anonymous) {
-                    SharedAudioState.currentTitle.value = "LISTENING IN: French Cafe Vibe...";
-                  } else if (role == LucyRole.proMentor) {
-                    SharedAudioState.currentTitle.value = "Weekly Mentor Brief - Lvl 12";
-                  } else if (role == LucyRole.superCreator) {
-                    SharedAudioState.currentTitle.value = "Weekly Analytics Brief - Live";
-                  } else if (role == LucyRole.admin) {
-                    SharedAudioState.currentTitle.value = "Lucy Administrator Console";
-                  }
+                  SharedAudioState.currentTitle.value = _audioTitleForRole(role);
                 });
               },
               child: AnimatedContainer(
@@ -685,35 +689,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             ],
           ),
-          child: Column(
-            children: [
-              _buildMentorListItem(
-                rank: 1,
-                name: "Professor K",
-                subject: "English & German Expert",
-                repScore: 4982,
-                avatarInitials: "PK",
-                rankColor: Colors.amber.shade400,
-              ),
-              const Divider(height: 1, color: AppColors.inputBorder),
-              _buildMentorListItem(
-                rank: 2,
-                name: "Mina-san",
-                subject: "Japanese Native Educator",
-                repScore: 3211,
-                avatarInitials: "MS",
-                rankColor: Colors.grey.shade400,
-              ),
-              const Divider(height: 1, color: AppColors.inputBorder),
-              _buildMentorListItem(
-                rank: 3,
-                name: "Juan Rivera",
-                subject: "Spanish & Chinese Bilingual",
-                repScore: 2845,
-                avatarInitials: "JR",
-                rankColor: Colors.deepOrange.shade300,
-              ),
-            ],
+          child: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            child: Text(
+              "Chưa có dữ liệu xếp hạng mentor.",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ],
@@ -1006,7 +988,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Icon(Icons.star, color: Colors.orange, size: 14),
                   SizedBox(width: 4),
                   Text(
-                    "98% Reputation",
+                    "Mentor chính thức",
                     style: TextStyle(
                       color: AppColors.primaryDark,
                       fontSize: 11,
@@ -1694,22 +1676,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
         const SizedBox(height: 6),
-
-        _buildPodcastListItem(
-          episodeTitle: "Digital Nomads: Ep. 42",
-          views: "14.2k lượt nghe",
-          earnings: "\$342.00 kiếm được",
-          statusTag: "ĐÃ GHI ÂM",
-          iconColor: Colors.blue.shade400,
-        ),
-        const SizedBox(height: 12),
-
-        _buildPodcastListItem(
-          episodeTitle: "The Future of AI in Art",
-          views: "8.9k lượt nghe",
-          earnings: "\$186.50 kiếm được",
-          statusTag: "ĐÃ GHI ÂM",
-          iconColor: Colors.deepOrange.shade300,
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.inputBorder),
+          ),
+          child: const Text(
+            "Chưa có podcast đã ghi âm.",
+            style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+            textAlign: TextAlign.center,
+          ),
         ),
         const SizedBox(height: 24),
 

@@ -1,7 +1,12 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:lucy_app/services/auth_api.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
+import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/realtime_socket_service.dart';
+import 'package:lucy_app/screens/live_learner_room_dialog.dart';
 
 class LucyAnonymousHome extends StatefulWidget {
   const LucyAnonymousHome({super.key});
@@ -9,7 +14,6 @@ class LucyAnonymousHome extends StatefulWidget {
   @override
   State<LucyAnonymousHome> createState() => _LucyAnonymousHomeState();
 }
-
 class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProviderStateMixin {
   late TabController _tabController;
   final String _userLevel = "Level 1";
@@ -19,13 +23,23 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
+  final LmsApi _lmsApi = LmsApi();
+  final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
+  List<LmsRoom> _allRooms = [];
+  List<LmsRoomHistory> _joinedRoomHistory = [];
+  bool _isLoading = false;
+  bool _isHistoryLoading = false;
+  Timer? _refreshTimer;
+
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, initialIndex: 1, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() {});
+        _fetchRooms();
+        _fetchJoinedRoomHistory();
       }
     });
     
@@ -35,89 +49,74 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     )..repeat(reverse: true);
     
     _pulseAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(_pulseController);
+
+    _fetchRooms();
+    _fetchJoinedRoomHistory();
+
+    _refreshTimer = Timer.periodic(const Duration(seconds: 15), (timer) {
+      _fetchRooms();
+      _fetchJoinedRoomHistory();
+    });
+  }
+
+  Future<void> _fetchRooms() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final rooms = await _lmsApi.getAllRooms();
+      if (mounted) {
+        setState(() {
+          _allRooms = rooms;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể tải danh sách phòng: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _fetchJoinedRoomHistory() async {
+    final session = AppSession.current;
+    if (session == null) return;
+    setState(() {
+      _isHistoryLoading = true;
+    });
+    try {
+      final history = await _lmsApi.getJoinedRoomHistory(session.userId);
+      if (mounted) {
+        setState(() {
+          _joinedRoomHistory = history;
+          _isHistoryLoading = false;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _isHistoryLoading = false;
+        });
+      }
+    }
   }
 
   @override
   void dispose() {
+    _refreshTimer?.cancel();
+    _realtimeSocket.disconnect();
     _tabController.dispose();
     _pulseController.dispose();
     super.dispose();
   }
 
-  // ==========================================
-  // MOCK DATA FOR LIVE ROOMS
-  // ==========================================
-  final Map<String, List<Map<String, dynamic>>> _liveRooms = {
-    'Anh': [
-      {
-        'title': 'Survival Speaking: Cafe order & small talk ☕',
-        'mentor': 'Professor K',
-        'mentorRep': '4,982 REP',
-        'listeners': 14,
-        'level': 'Level 1',
-        'color': const Color(0xFF64C3A5),
-        'bgColors': [const Color(0xFFECFDF5), const Color(0xFFD1FAE5)],
-      },
-      {
-        'title': 'Job Interview Pitch: Gen Z Slangs & Etiquette 💼',
-        'mentor': 'Sarah Jenkins',
-        'mentorRep': '2,150 REP',
-        'listeners': 28,
-        'level': 'Level 6',
-        'color': const Color(0xFF6366F1),
-        'bgColors': [const Color(0xFFEEF2FF), const Color(0xFFE0E7FF)],
-      },
-      {
-        'title': 'Movie Review Lounge: Discussing Marvel films 🎬',
-        'mentor': 'Austin Miller',
-        'mentorRep': '1,890 REP',
-        'listeners': 9,
-        'level': 'Level 3',
-        'color': const Color(0xFFEC4899),
-        'bgColors': [const Color(0xFFFDF2F8), const Color(0xFFFCE7F3)],
-      },
-    ],
-    'Trung': [
-      {
-        'title': 'HSK 1 Conversational Drill: Introducing yourself 🤝',
-        'mentor': 'Juan Rivera',
-        'mentorRep': '2,845 REP',
-        'listeners': 18,
-        'level': 'Level 11',
-        'color': const Color(0xFFF59E0B),
-        'bgColors': [const Color(0xFFFFF7ED), const Color(0xFFFFEDD5)],
-      },
-      {
-        'title': 'Dimsum & Tea culture vocabulary 🥟',
-        'mentor': 'Mei Ling',
-        'mentorRep': '3,450 REP',
-        'listeners': 12,
-        'level': 'Level 16',
-        'color': const Color(0xFFEF4444),
-        'bgColors': [const Color(0xFFFEF2F2), const Color(0xFFFEE2E2)],
-      },
-    ],
-    'Nhật': [
-      {
-        'title': 'JLPT N5 Kaiwa: Basic travel direction phrases 🗺️',
-        'mentor': 'Mina-san',
-        'mentorRep': '3,211 REP',
-        'listeners': 22,
-        'level': 'Level 21',
-        'color': const Color(0xFF8B5CF6),
-        'bgColors': [const Color(0xFFF5F3FF), const Color(0xFFEDE9FE)],
-      },
-      {
-        'title': 'Anime Slang: Talking like Naruto & Jujutsu Kaisen 🦊',
-        'mentor': 'Takuya Sato',
-        'mentorRep': '1,990 REP',
-        'listeners': 35,
-        'level': 'Level 26',
-        'color': const Color(0xFFEC4899),
-        'bgColors': [const Color(0xFFFFF1F2), const Color(0xFFFFE4E6)],
-      },
-    ]
-  };
+  // Active rooms are fetched from LmsApi.
+
 
   // ==========================================
   // WIDGET BUILD
@@ -141,13 +140,16 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
 
         // Tab Views (Core Live list in dynamic scannable grid)
         // Dynamic Live list in clean scannable grid based on selected Tab
-        _buildLiveRoomsGrid(
-          _tabController.index == 0
-              ? 'Anh'
-              : _tabController.index == 1
-                  ? 'Trung'
-                  : 'Nhật',
-        ),
+        if (_tabController.index == 0)
+          _buildJoinedRoomHistorySection()
+        else
+          _buildLiveRoomsGrid(
+            _tabController.index == 1
+                ? 'ENG'
+                : _tabController.index == 2
+                    ? 'CHI'
+                    : 'JAP',
+          ),
         const SizedBox(height: 24),
 
         // 4. Leaderboard of Top Mentors
@@ -217,7 +219,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${AppSession.current?.fullName ?? 'Polyglot Ẩn Danh'} ✨",
+                  "${AppSession.current?.displayName ?? 'Polyglot Ẩn Danh'} ✨",
                   style: const TextStyle(
                     color: AppColors.textPrimary,
                     fontSize: 18,
@@ -438,19 +440,24 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
           // Clickable Quick Join Action button
           GestureDetector(
             onTap: () {
+              if (_allRooms.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Hiện không có phòng live nào hoạt động để tham gia nhanh!'),
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+                return;
+              }
               setState(() {
                 _isJoiningRandom = true;
               });
-              // Simulate real-time matchmaking delay (1.8 seconds)
-              Future.delayed(const Duration(milliseconds: 1800), () {
+              final randomRoom = _allRooms[math.Random().nextInt(_allRooms.length)];
+              _joinLearnerRoom(randomRoom).whenComplete(() {
                 if (mounted) {
                   setState(() {
                     _isJoiningRandom = false;
                   });
-                  _showAgoraCallSimulation(
-                    title: "Survival Speaking Room ngẫu nhiên",
-                    mentor: "Professor K",
-                  );
                 }
               });
             },
@@ -514,6 +521,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
           ],
         ),
         tabs: const [
+          Tab(text: "Lich su"),
           Tab(text: "🇬🇧 Tiếng Anh"),
           Tab(text: "🇨🇳 Tiếng Trung"),
           Tab(text: "🇯🇵 Tiếng Nhật"),
@@ -525,14 +533,121 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   // ==========================================
   // CORE SCANNABLE GRID FOR LIVE ROOMS
   // ==========================================
+  Widget _buildJoinedRoomHistorySection() {
+    if (_isHistoryLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    if (_joinedRoomHistory.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.inputBorder),
+        ),
+        child: const Text(
+          "Chua co lich su phong ban da tham gia.",
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Lich su phong ban da tham gia",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        ..._joinedRoomHistory.map(_buildHistoryRoomTile),
+      ],
+    );
+  }
+
+  Widget _buildHistoryRoomTile(LmsRoomHistory room) {
+    final endedAt = room.endedAt;
+    final endedText = endedAt == null
+        ? room.roomStatus
+        : "${endedAt.day}/${endedAt.month}/${endedAt.year}";
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.history, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  room.roomTitle,
+                  style: const TextStyle(color: AppColors.textPrimary, fontSize: 12.5, fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "Mentor: ${room.mentorName} | Level ${room.levelNumber ?? 0}",
+                  style: const TextStyle(color: AppColors.textSecondary, fontSize: 10.5, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            endedText,
+            style: const TextStyle(color: AppColors.primaryDark, fontSize: 10, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLiveRoomsGrid(String languageKey) {
-    final list = _liveRooms[languageKey] ?? [];
+    if (_isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24.0),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    final list = _allRooms.where((room) {
+      if (room.languageId == null) return false;
+      return room.languageId == languageKey;
+    }).toList();
 
     if (list.isEmpty) {
       return const Center(
-        child: Text(
-          "Hiện chưa có phòng Live trực tiếp cho ngôn ngữ này.",
-          style: TextStyle(color: AppColors.textSecondary),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 24.0),
+          child: Text(
+            "Hiện chưa có phòng Live trực tiếp cho ngôn ngữ này.",
+            style: TextStyle(color: AppColors.textSecondary),
+          ),
         ),
       );
     }
@@ -554,15 +669,39 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     );
   }
 
-  Widget _buildRoomGridCard(Map<String, dynamic> room) {
-    Color cardColor = room['color'] as Color;
-    List<Color> bgColors = room['bgColors'] as List<Color>;
+  Widget _buildRoomGridCard(LmsRoom room) {
+    final languageKey = _tabController.index == 1
+        ? 'ENG'
+        : _tabController.index == 2
+            ? 'CHI'
+            : 'JAP';
+    Color cardColor;
+    List<Color> bgColors;
+    if (languageKey == 'ENG') {
+      cardColor = const Color(0xFF64C3A5);
+      bgColors = const [Color(0xFFECFDF5), Color(0xFFD1FAE5)];
+    } else if (languageKey == 'CHI') {
+      cardColor = const Color(0xFFEF4444);
+      bgColors = const [Color(0xFFFEF2F2), Color(0xFFFEE2E2)];
+    } else {
+      cardColor = const Color(0xFF8B5CF6);
+      bgColors = const [Color(0xFFF5F3FF), Color(0xFFEDE9FE)];
+    }
+
+    final listenersCount = room.participantCount;
 
     return GestureDetector(
-      onTap: () => _showAgoraCallSimulation(
-        title: room['title'] as String,
-        mentor: room['mentor'] as String,
-      ),
+      onTap: () async {
+        final session = AppSession.current;
+        if (session == null || session.userId.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Vui lòng đăng nhập để tham gia phòng!')),
+          );
+          return;
+        }
+
+        await _joinLearnerRoom(room);
+      },
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -608,17 +747,18 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
                           width: 6,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(_pulseAnimation.value),
+                            color: (room.roomStatus.toUpperCase() == 'SCHEDULED' ? Colors.blue : Colors.red)
+                                .withOpacity(_pulseAnimation.value),
                             shape: BoxShape.circle,
                           ),
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Text(
-                        "LIVE",
+                      Text(
+                        room.roomStatus.toUpperCase() == 'SCHEDULED' ? "LÊN LỊCH" : "LIVE",
                         style: TextStyle(
                           fontSize: 8,
-                          color: Colors.red,
+                          color: room.roomStatus.toUpperCase() == 'SCHEDULED' ? Colors.blue : Colors.red,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -632,7 +772,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
                     const Icon(Icons.headphones_outlined, size: 12, color: AppColors.textSecondary),
                     const SizedBox(width: 2),
                     Text(
-                      "${room['listeners']}",
+                      "$listenersCount",
                       style: const TextStyle(
                         fontSize: 10.5,
                         color: AppColors.textSecondary,
@@ -647,7 +787,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
 
             // Title
             Text(
-              room['title'] as String,
+              room.roomTitle,
               style: const TextStyle(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.bold,
@@ -661,7 +801,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
 
             // Mentor Tag
             Text(
-              "🎙️ Mentor: ${room['mentor']}",
+              "Mentor: ${room.mentorName ?? room.hostUserId}",
               style: const TextStyle(
                 color: AppColors.textSecondary,
                 fontSize: 9.5,
@@ -680,7 +820,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
                 border: Border.all(color: cardColor.withOpacity(0.15)),
               ),
               child: Text(
-                room['level'] as String,
+                room.levelNumber != null ? 'Level ${room.levelNumber}' : (room.levelId ?? 'Level 1'),
                 style: TextStyle(
                   color: cardColor.darken(0.1),
                   fontSize: 8,
@@ -695,113 +835,75 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     );
   }
 
-  void _showAgoraCallSimulation({required String title, required String mentor}) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            // Simulate connection steps
-            bool connected = false;
-            Future.delayed(const Duration(seconds: 1500), () {
-              if (context.mounted) {
-                setDialogState(() {
-                  connected = true;
-                });
-              }
-            });
+  Future<void> _joinLearnerRoom(LmsRoom room) async {
+    final session = AppSession.current;
+    if (session == null || session.userId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Vui long dang nhap de tham gia phong!')),
+      );
+      return;
+    }
 
-            return AlertDialog(
-              backgroundColor: AppColors.textPrimary, // Elegant dark theme for audio room
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-              content: Container(
-                width: 320,
-                padding: const EdgeInsets.all(8),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Animated pulsar or connecting ring
-                    connected
-                        ? const CircleAvatar(
-                            radius: 32,
-                            backgroundColor: AppColors.primary,
-                            child: Icon(Icons.graphic_eq, color: Colors.white, size: 32),
-                          )
-                        : const SizedBox(
-                            width: 56,
-                            height: 56,
-                            child: CircularProgressIndicator(
-                              color: AppColors.primary,
-                              strokeWidth: 4,
-                            ),
-                          ),
-                    const SizedBox(height: 24),
-                    Text(
-                      connected ? "ĐÃ THAM GIA PHÒNG" : "ĐANG KẾT NỐI REAL-TIME...",
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Mentor chính: $mentor • 98% Reputation",
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.lock_outline, color: Colors.white54, size: 14),
-                        SizedBox(width: 4),
-                        Text(
-                          "Chế độ ẩn danh (Avatar Persona hoạt động)",
-                          style: TextStyle(color: Colors.white54, fontSize: 10),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red.shade400,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 48),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.call_end),
-                      label: const Text(
-                        "Rời phòng Audio",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+    final messenger = ScaffoldMessenger.of(context);
+    var restJoined = false;
+    try {
+      await _lmsApi.joinRoom(roomId: room.roomId, userId: session.userId);
+      restJoined = true;
+      await _realtimeSocket.joinRoom(
+        roomId: room.roomId,
+        userId: session.userId,
+        displayName: _sessionDisplayName(session),
+      );
+      _fetchRooms();
+
+      if (!mounted) return;
+
+      _showAgoraCallSimulation(
+        roomId: room.roomId,
+        title: room.roomTitle,
+        mentor: room.mentorName ?? room.hostUserId,
+        hostUserId: room.hostUserId,
+      );
+    } catch (e) {
+      if (restJoined) {
+        try {
+          await _lmsApi.leaveRoom(roomId: room.roomId, userId: session.userId);
+        } catch (_) {}
+      }
+      if (mounted) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('Khong the tham gia phong: $e')),
         );
-      },
-    );
+      }
+    }
+  }
+
+  String _sessionDisplayName(AuthSession session) {
+    final displayName = session.displayName?.trim();
+    if (displayName != null && displayName.isNotEmpty) return displayName;
+    return 'Learner ${session.userId.length > 4 ? session.userId.substring(session.userId.length - 4) : session.userId}';
+  }
+
+  void _showAgoraCallSimulation({
+    required String roomId,
+    required String title,
+    required String mentor,
+    required String hostUserId,
+  }) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (_) => LiveLearnerRoomDialog(
+          roomId: roomId,
+          title: title,
+          mentor: mentor,
+          hostUserId: hostUserId,
+        ),
+      ),
+    ).then((_) {
+      _fetchRooms();
+      _fetchJoinedRoomHistory();
+    });
   }
 
   // ==========================================
@@ -857,12 +959,20 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
           ),
           const SizedBox(height: 16),
 
-          // Leaderboard top 3 rows
-          _buildLeaderboardRow(1, "Professor K", "🇬🇧 Anh & Đức", "4.9k REP", Colors.amber.shade400, "PK"),
-          const Divider(height: 16, color: AppColors.inputBorder),
-          _buildLeaderboardRow(2, "Mei Ling", "🇨🇳 Tiếng Trung", "3.4k REP", Colors.grey.shade400, "ML"),
-          const Divider(height: 16, color: AppColors.inputBorder),
-          _buildLeaderboardRow(3, "Mina-san", "🇯🇵 Tiếng Nhật Bản", "3.2k REP", Colors.deepOrange.shade300, "MS"),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.inputBorder),
+            ),
+            child: const Text(
+              "Chưa có dữ liệu xếp hạng mentor.",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontWeight: FontWeight.w600),
+              textAlign: TextAlign.center,
+            ),
+          ),
         ],
       ),
     );

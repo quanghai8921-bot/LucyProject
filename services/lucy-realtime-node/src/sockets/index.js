@@ -4,6 +4,8 @@ const registerRoomSocket = require('./room.socket');
 const registerChatSocket = require('./chat.socket');
 const registerMicSocket = require('./mic.socket');
 const registerAttendanceSocket = require('./attendance.socket');
+const registerHandSocket = require('./hand.socket');
+const registerSlideSocket = require('./slide.socket');
 
 function registerSockets(httpServer) {
   const io = new Server(httpServer, {
@@ -18,6 +20,8 @@ function registerSockets(httpServer) {
     registerChatSocket(io, socket);
     registerMicSocket(io, socket);
     registerAttendanceSocket(io, socket);
+    registerHandSocket(io, socket);
+    registerSlideSocket(io, socket);
   });
 
   return io;

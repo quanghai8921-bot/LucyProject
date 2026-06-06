@@ -324,6 +324,7 @@ class AuthSession {
     required this.email,
     required this.roleIds,
     required this.roleNames,
+    this.displayName,
     this.avatarUrl,
   });
 
@@ -333,6 +334,7 @@ class AuthSession {
   final String email;
   final List<String> roleIds;
   final List<String> roleNames;
+  final String? displayName;
   final String? avatarUrl;
 
   bool get isLearner => roleIds.contains('R002') || roleNames.contains('LUCY ANONYMOUS');
@@ -356,6 +358,7 @@ class AuthSession {
       userId: '${user['userId'] ?? ''}',
       fullName: '${user['fullName'] ?? ''}',
       email: '${user['email'] ?? ''}',
+      displayName: user['displayName'] as String?,
       avatarUrl: user['avatarUrl'] as String?,
       roleIds: roles.map((role) => '${(role as Map<String, dynamic>)['roleId'] ?? ''}').toList(),
       roleNames: roles.map((role) => '${(role as Map<String, dynamic>)['roleName'] ?? ''}').toList(),
@@ -371,6 +374,7 @@ class AuthSession {
       userId: '${user['userId'] ?? ''}',
       fullName: '${user['fullName'] ?? ''}',
       email: '${user['email'] ?? ''}',
+      displayName: user['displayName'] as String?,
       avatarUrl: user['avatarUrl'] as String?,
       roleIds: roles.map((role) => '${(role as Map<String, dynamic>)['roleId'] ?? ''}').toList(),
       roleNames: roles.map((role) => '${(role as Map<String, dynamic>)['roleName'] ?? ''}').toList(),

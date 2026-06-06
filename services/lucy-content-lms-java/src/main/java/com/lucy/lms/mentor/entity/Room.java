@@ -58,6 +58,12 @@ public class Room {
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
 
+    @jakarta.persistence.Transient
+    private String hostUserName;
+
+    @jakarta.persistence.Transient
+    private Integer participantCount;
+
     protected Room() {
     }
 
@@ -124,6 +130,10 @@ public class Room {
         return studyStartedAt;
     }
 
+    public void setStudyStartedAt(LocalDateTime studyStartedAt) {
+        this.studyStartedAt = studyStartedAt;
+    }
+
     public LocalDateTime getEndedAt() {
         return endedAt;
     }
@@ -132,11 +142,35 @@ public class Room {
         return roomStatus;
     }
 
+    public void setRoomStatus(String roomStatus) {
+        this.roomStatus = roomStatus;
+    }
+
+    public void setEndedAt(LocalDateTime endedAt) {
+        this.endedAt = endedAt;
+    }
+
     public Integer getMaxParticipants() {
         return maxParticipants;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getHostUserName() {
+        return hostUserName;
+    }
+
+    public void setHostUserName(String hostUserName) {
+        this.hostUserName = hostUserName;
+    }
+
+    public Integer getParticipantCount() {
+        return participantCount;
+    }
+
+    public void setParticipantCount(Integer participantCount) {
+        this.participantCount = participantCount;
     }
 }

@@ -241,9 +241,10 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
     }
 
     private static UserDto MapUserDto(User user) =>
-        new(user.UserId, 
-            !string.IsNullOrWhiteSpace(user.AvatarPersona?.DisplayName) ? user.AvatarPersona.DisplayName : user.FullName, 
+        new(user.UserId,
+            user.FullName,
             user.PhoneNumber, user.Email,
+            user.AvatarPersona?.DisplayName,
             user.AvatarPersona?.AvatarUrl, user.IsStatus, user.CreatedAt);
 
     private static ApplicationDto MapApplication(MentorApplication app, string type) =>
