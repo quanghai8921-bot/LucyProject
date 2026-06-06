@@ -1,0 +1,99 @@
+@HostAddress = http://localhost:5000
+@TestUserId = U-LINH-001
+
+### 1. Lấy thông tin ví của người dùng
+GET {{HostAddress}}/api/payment/wallet
+X-User-Id: {{TestUserId}}
+Accept: application/json
+
+###
+
+### 2. Nạp tiền (cộng xu) vào ví
+POST {{HostAddress}}/api/payment/deposit
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "amount": 200.0
+}
+
+###
+
+### 3. Chuyển tiền (donate/thanh toán) sang ví khác
+POST {{HostAddress}}/api/payment/transfer
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "toUserId": "U-DAT-002",
+  "amount": 150.0,
+  "transferType": "Donate"
+}
+
+###
+
+### 4. Yêu cầu rút tiền mặt (ở trạng thái Pending chờ duyệt)
+POST {{HostAddress}}/api/payment/withdraw
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "amount": 100.0,
+  "bankAccountId": "ID_CU_THE_NGAN_HANG_(COPY_TU_BUOC_2.2)"
+}
+
+###
+
+### 5. (Admin) Duyệt lệnh rút tiền
+POST {{HostAddress}}/api/payment/admin/withdraw/approve/ID_CUA_TRANSACTION_(XEM_TRONG_DB)
+Content-Type: application/json
+
+###
+
+### 6. (Admin) Từ chối lệnh rút tiền
+POST {{HostAddress}}/api/payment/admin/withdraw/reject/ID_CUA_TRANSACTION_(XEM_TRONG_DB)
+Content-Type: application/json
+
+###
+=============================================
+=== LUỒNG QUẢN LÝ THẺ NGÂN HÀNG (MỚI) ===
+=============================================
+
+### 2.1 Tra cứu tên chủ thẻ (Mock)
+POST {{HostAddress}}/api/payment/lookup-account
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "bankCode": "VCB",
+  "accountNumber": "123456789"
+}
+
+###
+
+### 2.2 Lưu thẻ ngân hàng mới
+POST {{HostAddress}}/api/payment/bank-accounts
+X-User-Id: {{TestUserId}}
+Content-Type: application/json
+
+{
+  "bankCode": "VCB",
+  "bankName": "Vietcombank",
+  "accountNumber": "123456789",
+  "accountName": "NGUYEN VAN A",
+  "isDefault": true
+}
+
+###
+
+### 2.3 Xem danh sách thẻ đã lưu
+GET {{HostAddress}}/api/payment/bank-accounts
+X-User-Id: {{TestUserId}}
+
+###
+
+### 2.4 Xóa một thẻ đã lưu
+DELETE {{HostAddress}}/api/payment/bank-accounts/ID_CUA_THE_NGAN_HANG
+X-User-Id: {{TestUserId}}
+
+###
