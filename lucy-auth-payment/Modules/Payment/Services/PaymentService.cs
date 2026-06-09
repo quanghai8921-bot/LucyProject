@@ -70,7 +70,7 @@ namespace lucy_auth_payment.Modules.Payment.Services
             }
         }
 
-        public async Task<bool> TransferMoneyAsync(string fromUserId, string toUserId, decimal amount, string transferType)
+        public async Task<bool> TransferMoneyAsync(string fromUserId, string toUserId, decimal amount, string transferType, bool isReceiverContentCreator)
         {
             if (amount <= 0 || fromUserId == toUserId) return false;
 
@@ -81,24 +81,29 @@ namespace lucy_auth_payment.Modules.Payment.Services
                 var senderWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.UserId == fromUserId);
                 if (senderWallet == null || senderWallet.Balance < amount) return false;
 
-                // 2. Tự động kiểm tra cấp bậc Super của người nhận qua mã User (chứa chữ "SUPER")
-                bool isSuper = toUserId.Contains("SUPER", StringComparison.OrdinalIgnoreCase);
-
-                // 3. Phân bổ hoa hồng (Commission Split) dựa trên loại giao dịch
+                // 2. Phân bổ hoa hồng (Commission Split) dựa trên loại giao dịch
                 decimal feePercentage = 0;
                 string typeLower = transferType.ToLower();
 
                 if (typeLower == "buypodcast")
                 {
-                    feePercentage = 0.10m; // Creator 90%, Admin 10%
+                    // Chặn nếu người nhận không phải Content Creator
+                    if (!isReceiverContentCreator) return false;
+                    
+                    feePercentage = 0.10m; // Content Creator 90%, Admin 10%
                 }
                 else if (typeLower == "paylive")
                 {
-                    feePercentage = isSuper ? 0.10m : 0.15m; // Super Mentor 10%, Thường 15%
+                    feePercentage = isReceiverContentCreator ? 0.10m : 0.15m; // Content Creator 10%, Mentor Thường 15%
                 }
                 else if (typeLower == "donate")
                 {
-                    feePercentage = isSuper ? 0.10m : 0.20m; // Super Mentor 10%, Thường 20%
+                    feePercentage = isReceiverContentCreator ? 0.10m : 0.20m; // Content Creator 10%, Mentor Thường 20%
+                }
+                else
+                {
+                    // Loại giao dịch không được phép
+                    return false;
                 }
 
                 decimal feeAmount = amount * feePercentage;
@@ -191,6 +196,132 @@ namespace lucy_auth_payment.Modules.Payment.Services
 
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+        }
+
+        public async Task<bool> SendGiftAsync(string fromUserId, string toUserId, string giftId, string? message, bool isReceiverContentCreator)
+        {
+            if (fromUserId == toUserId) return false;
+
+            if (!Guid.TryParse(giftId, out Guid parsedGiftId))
+                return false;
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                var gift = await _context.Gifts.FirstOrDefaultAsync(g => g.Id == parsedGiftId);
+                if (gift == null || gift.Price <= 0) return false;
+
+                var amount = gift.Price;
+
+                // 1. Kiểm tra ví người gửi
+                var senderWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.UserId == fromUserId);
+                if (senderWallet == null || senderWallet.Balance < amount) return false;
+
+                // 2. Phân bổ hoa hồng cho Donate (Gift): Content Creator 10%, Thường 20%
+                decimal feePercentage = isReceiverContentCreator ? 0.10m : 0.20m;
+                decimal feeAmount = amount * feePercentage;
+                decimal netAmount = amount - feeAmount;
+
+                // 4. Lấy hoặc tạo ví người nhận
+                var receiverWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.UserId == toUserId);
+                if (receiverWallet == null)
+                {
+                    receiverWallet = new Wallet
+                    {
+                        WalletId = Guid.NewGuid().ToString(),
+                        UserId = toUserId,
+                        Balance = 0,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    _context.Wallets.Add(receiverWallet);
+                }
+
+                // 5. Lấy hoặc tạo ví Admin
+                var adminWallet = await _context.Wallets.FirstOrDefaultAsync(w => w.WalletId == "W-ADMIN-001");
+                if (adminWallet == null)
+                {
+                    adminWallet = new Wallet
+                    {
+                        WalletId = "W-ADMIN-001",
+                        UserId = "U-ADMIN-001",
+                        Balance = 0,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now
+                    };
+                    _context.Wallets.Add(adminWallet);
+                }
+
+                // 6. Thực hiện chuyển tiền (Xu)
+                senderWallet.Balance -= amount;
+                senderWallet.UpdatedAt = DateTime.Now;
+
+                receiverWallet.Balance += netAmount;
+                receiverWallet.UpdatedAt = DateTime.Now;
+
+                if (feeAmount > 0)
+                {
+                    adminWallet.Balance += feeAmount;
+                    adminWallet.UpdatedAt = DateTime.Now;
+                }
+
+                string note = $"Tặng quà: {gift.Name}" + (string.IsNullOrEmpty(message) ? "" : $" - Lời nhắn: {message}");
+
+                // 7. Ghi nhận giao dịch
+                var senderTx = new Transaction
+                {
+                    TransactionId = Guid.NewGuid().ToString(),
+                    WalletId = senderWallet.WalletId,
+                    Amount = -amount,
+                    TransactionType = "SendGift",
+                    Status = "Success",
+                    CreatedAt = DateTime.Now,
+                    Fee = 0,
+                    Note = note
+                };
+                _context.Transactions.Add(senderTx);
+
+                var receiverTx = new Transaction
+                {
+                    TransactionId = Guid.NewGuid().ToString(),
+                    WalletId = receiverWallet.WalletId,
+                    Amount = netAmount,
+                    TransactionType = "ReceiveGift",
+                    Status = "Success",
+                    CreatedAt = DateTime.Now,
+                    Fee = feeAmount,
+                    Note = note
+                };
+                _context.Transactions.Add(receiverTx);
+
+                if (feeAmount > 0)
+                {
+                    var adminTx = new Transaction
+                    {
+                        TransactionId = Guid.NewGuid().ToString(),
+                        WalletId = adminWallet.WalletId,
+                        Amount = feeAmount,
+                        TransactionType = "Commission",
+                        Status = "Success",
+                        CreatedAt = DateTime.Now,
+                        Fee = 0,
+                        Note = $"Phí hoa hồng từ quà {gift.Name}"
+                    };
+                    _context.Transactions.Add(adminTx);
+                }
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                // TODO: Bắn Event WebSocket/SignalR ra ngoài Frontend ở đây
+                
                 return true;
             }
             catch
@@ -325,6 +456,56 @@ namespace lucy_auth_payment.Modules.Payment.Services
             if (account == null) return false;
 
             _context.UserBankAccounts.Remove(account);
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        // CRUD Gift
+        public async Task<List<Gift>> GetAllGiftsAsync()
+        {
+            return await _context.Gifts.ToListAsync();
+        }
+
+        public async Task<Gift?> CreateGiftAsync(CreateGiftAdminRequest request)
+        {
+            var gift = new Gift
+            {
+                Id = Guid.NewGuid(),
+                Name = request.Name,
+                Price = request.Price,
+                ImageUrl = request.ImageUrl,
+                AnimationUrl = request.AnimationUrl
+            };
+
+            _context.Gifts.Add(gift);
+            await _context.SaveChangesAsync();
+            return gift;
+        }
+
+        public async Task<Gift?> UpdateGiftAsync(string giftId, UpdateGiftAdminRequest request)
+        {
+            if (!Guid.TryParse(giftId, out Guid parsedId)) return null;
+
+            var gift = await _context.Gifts.FirstOrDefaultAsync(g => g.Id == parsedId);
+            if (gift == null) return null;
+
+            gift.Name = request.Name;
+            gift.Price = request.Price;
+            gift.ImageUrl = request.ImageUrl;
+            gift.AnimationUrl = request.AnimationUrl;
+
+            await _context.SaveChangesAsync();
+            return gift;
+        }
+
+        public async Task<bool> DeleteGiftAsync(string giftId)
+        {
+            if (!Guid.TryParse(giftId, out Guid parsedId)) return false;
+
+            var gift = await _context.Gifts.FirstOrDefaultAsync(g => g.Id == parsedId);
+            if (gift == null) return false;
+
+            _context.Gifts.Remove(gift);
             await _context.SaveChangesAsync();
             return true;
         }

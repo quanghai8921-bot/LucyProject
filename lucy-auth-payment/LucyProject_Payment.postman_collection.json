@@ -1,383 +1,164 @@
 {
-	"info": {
-		"_postman_id": "c62fb91d-bf2e-4b4d-9f4a-fa681f9b36d7",
-		"name": "Lucy Project - Payment",
-		"description": "Bộ sưu tập các API test Module Payment của LucyProject (Đã tích hợp API Ngân hàng)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "1a. Get User Wallet Balance",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/wallet",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"wallet"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "1b. Get Admin Wallet Balance",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-ADMIN-001",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/wallet",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"wallet"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "2. Deposit Coins",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"amount\": 200.0\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/deposit",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"deposit"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "3a. Transfer Money to Normal Creator (10% Fee)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"toUserId\": \"U-CREATOR-002\",\n  \"amount\": 100.0,\n  \"transferType\": \"BuyPodcast\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/transfer",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"transfer"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "3b. Transfer Money to Super Mentor (10% Fee instead of 20% Donate)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"toUserId\": \"U-SUPER-MENTOR-003\",\n  \"amount\": 100.0,\n  \"transferType\": \"Donate\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/transfer",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"transfer"
-					]
-				}
-			},
-			"response": []
-		},
-        {
-			"name": "4a. Lookup Account Name (Mock)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"bankCode\": \"VCB\",\n  \"accountNumber\": \"123456789\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/lookup-account",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"lookup-account"
-					]
-				}
-			},
-			"response": []
-		},
-        {
-			"name": "4b. Add Bank Account",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"bankCode\": \"VCB\",\n  \"bankName\": \"Vietcombank\",\n  \"accountNumber\": \"123456789\",\n  \"accountName\": \"NGUYEN VAN A\",\n  \"isDefault\": true\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/bank-accounts",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"bank-accounts"
-					]
-				}
-			},
-			"response": []
-		},
-        {
-			"name": "4c. Get Bank Accounts",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/bank-accounts",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"bank-accounts"
-					]
-				}
-			},
-			"response": []
-		},
-        {
-			"name": "4d. Delete Bank Account",
-			"request": {
-				"method": "DELETE",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/bank-accounts/REPLACE_WITH_BANK_ACCOUNT_ID",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"bank-accounts",
-                        "REPLACE_WITH_BANK_ACCOUNT_ID"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "4e. Withdraw Money (Lock Balance as Pending)",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "X-User-Id",
-						"value": "U-LINH-001",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"amount\": 100.0,\n  \"bankAccountId\": \"REPLACE_WITH_BANK_ACCOUNT_ID\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5005/api/payment/withdraw",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"withdraw"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "5a. Admin Approve Withdraw",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/admin/withdraw/approve/REPLACE_WITH_TRANSACTION_ID",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"admin",
-						"withdraw",
-						"approve",
-						"REPLACE_WITH_TRANSACTION_ID"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "5b. Admin Reject Withdraw",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "http://localhost:5005/api/payment/admin/withdraw/reject/REPLACE_WITH_TRANSACTION_ID",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5005",
-					"path": [
-						"api",
-						"payment",
-						"admin",
-						"withdraw",
-						"reject",
-						"REPLACE_WITH_TRANSACTION_ID"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "b3e34b22-1234-5678-abcd-ef0123456789",
+    "name": "Lucy Project - Payment",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1a. Get User Wallet Balance",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/payment/wallet", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "wallet"] }
+      }
+    },
+    {
+      "name": "1b. Get Admin Wallet Balance",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "X-User-Id", "value": "U-ADMIN-001" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/payment/wallet", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "wallet"] }
+      }
+    },
+    {
+      "name": "2. Deposit Coins",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"amount\": 1000\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/deposit", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "deposit"] }
+      }
+    },
+    {
+      "name": "3a. PayLive - Mentor Thuong (Thu 15%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-MENTOR-1\",\n  \"amount\": 100.0,\n  \"transferType\": \"PayLive\",\n  \"isReceiverContentCreator\": false\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/transfer", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "transfer"] }
+      }
+    },
+    {
+      "name": "3b. PayLive - Super Mentor (Thu 10%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-SUPER-MENTOR-1\",\n  \"amount\": 100.0,\n  \"transferType\": \"PayLive\",\n  \"isReceiverContentCreator\": true\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/transfer", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "transfer"] }
+      }
+    },
+    {
+      "name": "4a. BuyPodcast - Hacker Mentor Thuong (Bi Chan)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-MENTOR-1\",\n  \"amount\": 200.0,\n  \"transferType\": \"BuyPodcast\",\n  \"isReceiverContentCreator\": false\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/transfer", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "transfer"] }
+      }
+    },
+    {
+      "name": "4b. BuyPodcast - Super Mentor (Thu 10%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-SUPER-MENTOR-1\",\n  \"amount\": 200.0,\n  \"transferType\": \"BuyPodcast\",\n  \"isReceiverContentCreator\": true\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/transfer", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "transfer"] }
+      }
+    },
+    {
+      "name": "5a. Get All Gifts",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "http://localhost:5000/api/admin/gifts", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "admin", "gifts"] }
+      }
+    },
+    {
+      "name": "5b. Send Gift - Mentor Thuong (Thu 20%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-MENTOR-1\",\n  \"giftId\": \"DÁN_ID_QUÀ_VÀO_ĐÂY\",\n  \"message\": \"Tặng quà Mentor\",\n  \"isReceiverContentCreator\": false\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/send-gift", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "send-gift"] }
+      }
+    },
+    {
+      "name": "5c. Send Gift - Super Mentor (Thu 10%)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-HOCSINH-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"toUserId\": \"U-SUPER-MENTOR-1\",\n  \"giftId\": \"DÁN_ID_QUÀ_VÀO_ĐÂY\",\n  \"message\": \"Tặng quà Super Mentor\",\n  \"isReceiverContentCreator\": true\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/send-gift", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "send-gift"] }
+      }
+    },
+    {
+      "name": "6a. Add Bank Account",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-SUPER-MENTOR-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"bankCode\": \"VCB\",\n  \"bankName\": \"Vietcombank\",\n  \"accountNumber\": \"123456789\",\n  \"accountName\": \"NGUYEN VAN A\"\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/bank-accounts", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "bank-accounts"] }
+      }
+    },
+    {
+      "name": "6b. Withdraw Money",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-SUPER-MENTOR-1" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"bankAccountId\": \"DÁN_ID_THẺ_NGÂN_HÀNG\",\n  \"amount\": 250.0\n}" },
+        "url": { "raw": "http://localhost:5000/api/payment/withdraw", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "withdraw"] }
+      }
+    },
+    {
+      "name": "6c. Admin Approve Withdraw",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-ADMIN-001" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/payment/admin/withdraw/approve/DÁN_TRANSACTION_ID", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "admin", "withdraw", "approve", "DÁN_TRANSACTION_ID"] }
+      }
+    },
+    {
+      "name": "6d. Admin Reject Withdraw",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "X-User-Id", "value": "U-ADMIN-001" }
+        ],
+        "url": { "raw": "http://localhost:5000/api/payment/admin/withdraw/reject/DÁN_TRANSACTION_ID", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["api", "payment", "admin", "withdraw", "reject", "DÁN_TRANSACTION_ID"] }
+      }
+    }
+  ]
 }

@@ -66,12 +66,27 @@ namespace lucy_auth_payment.Modules.Payment.Controllers
         public async Task<IActionResult> Transfer([FromBody] TransferRequest request)
         {
             var fromUserId = GetCurrentUserId();
-            var result = await _paymentService.TransferMoneyAsync(fromUserId, request.ToUserId, request.Amount, request.TransferType);
+            var result = await _paymentService.TransferMoneyAsync(fromUserId, request.ToUserId, request.Amount, request.TransferType, request.IsReceiverContentCreator);
             if (!result)
             {
-                return BadRequest(new { Message = "Chuyển tiền thất bại. Hãy đảm bảo số dư ví đủ và thông tin tài khoản hợp lệ." });
+                return BadRequest(new { Message = "Chuyển tiền thất bại. Hãy đảm bảo số dư ví đủ, thông tin tài khoản hợp lệ và có quyền bán." });
             }
             return Ok(new { Message = $"Đã chuyển thành công {request.Amount} xu từ {fromUserId} đến {request.ToUserId} (Loại: {request.TransferType})." });
+        }
+
+        /// <summary>
+        /// Tặng quà ảo (Donate) cho user khác
+        /// </summary>
+        [HttpPost("send-gift")]
+        public async Task<IActionResult> SendGift([FromBody] SendGiftRequest request)
+        {
+            var fromUserId = GetCurrentUserId();
+            var result = await _paymentService.SendGiftAsync(fromUserId, request.ToUserId, request.GiftId, request.Message, request.IsReceiverContentCreator);
+            if (!result)
+            {
+                return BadRequest(new { Message = "Tặng quà thất bại. Hãy kiểm tra xem mã quà có hợp lệ và số dư ví của bạn có đủ không." });
+            }
+            return Ok(new { Message = $"Đã tặng quà thành công cho {request.ToUserId}." });
         }
 
         /// <summary>

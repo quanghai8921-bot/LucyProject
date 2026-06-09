@@ -12,6 +12,7 @@ public class AppDbContext : DbContext
     public DbSet<Wallet> Wallets { get; set; } = null!;
     public DbSet<Transaction> Transactions { get; set; } = null!;
     public DbSet<UserBankAccount> UserBankAccounts { get; set; } = null!;
+    public DbSet<Gift> Gifts { get; set; } = null!;
 
     public async Task EnsureAdminWalletExistsAsync()
     {
@@ -75,6 +76,29 @@ public class AppDbContext : DbContext
             entity.Property(e => e.BankName).HasMaxLength(255);
             entity.Property(e => e.AccountNumber).HasMaxLength(50).IsRequired();
             entity.Property(e => e.AccountName).HasMaxLength(255).IsRequired();
+        });
+
+        modelBuilder.Entity<Gift>(entity =>
+        {
+            entity.ToTable("Gifts");
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).HasMaxLength(255).IsRequired();
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 2)");
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
+            entity.Property(e => e.AnimationUrl).HasMaxLength(500);
+            
+            // Seed sample data
+            entity.HasData(
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000001"), Name = "Cây Bút Thần Kỳ", Price = 1 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000002"), Name = "Cục Tẩy \"Xóa Deadline\"", Price = 2 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000003"), Name = "Ly Cà Phê 24/7", Price = 5 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000004"), Name = "Quyển Bí Kíp Tận Thế", Price = 10 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000005"), Name = "Vòng Đèn Led Chống Cận", Price = 20 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000006"), Name = "Bộ Não Thiên Tài", Price = 50 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000007"), Name = "Chiếc Cúp Thủ Khoa", Price = 100 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000008"), Name = "Vương Miện Học Bá", Price = 200 },
+                new Gift { Id = Guid.Parse("00000000-0000-0000-0000-000000000009"), Name = "Tàu Vũ Trụ Vượt Vũ Môn", Price = 500 }
+            );
         });
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using lucy_auth_payment.Data;
 
@@ -11,9 +12,11 @@ using lucy_auth_payment.Data;
 namespace lucy_auth_payment.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260606072728_AddGiftTable")]
+    partial class AddGiftTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -52,56 +55,20 @@ namespace lucy_auth_payment.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Name = "Cây Bút Thần Kỳ",
-                            Price = 1m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Name = "Cục Tẩy \"Xóa Deadline\"",
-                            Price = 2m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            Name = "Ly Cà Phê 24/7",
-                            Price = 5m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            Name = "Quyển Bí Kíp Tận Thế",
+                            Name = "Bông hồng",
                             Price = 10m
                         },
                         new
                         {
-                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                            Name = "Vòng Đèn Led Chống Cận",
-                            Price = 20m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
-                            Name = "Bộ Não Thiên Tài",
+                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
+                            Name = "Sách",
                             Price = 50m
                         },
                         new
                         {
-                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
-                            Name = "Chiếc Cúp Thủ Khoa",
-                            Price = 100m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000008"),
-                            Name = "Vương Miện Học Bá",
-                            Price = 200m
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
-                            Name = "Tàu Vũ Trụ Vượt Vũ Môn",
-                            Price = 500m
+                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
+                            Name = "Siêu xe",
+                            Price = 1000m
                         });
                 });
 

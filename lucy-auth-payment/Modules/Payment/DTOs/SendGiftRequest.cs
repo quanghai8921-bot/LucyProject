@@ -1,10 +1,10 @@
 namespace lucy_auth_payment.Modules.Payment.DTOs
 {
-    public class TransferRequest
+    public class SendGiftRequest
     {
         public string ToUserId { get; set; } = null!;
-        public decimal Amount { get; set; }
-        public string TransferType { get; set; } = null!; // Donate, BuyPodcast, PayLive
+        public string GiftId { get; set; } = null!;
+        public string? Message { get; set; }
         public bool IsReceiverContentCreator { get; set; }
     }
 }
