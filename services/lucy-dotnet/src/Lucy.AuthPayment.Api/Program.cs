@@ -1,4 +1,4 @@
-﻿using lucy_auth_payment.Data;
+using lucy_auth_payment.Data;
 using lucy_auth_payment.Modules.Payment.Services;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -11,12 +11,13 @@ builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("LucyDevCors", policy =>
+    options.AddPolicy("AllowFrontend", policy =>
     {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        policy.WithOrigins(
+            "https://lucyproject.vercel.app"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
@@ -34,7 +35,7 @@ app.MapOpenApi();
 app.MapScalarApiReference();
 
 app.UseHttpsRedirection();
-app.UseCors("LucyDevCors");
+app.UseCors("AllowFrontend");
 app.UseStaticFiles();
 
 app.Use(async (context, next) =>

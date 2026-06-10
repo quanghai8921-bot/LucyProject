@@ -10,8 +10,10 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
+                .allowedOrigins(
+                    "https://lucyproject.vercel.app"
+                )
+                .allowedMethods("*")
                 .allowedHeaders("*")
                 .exposedHeaders("Authorization");
     }

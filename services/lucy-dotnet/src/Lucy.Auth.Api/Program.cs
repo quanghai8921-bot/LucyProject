@@ -106,7 +106,7 @@ builder.Services.AddSwaggerGen(options =>
 // ── CORS ─────────────────────────────────────────────────────────────────────
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
+        policy.WithOrigins("https://lucyproject.vercel.app").AllowAnyHeader().AllowAnyMethod()));
 
 var app = builder.Build();
 

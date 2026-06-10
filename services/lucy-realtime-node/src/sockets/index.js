@@ -10,7 +10,7 @@ const registerSlideSocket = require('./slide.socket');
 function registerSockets(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: '*',
+      origin: 'https://lucyproject.vercel.app',
       methods: ['GET', 'POST'],
     },
   });

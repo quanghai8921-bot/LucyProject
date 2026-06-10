@@ -7,7 +7,8 @@ CREATE TABLE Languages
 (
     LanguageId VARCHAR(50) PRIMARY KEY,
     LanguageName VARCHAR(50) NOT NULL
-);
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Users
 (
@@ -18,14 +19,16 @@ CREATE TABLE Users
     Passwords VARCHAR(255) NOT NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     IsStatus INT NOT NULL
-);
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE Roles
 (
     RoleId VARCHAR(50) PRIMARY KEY,
     RoleName VARCHAR(50) NOT NULL,
     IsActive TINYINT NOT NULL DEFAULT 1
-);
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO Roles
     (RoleId, RoleName)
 VALUES

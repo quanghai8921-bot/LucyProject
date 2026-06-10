@@ -10,7 +10,9 @@ const { errorResponse } = require('./utils/response');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+    origin: "https://lucyproject.vercel.app"
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
