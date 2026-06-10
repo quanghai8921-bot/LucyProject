@@ -10,8 +10,10 @@ const { errorResponse } = require('./utils/response');
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(cors({
-    origin: "https://lucyproject.vercel.app"
+    origin: "https://lucyproject.vercel.app",
+    credentials: true
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

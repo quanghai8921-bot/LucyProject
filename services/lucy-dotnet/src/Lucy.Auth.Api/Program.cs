@@ -103,10 +103,21 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// ── CORS ─────────────────────────────────────────────────────────────────────
+// ── CORS & Forwarded Headers ─────────────────────────────────────────────────
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("https://lucyproject.vercel.app").AllowAnyHeader().AllowAnyMethod()));
+        policy.WithOrigins("https://lucyproject.vercel.app")
+              .SetIsOriginAllowedToAllowWildcardSubdomains()
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials()));
+
+builder.Services.Configure<Microsoft.AspNetCore.HttpOverrides.ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
 
 var app = builder.Build();
 
@@ -158,8 +169,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseForwardedHeaders();
 app.UseCors();
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 var uploadsPath = Path.Combine(app.Environment.ContentRootPath, "uploads");
 Directory.CreateDirectory(uploadsPath);
