@@ -22,6 +22,9 @@ public class RoomQuizQuestion {
     @Column(name = "QuestionType", length = 50)
     private String questionType;
 
+    @Column(name = "CorrectAnswerText")
+    private String correctAnswerText;
+
     @Column(name = "QuestionOrder")
     private Integer questionOrder;
 
@@ -33,12 +36,14 @@ public class RoomQuizQuestion {
             String quizId,
             String questionText,
             String questionType,
+            String correctAnswerText,
             Integer questionOrder) {
 
         this.roomQuizQuestionId = roomQuizQuestionId;
         this.quizId = quizId;
         this.questionText = questionText;
         this.questionType = questionType;
+        this.correctAnswerText = correctAnswerText;
         this.questionOrder = questionOrder;
     }
 
@@ -56,6 +61,10 @@ public class RoomQuizQuestion {
 
     public String getQuestionType() {
         return questionType;
+    }
+
+    public String getCorrectAnswerText() {
+        return correctAnswerText;
     }
 
     public Integer getQuestionOrder() {

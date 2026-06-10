@@ -8,6 +8,7 @@ public class CreateRoomQuizRequest {
     private String levelId;
     private String createdBy;
     private String quizTitle;
+    private Integer durationMinutes;
     private BigDecimal passingScorePercent;
 
     public String getRoomId() {
@@ -24,6 +25,10 @@ public class CreateRoomQuizRequest {
 
     public String getQuizTitle() {
         return quizTitle;
+    }
+
+    public Integer getDurationMinutes() {
+        return durationMinutes;
     }
 
     public BigDecimal getPassingScorePercent() {

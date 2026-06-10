@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:lucy_app/screens/admin_users_screen.dart';
 import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 import 'package:lucy_app/screens/lucy_anonymous_home.dart';
 import 'package:lucy_app/screens/lucy_pro_home.dart';
@@ -33,6 +34,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late LucyRole _currentRole;
   int _navIndex = 0;
   String? _selectedLanguageFilter = 'LISA';
+  final PaymentApi _paymentApi = PaymentApi();
+  num _walletBalance = 0;
 
   String get _displayName {
     final session = AppSession.current;
@@ -61,8 +64,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _currentRole = widget.role;
     SharedAudioState.currentTitle.value = _audioTitleForRole(_currentRole);
+    _loadWalletBalance();
   }
 
+
+  Future<void> _loadWalletBalance() async {
+    if (AppSession.current == null || _currentRole == LucyRole.admin) return;
+    try {
+      final wallet = await _paymentApi.getWallet();
+      if (!mounted) return;
+      setState(() {
+        _walletBalance = wallet.balance;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _walletBalance = 0;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -252,7 +272,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildRoleSelector() {
-    if (widget.allowedRoles.length <= 1) {
+    final visibleRoles = widget.allowedRoles.contains(LucyRole.admin)
+        ? <LucyRole>[LucyRole.admin]
+        : <LucyRole>[LucyRole.anonymous, LucyRole.proMentor, LucyRole.superCreator];
+    if (visibleRoles.length <= 1) {
       return const SizedBox.shrink();
     }
     return Container(
@@ -271,10 +294,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
       child: Row(
-        children: LucyRole.values
-            .where((role) => widget.allowedRoles.contains(role))
-            .map((role) {
+        children: visibleRoles.map((role) {
           bool isSelected = _currentRole == role;
+          bool isLocked = !widget.allowedRoles.contains(role);
           String label = "";
           IconData icon = Icons.person;
 
@@ -300,10 +322,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return Expanded(
             child: GestureDetector(
               onTap: () {
+                if (isLocked) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$label đang bị khóa. Vui lòng nâng cấp hoặc chờ admin duyệt quyền.')),
+                  );
+                  return;
+                }
                 setState(() {
                   _currentRole = role;
                   SharedAudioState.currentTitle.value = _audioTitleForRole(role);
                 });
+                _loadWalletBalance();
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 250),
@@ -317,15 +346,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      icon,
+                      isLocked ? Icons.lock_outline : icon,
                       size: 16,
-                      color: isSelected ? Colors.white : AppColors.textSecondary,
+                      color: isSelected ? Colors.white : isLocked ? Colors.grey : AppColors.textSecondary,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       label,
                       style: TextStyle(
-                        color: isSelected ? Colors.white : AppColors.textPrimary,
+                        color: isSelected ? Colors.white : isLocked ? Colors.grey : AppColors.textPrimary,
                         fontSize: 11,
                         fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                       ),
@@ -2148,8 +2177,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             currentIndex: _navIndex,
             onTap: (index) {
               setState(() {
-                _navIndex = index;
+                _navIndex = index == 2 ? 4 : index;
               });
+              _loadWalletBalance();
             },
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.transparent,
@@ -2169,19 +2199,25 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: const BoxDecoration(
-                    color: AppColors.primary,
-                    shape: BoxShape.circle,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(color: AppColors.primary.withOpacity(0.35)),
                   ),
-                  child: const Icon(
-                    Icons.bolt,
-                    color: Colors.white,
-                    size: 24,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.monetization_on_outlined, color: AppColors.primaryDark, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${_walletBalance.toStringAsFixed(0)} Xu',
+                        style: const TextStyle(color: AppColors.primaryDark, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                 ),
-                label: "",
+                label: "Ví",
               ),
               const BottomNavigationBarItem(
                 icon: Icon(Icons.library_books_outlined),
@@ -2277,3 +2313,5 @@ class BezierCurveChartPainter extends CustomPainter {
 extension ColorsExtra on Colors {
   static const Color whiteEE = Color(0xFFEEEEEE);
 }
+
+

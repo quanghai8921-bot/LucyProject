@@ -6,22 +6,22 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.lucy.lms.content.service.ImportDocxService;
 import com.lucy.lms.content.service.ImportDocxService.BatchImportSummary;
 import com.lucy.lms.content.service.ImportDocxService.FileImportResult;
+import com.lucy.lms.content.service.ImportedDocxFileService;
 
 @Component
 @ConditionalOnProperty(prefix = "lucy.import-docx", name = "auto-run", havingValue = "true")
 public class StartupDocxImportRunner implements ApplicationRunner {
     private static final int EXPECTED_DOCX_FILE_COUNT = 8;
 
-    private final ImportDocxService importDocxService;
+    private final ImportedDocxFileService importedDocxFileService;
     private final String importDocxPath;
 
     public StartupDocxImportRunner(
-            ImportDocxService importDocxService,
+            ImportedDocxFileService importedDocxFileService,
             @Value("${lucy.import-docx.path:src/main/resources/import-docx}") String importDocxPath) {
-        this.importDocxService = importDocxService;
+        this.importedDocxFileService = importedDocxFileService;
         this.importDocxPath = importDocxPath;
     }
 
@@ -30,7 +30,7 @@ public class StartupDocxImportRunner implements ApplicationRunner {
         System.out.println("=== DOCX STARTUP IMPORT ===");
         System.out.println("Bat dau quet keyword trong folder: " + importDocxPath);
 
-        BatchImportSummary summary = importDocxService.importAllDocxToDatabase(importDocxPath);
+        BatchImportSummary summary = importedDocxFileService.importFolderAndRecordFiles(importDocxPath);
 
         if (summary.results.size() == EXPECTED_DOCX_FILE_COUNT
                 && summary.successCount == EXPECTED_DOCX_FILE_COUNT

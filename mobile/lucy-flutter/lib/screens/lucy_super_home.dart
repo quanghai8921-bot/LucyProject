@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 import 'package:lucy_app/screens/lucy_pro_home.dart'; // To leverage LiveStudioRoomDialog
 
@@ -13,6 +15,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
   final List<Map<String, dynamic>> _podcasts = [];
   final List<Map<String, dynamic>> _premiumSeries = [];
   final List<Map<String, dynamic>> _curriculumDocs = [];
+  final LmsApi _lmsApi = LmsApi();
 
   @override
   Widget build(BuildContext context) {
@@ -207,6 +210,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
             String selectedCurriculum = 'LISA';
             double roomDuration = 60.0;
             bool isAiModeratorEnabled = true;
+            final livePriceController = TextEditingController(text: '0');
 
             return StatefulBuilder(builder: (context, setInnerState) {
               return Padding(
@@ -359,16 +363,57 @@ class _LucySuperHomeState extends State<LucySuperHome> {
                         });
                       },
                     ),
+                    const SizedBox(height: 12),
+                    const Text(
+                      "Phí tham gia live:",
+                      style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: livePriceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.payments_outlined),
+                        suffixText: 'Xu',
+                        hintText: 'Nhập 0 nếu miễn phí',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         Navigator.pop(context); // Close BottomSheet
-                        _showLiveStudioRoomSimulation(
-                          language: selectedLang,
-                          curriculum: selectedCurriculum,
-                          duration: roomDuration.toInt(),
-                          aiEnabled: isAiModeratorEnabled,
-                        );
+                        final session = AppSession.current;
+                        if (session == null) return;
+                        final price = num.tryParse(livePriceController.text.trim()) ?? 0;
+                        try {
+                          final room = await _lmsApi.createMentorRoom(
+                            hostUserId: session.userId,
+                            roomTitle: selectedCurriculum,
+                            languageId: selectedLang == 'Anh' ? 'ENG' : selectedLang == 'Trung' ? 'CHI' : 'JAP',
+                            maxParticipants: 30,
+                            roomStatus: 'OPEN',
+                            hostRole: 'CREATOR',
+                            accessType: price > 0 ? 'PAID' : 'FREE',
+                            priceAmount: price,
+                            scheduledStartAt: DateTime.now(),
+                          );
+                          _showLiveStudioRoomSimulation(
+                            roomId: room.roomId,
+                            language: selectedLang,
+                            curriculum: selectedCurriculum,
+                            duration: roomDuration.toInt(),
+                            aiEnabled: isAiModeratorEnabled,
+                            joinFee: price,
+                          );
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Không tạo được phòng Creator trên server: $e')),
+                            );
+                          }
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
@@ -389,10 +434,12 @@ class _LucySuperHomeState extends State<LucySuperHome> {
   }
 
   void _showLiveStudioRoomSimulation({
+    required String roomId,
     required String language,
     required String curriculum,
     required int duration,
     required bool aiEnabled,
+    required num joinFee,
   }) {
     showGeneralDialog(
       context: context,
@@ -401,10 +448,13 @@ class _LucySuperHomeState extends State<LucySuperHome> {
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, anim1, anim2) {
         return LiveStudioRoomDialog(
+          roomId: roomId,
           language: language,
           curriculum: curriculum,
           duration: duration,
           aiEnabled: aiEnabled,
+          joinFee: joinFee,
+          enableLocalRecording: true,
           curriculumDocs: _curriculumDocs,
         );
       },

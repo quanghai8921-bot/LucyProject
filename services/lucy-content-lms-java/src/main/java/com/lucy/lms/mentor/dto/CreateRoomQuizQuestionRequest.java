@@ -5,6 +5,7 @@ public class CreateRoomQuizQuestionRequest {
     private String quizId;
     private String questionText;
     private String questionType;
+    private String correctAnswerText;
     private Integer questionOrder;
 
     public String getQuizId() {
@@ -17,6 +18,10 @@ public class CreateRoomQuizQuestionRequest {
 
     public String getQuestionType() {
         return questionType;
+    }
+
+    public String getCorrectAnswerText() {
+        return correctAnswerText;
     }
 
     public Integer getQuestionOrder() {

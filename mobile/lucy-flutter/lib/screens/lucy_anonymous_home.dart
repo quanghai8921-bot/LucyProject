@@ -1,10 +1,11 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/auth_api.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/services/realtime_socket_service.dart';
 import 'package:lucy_app/screens/live_learner_room_dialog.dart';
 
@@ -24,6 +25,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   late Animation<double> _pulseAnimation;
 
   final LmsApi _lmsApi = LmsApi();
+  final PaymentApi _paymentApi = PaymentApi();
   final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
   List<LmsRoom> _allRooms = [];
   List<LmsRoomHistory> _joinedRoomHistory = [];
@@ -844,6 +846,31 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
       return;
     }
 
+    final isPaidRoom = room.accessType?.toUpperCase() == 'PAID' || (room.priceAmount ?? 0) > 0;
+    if (isPaidRoom) {
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Mua ve live'),
+          content: Text('Phong nay co phi ' + (room.priceAmount?.toStringAsFixed(0) ?? '0') + ' Xu. Ban muon thanh toan bang vi khong?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Huy')),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Thanh toan')),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+      try {
+        await _paymentApi.purchaseLive(room.roomId);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Khong mua duoc ve live: ' + e.toString())),
+        );
+        return;
+      }
+    }
+
     final messenger = ScaffoldMessenger.of(context);
     var restJoined = false;
     try {
@@ -863,6 +890,8 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         title: room.roomTitle,
         mentor: room.mentorName ?? room.hostUserId,
         hostUserId: room.hostUserId,
+        levelId: room.levelId,
+        languageId: room.languageId,
       );
     } catch (e) {
       if (restJoined) {
@@ -889,6 +918,8 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     required String title,
     required String mentor,
     required String hostUserId,
+    String? levelId,
+    String? languageId,
   }) {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -898,6 +929,8 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
           title: title,
           mentor: mentor,
           hostUserId: hostUserId,
+          levelId: levelId,
+          languageId: languageId,
         ),
       ),
     ).then((_) {
@@ -1136,3 +1169,5 @@ class VirtualAvatarPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+

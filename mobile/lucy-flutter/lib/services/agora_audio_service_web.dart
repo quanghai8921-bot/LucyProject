@@ -41,7 +41,7 @@ class AgoraAudioService {
     final tokenInfo = await _fetchRtcToken(roomId: roomId, userId: userId);
     _agora = js_util.getProperty(html.window, 'AgoraRTC');
     if (_agora == null || js_util.hasProperty(_agora!, 'createClient') == false) {
-      throw AgoraAudioException(
+      throw const AgoraAudioException(
         'Agora Web SDK chua duoc tai. Kiem tra script AgoraRTC_N trong web/index.html.',
       );
     }
@@ -70,7 +70,7 @@ class AgoraAudioService {
 
   Future<void> setMicrophoneEnabled(bool enabled) async {
     if (!_joined || _rtcClient == null) {
-      throw AgoraAudioException('Chua ket noi Agora RTC.');
+      throw const AgoraAudioException('Chua ket noi Agora RTC.');
     }
 
     if (!enabled) {

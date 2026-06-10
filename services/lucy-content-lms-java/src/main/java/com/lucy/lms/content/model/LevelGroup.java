@@ -39,4 +39,28 @@ public class LevelGroup {
         this.grLevelStart = grLevelStart;
         this.grLevelEnd = grLevelEnd;
     }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public String getStageId() {
+        return stageId;
+    }
+
+    public String getGroupTitle() {
+        return groupTitle;
+    }
+
+    public String getGrCefrLevel() {
+        return grCefrLevel;
+    }
+
+    public Integer getGrLevelStart() {
+        return grLevelStart;
+    }
+
+    public Integer getGrLevelEnd() {
+        return grLevelEnd;
+    }
 }

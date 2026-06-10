@@ -43,6 +43,7 @@ public class RoomQuizService {
                 request.getLevelId(),
                 request.getCreatedBy(),
                 request.getQuizTitle(),
+                request.getDurationMinutes(),
                 passingScore,
                 "DRAFT",
                 LocalDateTime.now());
@@ -56,6 +57,7 @@ public class RoomQuizService {
                 request.getQuizId(),
                 request.getQuestionText(),
                 request.getQuestionType() != null ? request.getQuestionType() : "MULTIPLE_CHOICE",
+                request.getCorrectAnswerText(),
                 request.getQuestionOrder());
 
         return roomQuizQuestionRepository.save(question);
@@ -82,5 +84,12 @@ public class RoomQuizService {
 
     public List<RoomQuizOption> getOptionsByQuestion(String roomQuizQuestionId) {
         return roomQuizOptionRepository.findByRoomQuizQuestionId(roomQuizQuestionId);
+    }
+
+    public RoomQuiz publishQuiz(String quizId) {
+        RoomQuiz quiz = roomQuizRepository.findById(quizId)
+                .orElseThrow(() -> new IllegalArgumentException("Quiz not found: " + quizId));
+        quiz.publish(LocalDateTime.now());
+        return roomQuizRepository.save(quiz);
     }
 }

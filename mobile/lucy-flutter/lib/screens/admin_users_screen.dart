@@ -1,6 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/auth_api.dart';
+import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 class AdminUsersScreen extends StatefulWidget {
@@ -12,11 +15,13 @@ class AdminUsersScreen extends StatefulWidget {
 
 class _AdminUsersScreenState extends State<AdminUsersScreen> {
   final _authApi = AuthApi();
+  final _paymentApi = PaymentApi();
+  final _lmsApi = LmsApi();
   final _searchController = TextEditingController();
   bool _isLoading = false;
   String? _error;
   
-  // Tab index: 0 = Tài khoản, 1 = Đơn Mentor, 2 = Yêu cầu Creator
+  // Tab index: 0 = Tài khoản, 1 = Đơn Mentor, 2 = Yêu cầu Creator, 3 = Nạp Xu, 4 = Rút Xu, 5 = Import DOCX
   int _currentTab = 0;
 
   // Tab 0: Tài khoản state
@@ -27,6 +32,11 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
   // Tab 1 & 2: Applications state
   List<AdminApplication> _mentorApps = [];
   List<AdminApplication> _creatorRequests = [];
+  List<TopUpOrder> _topUpOrders = [];
+  List<WithdrawRequestInfo> _withdrawRequests = [];
+  List<ImportedDocxFile> _importedDocxFiles = [];
+  PaymentSetting? _momoSetting;
+  PaymentWallet? _adminWallet;
   String? _selectedAppStatus;
 
   @override
@@ -48,6 +58,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       _loadMentorApplications();
     } else if (_currentTab == 2) {
       _loadCreatorUpgradeRequests();
+    } else if (_currentTab == 3) {
+      _loadTopUpOrders();
+    } else if (_currentTab == 4) {
+      _loadWithdrawRequests();
+    } else if (_currentTab == 5) {
+      _loadImportedDocxFiles();
     }
   }
 
@@ -89,6 +105,55 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       setState(() => _error = 'Không kết nối được Lucy.Auth.Api.');
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadImportedDocxFiles() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final files = await _lmsApi.getImportedDocxFiles();
+      if (!mounted) return;
+      setState(() {
+        _importedDocxFiles = files;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = '$e';
+      });
+    }
+  }
+
+  Future<void> _pickAndUploadDocx() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['docx'],
+      withData: true,
+    );
+    if (result == null || result.files.isEmpty) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      await _lmsApi.uploadImportedDocx(
+        file: result.files.first,
+        uploadedBy: AppSession.current?.userId,
+      );
+      await _loadImportedDocxFiles();
+      if (!mounted) return;
+      _showSuccessSnack('File DOCX đã được upload và parser thành công.');
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _error = '$e';
+      });
     }
   }
 
@@ -152,6 +217,56 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     }
   }
 
+  Future<void> _loadTopUpOrders() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final setting = await _paymentApi.getMomoSetting();
+      final orders = await _paymentApi.getAdminTopUpOrders(status: _selectedAppStatus ?? 'PENDING');
+      if (!mounted) return;
+      setState(() {
+        _momoSetting = setting;
+        _topUpOrders = orders;
+      });
+    } on PaymentApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Khong ket noi duoc Lucy.AuthPayment.Api.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _loadWithdrawRequests() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final wallet = await _paymentApi.getWallet();
+      final requests = await _paymentApi.getAdminWithdrawRequests(status: _selectedAppStatus ?? 'PENDING');
+      if (!mounted) return;
+      setState(() {
+        _adminWallet = wallet;
+        _withdrawRequests = requests;
+      });
+    } on PaymentApiException catch (error) {
+      if (!mounted) return;
+      setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = 'Khong ket noi duoc Lucy.AuthPayment.Api.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
   String _formatDate(String dateStr) {
     try {
       final dt = DateTime.parse(dateStr);
@@ -192,6 +307,35 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ],
           ),
           const SizedBox(height: 18),
+        ] else if (_currentTab == 3) ...[
+          _buildTopUpToolbar(),
+          const SizedBox(height: 12),
+          _buildTopUpStatusFilters(),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _buildMetricCard('Tổng đơn nạp', '${_topUpOrders.length}', AppColors.primary)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildMetricCard('Chờ duyệt', '${_topUpOrders.where((o) => o.orderStatus == "PENDING").length}', Colors.orange.shade400)),
+            ],
+          ),
+          const SizedBox(height: 18),
+        ] else if (_currentTab == 4) ...[
+          _buildWithdrawToolbar(),
+          const SizedBox(height: 12),
+          _buildWithdrawStatusFilters(),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(child: _buildMetricCard('Ví Xu admin', '${(_adminWallet?.balance ?? 0).toStringAsFixed(0)} Xu', AppColors.primary)),
+              const SizedBox(width: 12),
+              Expanded(child: _buildMetricCard('Phí trong danh sách', '${_withdrawRequests.fold<num>(0, (sum, item) => sum + item.feeAmount).toStringAsFixed(0)} Xu', Colors.orange.shade400)),
+            ],
+          ),
+          const SizedBox(height: 18),
+        ] else if (_currentTab == 5) ...[
+          _buildDocxImportToolbar(),
+          const SizedBox(height: 18),
         ] else ...[
           _buildStatusFilters(),
           const SizedBox(height: 16),
@@ -199,7 +343,7 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             children: [
               Expanded(
                 child: _buildMetricCard(
-                  'Tổng số đơn',
+                  'Tong don',
                   '${_currentTab == 1 ? _mentorApps.length : _creatorRequests.length}',
                   AppColors.primary,
                 ),
@@ -226,6 +370,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
           _buildEmptyCard()
         else if (_currentTab == 2 && _creatorRequests.isEmpty)
           _buildEmptyCard()
+        else if (_currentTab == 3 && _topUpOrders.isEmpty)
+          _buildEmptyCard()
+        else if (_currentTab == 4 && _withdrawRequests.isEmpty)
+          _buildEmptyCard()
+        else if (_currentTab == 5 && _importedDocxFiles.isEmpty)
+          _buildEmptyCard()
         else ...[
           if (_currentTab == 0) ...[
             ...users.map(_buildUserCard),
@@ -234,6 +384,12 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ..._mentorApps.map(_buildApplicationCard),
           ] else if (_currentTab == 2) ...[
             ..._creatorRequests.map(_buildApplicationCard),
+          ] else if (_currentTab == 3) ...[
+            ..._topUpOrders.map(_buildTopUpOrderCard),
+          ] else if (_currentTab == 4) ...[
+            ..._withdrawRequests.map(_buildWithdrawRequestCard),
+          ] else if (_currentTab == 5) ...[
+            ..._importedDocxFiles.map(_buildImportedDocxCard),
           ],
         ],
       ],
@@ -245,6 +401,9 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
       (label: 'Tài khoản', index: 0, icon: Icons.people_outline),
       (label: 'Đơn Mentor', index: 1, icon: Icons.school_outlined),
       (label: 'Yêu cầu Creator', index: 2, icon: Icons.workspace_premium_outlined),
+      (label: 'Nap Xu', index: 3, icon: Icons.account_balance_wallet_outlined),
+      (label: 'Rút Xu', index: 4, icon: Icons.payments_outlined),
+      (label: 'Import DOCX', index: 5, icon: Icons.upload_file_outlined),
     ];
 
     return Container(
@@ -300,6 +459,93 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildDocxImportToolbar() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.description_outlined, color: AppColors.primary),
+          const SizedBox(width: 12),
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Import giáo trình DOCX', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+                SizedBox(height: 2),
+                Text('Upload file DOCX để hệ thống kiểm tra, parser và lưu vào import-docx.', style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          ElevatedButton.icon(
+            onPressed: _isLoading ? null : _pickAndUploadDocx,
+            icon: const Icon(Icons.upload_file, size: 16),
+            label: const Text('Upload'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImportedDocxCard(ImportedDocxFile file) {
+    final status = file.importStatus.toUpperCase();
+    final color = status == 'IMPORTED'
+        ? Colors.green.shade600
+        : status == 'FAILED'
+            ? Colors.red.shade600
+            : Colors.orange.shade700;
+    final levelRange = file.levelStart == null || file.levelEnd == null
+        ? 'Chưa xác định level'
+        : 'Level ${file.levelStart}-${file.levelEnd}';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.insert_drive_file_outlined, color: color),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(file.fileName, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text('${file.languageId ?? 'Chưa có ngôn ngữ'} • $levelRange', style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                if (file.errorMessage != null && file.errorMessage!.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(file.errorMessage!, style: TextStyle(color: Colors.red.shade600, fontSize: 11)),
+                ],
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(status, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }
@@ -380,6 +626,130 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
                 fontWeight: FontWeight.bold,
                 fontSize: 11,
               ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildTopUpToolbar() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.qr_code_2_outlined, color: AppColors.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _momoSetting == null
+                  ? 'Chưa cấu hình MoMo admin'
+                  : 'MoMo: ${_momoSetting!.receiverName} - ${_momoSetting!.receiverPhone}',
+              style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: _showMomoSettingDialog,
+            icon: const Icon(Icons.settings_outlined, size: 16),
+            label: const Text('Cấu hình'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTopUpStatusFilters() {
+    final filters = <({String label, String status, Color color})>[
+      (label: 'Chờ duyệt', status: 'PENDING', color: Colors.orange),
+      (label: 'Đã duyệt', status: 'PAID', color: Colors.green),
+      (label: 'Từ chối', status: 'FAILED', color: Colors.red),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filters.map((filter) {
+          final selected = (_selectedAppStatus ?? 'PENDING') == filter.status;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              selected: selected,
+              label: Text(filter.label),
+              onSelected: (_) {
+                setState(() => _selectedAppStatus = filter.status);
+                _loadTopUpOrders();
+              },
+              selectedColor: filter.color.withOpacity(0.15),
+              backgroundColor: Colors.white,
+              side: BorderSide(color: selected ? filter.color : AppColors.inputBorder),
+              labelStyle: TextStyle(color: selected ? filter.color : AppColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 11),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildWithdrawToolbar() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.account_balance_outlined, color: AppColors.primary),
+          const SizedBox(width: 10),
+          const Expanded(
+            child: Text(
+              'Yêu cầu rút Xu: duyệt sau khi đã chuyển khoản số tiền thực nhận cho người dùng.',
+              style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+            ),
+          ),
+          IconButton(
+            onPressed: _loadWithdrawRequests,
+            icon: const Icon(Icons.refresh, color: AppColors.primaryDark),
+            tooltip: 'Tải lại',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWithdrawStatusFilters() {
+    final filters = <({String label, String status, Color color})>[
+      (label: 'Chờ duyệt', status: 'PENDING', color: Colors.orange),
+      (label: 'Đã duyệt', status: 'SUCCESS', color: Colors.green),
+      (label: 'Từ chối', status: 'FAILED', color: Colors.red),
+    ];
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        children: filters.map((filter) {
+          final selected = (_selectedAppStatus ?? 'PENDING') == filter.status;
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: ChoiceChip(
+              selected: selected,
+              label: Text(filter.label),
+              onSelected: (_) {
+                setState(() => _selectedAppStatus = filter.status);
+                _loadWithdrawRequests();
+              },
+              selectedColor: filter.color.withOpacity(0.15),
+              backgroundColor: Colors.white,
+              side: BorderSide(color: selected ? filter.color : AppColors.inputBorder),
+              labelStyle: TextStyle(color: selected ? filter.color : AppColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 11),
             ),
           );
         }).toList(),
@@ -637,6 +1007,342 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildTopUpOrderCard(TopUpOrder order) {
+    final statusColor = switch (order.orderStatus) {
+      'PENDING' => Colors.orange,
+      'PAID' => Colors.green,
+      'FAILED' => Colors.red,
+      _ => AppColors.textSecondary,
+    };
+    final isPending = order.orderStatus == 'PENDING';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text('Đơn: ${order.topUpOrderId}', style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: Text(order.orderStatus, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text('User: ${order.userId}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+          Text('Số tiền: ${order.amount.toStringAsFixed(0)} VND', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+          Text('Số Xu cộng khi duyệt: ${order.coins.toStringAsFixed(0)} Xu', style: const TextStyle(color: AppColors.primaryDark, fontSize: 13, fontWeight: FontWeight.bold)),
+          if (order.transferContent != null) ...[
+            const SizedBox(height: 8),
+            const Text('Nội dung learner cần chuyển:', style: TextStyle(color: AppColors.textSecondary, fontSize: 11, fontWeight: FontWeight.bold)),
+            SelectableText(order.transferContent!, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12)),
+          ],
+          if (isPending) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _rejectTopUpOrder(order),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: BorderSide(color: Colors.red.shade200)),
+                    child: const Text('Từ chối'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _approveTopUpOrder(order),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                    child: const Text('Duyệt'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWithdrawRequestCard(WithdrawRequestInfo request) {
+    final statusColor = switch (request.requestStatus) {
+      'PENDING' => Colors.orange,
+      'SUCCESS' => Colors.green,
+      'FAILED' => Colors.red,
+      _ => AppColors.textSecondary,
+    };
+    final isPending = request.requestStatus == 'PENDING';
+    final vndAmount = request.netAmount * 1000;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text('Yêu cầu: ${request.withdrawRequestId}', style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold), overflow: TextOverflow.ellipsis),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(color: statusColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: Text(request.requestStatus, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text('User: ${request.userId}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+          Text('Ngân hàng: ${request.bankName}', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+          SelectableText('Số tài khoản: ${request.bankAccountNumber}', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13)),
+          SelectableText('Chủ tài khoản: ${request.bankAccountName}', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13)),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildAmountChip('Khóa từ ví', '${request.amount.toStringAsFixed(0)} Xu', AppColors.primary),
+              _buildAmountChip('Phí admin ${request.feePercent.toStringAsFixed(0)}%', '${request.feeAmount.toStringAsFixed(0)} Xu', Colors.orange),
+              _buildAmountChip('Thực chuyển', '${request.netAmount.toStringAsFixed(0)} Xu', Colors.green),
+              _buildAmountChip('Quy đổi', '${vndAmount.toStringAsFixed(0)} VND', Colors.indigo),
+            ],
+          ),
+          if (request.rejectReason != null && request.rejectReason!.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text('Lý do từ chối: ${request.rejectReason}', style: TextStyle(color: Colors.red.shade600, fontSize: 12, fontWeight: FontWeight.bold)),
+          ],
+          if (isPending) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => _rejectWithdrawRequest(request),
+                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: BorderSide(color: Colors.red.shade200)),
+                    child: const Text('Từ chối'),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: () => _approveWithdrawRequest(request),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+                    child: const Text('Đã chuyển khoản'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAmountChip(String label, String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 2),
+          Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showMomoSettingDialog() async {
+    final receiverNameController = TextEditingController(text: _momoSetting?.receiverName ?? 'System Admin');
+    final receiverPhoneController = TextEditingController(text: _momoSetting?.receiverPhone ?? '');
+    final templateController = TextEditingController(text: _momoSetting?.transferContentTemplate ?? 'LUCY NAP TIEN {ORDER_CODE}');
+    PlatformFile? selectedQrFile;
+
+    final shouldSave = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Cấu hình MoMo admin'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(controller: receiverNameController, decoration: const InputDecoration(labelText: 'Tên người nhận')),
+                TextField(controller: receiverPhoneController, decoration: const InputDecoration(labelText: 'Số điện thoại MoMo')),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final picked = await FilePicker.platform.pickFiles(
+                      type: FileType.custom,
+                      allowedExtensions: ['png', 'jpg', 'jpeg', 'webp'],
+                      withData: true,
+                    );
+                    if (picked == null || picked.files.isEmpty) return;
+                    setDialogState(() => selectedQrFile = picked.files.first);
+                  },
+                  icon: const Icon(Icons.upload_file),
+                  label: Text(selectedQrFile == null ? 'Chọn ảnh QR từ máy' : 'Đã chọn: ${selectedQrFile!.name}', overflow: TextOverflow.ellipsis),
+                ),
+                if (_momoSetting?.qrImageUrl != null && selectedQrFile == null) ...[
+                  const SizedBox(height: 8),
+                  const Text('Đang dùng QR đã upload trước đó.', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                ],
+                const SizedBox(height: 12),
+                TextField(controller: templateController, decoration: const InputDecoration(labelText: 'Nội dung chuyển khoản mẫu')),
+                const SizedBox(height: 8),
+                const Text(
+                  '{ORDER_CODE} là mã đơn nạp tiền do hệ thống tự tạo. Learner phải ghi mã này trong nội dung chuyển khoản để admin đối chiếu đúng đơn khi duyệt.',
+                  style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+            ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Lưu')),
+          ],
+        ),
+      ),
+    );
+    if (shouldSave != true) return;
+
+    try {
+      await _paymentApi.saveMomoSetting(
+        receiverName: receiverNameController.text.trim(),
+        receiverPhone: receiverPhoneController.text.trim(),
+        qrImageUrl: _momoSetting?.qrImageUrl,
+        transferContentTemplate: templateController.text.trim(),
+      );
+      if (selectedQrFile != null) {
+        await _paymentApi.uploadMomoQr(selectedQrFile!);
+      }
+      await _loadTopUpOrders();
+      _showSuccessSnack('Đã lưu cấu hình MoMo.');
+    } catch (e) {
+      setState(() => _error = 'Không lưu được cấu hình MoMo: $e');
+    }
+  }
+
+  Future<void> _approveTopUpOrder(TopUpOrder order) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Duyệt nạp Xu'),
+        content: Text('Xác nhận đã nhận ${order.amount.toStringAsFixed(0)} VND từ user ${order.userId}? Hệ thống sẽ cộng ${order.coins.toStringAsFixed(0)} Xu.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Duyệt')),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await _paymentApi.approveTopUpOrder(order.topUpOrderId);
+      await _loadTopUpOrders();
+      _showSuccessSnack('Đã duyệt và cộng Xu vào ví learner.');
+    } catch (e) {
+      setState(() => _error = 'Không duyệt được đơn nạp: $e');
+    }
+  }
+
+  Future<void> _rejectTopUpOrder(TopUpOrder order) async {
+    final reasonController = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Từ chối don nap'),
+        content: TextField(controller: reasonController, decoration: const InputDecoration(labelText: 'Ly do'), maxLines: 2),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, reasonController.text.trim()), child: const Text('Từ chối')),
+        ],
+      ),
+    );
+    if (reason == null) return;
+    try {
+      await _paymentApi.rejectTopUpOrder(order.topUpOrderId, reason: reason);
+      await _loadTopUpOrders();
+      _showSuccessSnack('Đã từ chối đơn nạp.');
+    } catch (e) {
+      setState(() => _error = 'Không từ chối được đơn nạp: $e');
+    }
+  }
+
+  Future<void> _approveWithdrawRequest(WithdrawRequestInfo request) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Duyệt rút Xu'),
+        content: Text(
+          'Xác nhận admin đã chuyển ${request.netAmount.toStringAsFixed(0)} Xu '
+          '(${(request.netAmount * 1000).toStringAsFixed(0)} VND) cho ${request.bankAccountName}? '
+          'Hệ thống sẽ ghi nhận phí admin ${request.feeAmount.toStringAsFixed(0)} Xu.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Xác nhận')),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await _paymentApi.approveWithdrawRequest(request.withdrawRequestId);
+      await _loadWithdrawRequests();
+      _showSuccessSnack('Đã duyệt yêu cầu rút tiền và ghi nhận phí admin.');
+    } catch (e) {
+      setState(() => _error = 'Không duyệt được yêu cầu rút tiền: $e');
+    }
+  }
+
+  Future<void> _rejectWithdrawRequest(WithdrawRequestInfo request) async {
+    final reasonController = TextEditingController();
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Từ chối rút Xu'),
+        content: TextField(controller: reasonController, decoration: const InputDecoration(labelText: 'Lý do'), maxLines: 2),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, reasonController.text.trim()), child: const Text('Từ chối')),
+        ],
+      ),
+    );
+    if (reason == null) return;
+    try {
+      await _paymentApi.rejectWithdrawRequest(request.withdrawRequestId, reason: reason);
+      await _loadWithdrawRequests();
+      _showSuccessSnack('Đã từ chối yêu cầu rút tiền và hoàn Xu cho người dùng.');
+    } catch (e) {
+      setState(() => _error = 'Không từ chối được yêu cầu rút tiền: $e');
+    }
   }
 
   Widget _buildApplicationCard(AdminApplication app) {
@@ -979,3 +1685,5 @@ class _AdminUsersScreenState extends State<AdminUsersScreen> {
     );
   }
 }
+
+

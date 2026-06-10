@@ -14,6 +14,8 @@ class LiveLearnerRoomDialog extends StatefulWidget {
   final String title;
   final String mentor;
   final String hostUserId;
+  final String? levelId;
+  final String? languageId;
 
   const LiveLearnerRoomDialog({
     super.key,
@@ -21,6 +23,8 @@ class LiveLearnerRoomDialog extends StatefulWidget {
     required this.title,
     required this.mentor,
     required this.hostUserId,
+    this.levelId,
+    this.languageId,
   });
 
   @override
@@ -41,6 +45,8 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
   String? _agoraError;
   int _secondsElapsed = 0;
   Timer? _stopwatchTimer;
+  Timer? _attendanceTimer;
+  RoomStudyPlan? _studyPlan;
   
   String _currentlyPinnedTitle = 'Chưa chọn slide nào';
   String? _currentlyPinnedBase64;
@@ -75,6 +81,8 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
 
     _setupRealtime();
     _joinAgoraAudio();
+    _loadStudyPlan();
+    _startAttendanceTimer();
   }
 
   void _setupRealtime() {
@@ -193,6 +201,7 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
   void dispose() {
     _isDialogClosed = true;
     _stopwatchTimer?.cancel();
+    _attendanceTimer?.cancel();
     _chatScrollController.dispose();
     _chatInputController.dispose();
     _waveformController.dispose();
@@ -209,6 +218,65 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
     _stopwatchTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) setState(() => _secondsElapsed++);
     });
+  }
+
+  Future<void> _loadStudyPlan() async {
+    try {
+      final plan = await _lmsApi.getRoomStudyPlan(widget.roomId);
+      if (!mounted) return;
+      setState(() {
+        _studyPlan = plan;
+        _currentlyPinnedTitle = plan.importedDocxFile?.fileName ?? _currentlyPinnedTitle;
+      });
+    } catch (_) {}
+  }
+
+  void _startAttendanceTimer() {
+    _attendanceTimer?.cancel();
+    _attendanceTimer = Timer.periodic(const Duration(minutes: 10), (_) => _askAttendance());
+  }
+
+  Future<void> _askAttendance() async {
+    final session = AppSession.current;
+    final levelId = widget.levelId;
+    final subLevelId = _studyPlan?.subLevels.isNotEmpty == true ? _studyPlan!.subLevels.first.subLevelId : null;
+    if (session == null || levelId == null || subLevelId == null || !mounted) return;
+    try {
+      final check = await _lmsApi.askAttendance(
+        roomId: widget.roomId,
+        userId: session.userId,
+        levelId: levelId,
+        subLevelId: subLevelId,
+      );
+      if (!mounted) return;
+      var confirmed = false;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          Future.delayed(const Duration(seconds: 10), () {
+            if (!confirmed && Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
+          });
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text('Bạn có đang online không?', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: const Text('Bấm xác nhận trong 10 giây để được tính đang học.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () async {
+                  confirmed = true;
+                  await _lmsApi.confirmAttendance(check.checkId);
+                  if (context.mounted) Navigator.of(context).pop();
+                },
+                child: const Text('Xác nhận'),
+              ),
+            ],
+          );
+        },
+      );
+    } catch (_) {}
   }
 
   String _formatCurrentTime() {
@@ -270,6 +338,8 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
                     child: Column(
                       children: [
                         _buildActiveSlideBoard(),
+                        const SizedBox(height: 16),
+                        _buildCourseOutcomeCard(),
                         const SizedBox(height: 16),
                         _buildControlPanel(),
                         const SizedBox(height: 16),
@@ -465,6 +535,40 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCourseOutcomeCard() {
+    final plan = _studyPlan;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            plan?.levelTitle ?? widget.title,
+            style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            plan?.levelDescription ?? 'Nội dung buổi học sẽ được mentor mở theo file DOCX đã chọn.',
+            style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, height: 1.35),
+          ),
+          if (plan?.importedDocxFile != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              plan!.importedDocxFile!.fileName,
+              style: const TextStyle(color: AppColors.primaryDark, fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+          ],
         ],
       ),
     );

@@ -15,6 +15,18 @@ function registerRoomSocket(io, socket) {
     ack?.({ success: true, data: { mentorUserId } });
   });
 
+  const watchNotifications = ({ userId } = {}, ack) => {
+    if (!userId) {
+      ack?.({ success: false, message: 'userId is required' });
+      return;
+    }
+    socket.join(`user:${userId}`);
+    ack?.({ success: true, data: { userId } });
+  };
+
+  socket.on('user:watch', watchNotifications);
+  socket.on('notification:watch', watchNotifications);
+
   socket.on('room:watch', ({ roomId } = {}, ack) => {
     if (!roomId) {
       ack?.({ success: false, message: 'roomId is required' });

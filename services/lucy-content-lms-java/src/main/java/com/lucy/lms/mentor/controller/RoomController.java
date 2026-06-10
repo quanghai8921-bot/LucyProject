@@ -1,7 +1,9 @@
 package com.lucy.lms.mentor.controller;
 
 import com.lucy.lms.mentor.dto.CreateMentorRoomRequest;
+import com.lucy.lms.mentor.dto.RoomStudyPlanDto;
 import com.lucy.lms.mentor.entity.Room;
+import com.lucy.lms.mentor.entity.RoomSubLevel;
 import com.lucy.lms.mentor.service.RoomService;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,5 +42,20 @@ public class RoomController {
     @PostMapping("/{roomId}/open")
     public Room openRoom(@PathVariable String roomId) {
         return roomService.openRoom(roomId);
+    }
+
+    @GetMapping("/{roomId}/study-plan")
+    public RoomStudyPlanDto getStudyPlan(@PathVariable String roomId) {
+        return roomService.getStudyPlan(roomId);
+    }
+
+    @PostMapping("/{roomId}/start-study")
+    public Room startStudy(@PathVariable String roomId) {
+        return roomService.startStudy(roomId);
+    }
+
+    @PostMapping("/{roomId}/sublevels/{subLevelId}/complete")
+    public RoomSubLevel completeSubLevel(@PathVariable String roomId, @PathVariable String subLevelId) {
+        return roomService.completeSubLevel(roomId, subLevelId);
     }
 }

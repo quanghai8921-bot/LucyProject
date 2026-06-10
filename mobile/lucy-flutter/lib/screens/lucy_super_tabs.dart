@@ -1,6 +1,8 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -207,135 +209,219 @@ class LucySuperLibrary extends StatefulWidget {
 }
 
 class _LucySuperLibraryState extends State<LucySuperLibrary> {
-  final List<Map<String, String>> _rawAudioFiles = [
-    {'title': 'Live Audio: Coffee Shop Keigo 101', 'date': '2 ngày trước', 'duration': '45:10'},
-    {'title': 'Live Audio: Business Mandarin Slangs', 'date': '5 ngày trước', 'duration': '62:30'},
-  ];
+  final LmsApi _lmsApi = LmsApi();
+  List<CreatorPaidContent> _videos = [];
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVideos();
+  }
+
+  Future<void> _loadVideos() async {
+    final session = AppSession.current;
+    if (session == null) return;
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final videos = await _lmsApi.getCreatorVideos(session.userId);
+      if (!mounted) return;
+      setState(() {
+        _videos = videos;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = '$e';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Header
         const Text(
-          "Kho Tài Nguyên & Lịch Xuất Bản 📁",
+          "Kho video Creator",
           style: TextStyle(color: AppColors.textPrimary, fontSize: 20, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
         const Text(
-          "Xem các file ghi âm audio thô sẵn sàng dựng Podcast và lập lịch phát hành chuỗi bài học.",
+          "Upload video từ máy, đặt giá và quản lý video đã đăng bằng dữ liệu thật từ PaidContents.",
           style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
         ),
         const SizedBox(height: 20),
-
-        // 1. Raw audio vault
-        const Text(
-          "Ghi âm Live thô chờ dựng Podcast 🎙️",
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: _rawAudioFiles.length,
-          itemBuilder: (context, index) {
-            final file = _rawAudioFiles[index];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.inputBorder),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.audio_file_outlined, color: AppColors.primary, size: 20),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(file['title']!, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12.5), maxLines: 1, overflow: TextOverflow.ellipsis),
-                        const SizedBox(height: 4),
-                        Text("${file['duration']} • ${file['date']}", style: const TextStyle(color: AppColors.textSecondary, fontSize: 9.5)),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text("⚡ Đang tạo dựng bản nháp Podcast từ: ${file['title']}"),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14),
-                    ),
-                    child: const Text("DỰNG PODCAST", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 10.5)),
-                  ),
-                ],
-              ),
-            );
-          },
+        ElevatedButton.icon(
+          onPressed: _showUploadVideoDialog,
+          icon: const Icon(Icons.upload_file),
+          label: const Text('Upload video mới'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            minimumSize: const Size(double.infinity, 46),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
         ),
         const SizedBox(height: 20),
-
-        // 2. Publication schedule
-        const Text(
-          "Lịch xuất bản scheduled 📅",
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: AppColors.inputBorder),
-          ),
-          child: Column(
-            children: [
-              _buildScheduleRow("Thứ Hai ➔", "Xuất bản Ep. 43 Remote work tips (Free)"),
-              const Divider(height: 1),
-              _buildScheduleRow("Thứ Năm ➔", "Xuất bản HSK 2 Office interview (Premium)"),
-            ],
-          ),
-        ),
+        if (_isLoading) const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        if (_error != null) Text(_error!, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+        if (!_isLoading && _videos.isEmpty) _buildEmptyState(),
+        if (!_isLoading) ..._videos.map(_buildVideoCard),
       ],
     );
   }
 
-  Widget _buildScheduleRow(String day, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
+  Widget _buildEmptyState() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: const Text(
+        'Chưa có video trong database. Hãy upload video thật để đăng bán.',
+        style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+      ),
+    );
+  }
+
+  Widget _buildVideoCard(CreatorPaidContent video) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(day, style: TextStyle(color: Colors.deepOrange.shade600, fontSize: 11, fontWeight: FontWeight.bold)),
-          const SizedBox(width: 12),
-          Expanded(child: Text(title, style: const TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.w500))),
+          Row(
+            children: [
+              const Icon(Icons.video_library_outlined, color: AppColors.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(video.title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ),
+              Text(video.displayPrice, style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.bold, fontSize: 11)),
+            ],
+          ),
+          if (video.descriptionText?.isNotEmpty == true) ...[
+            const SizedBox(height: 8),
+            Text(video.descriptionText!, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+          ],
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(onPressed: () => _showEditVideoDialog(video), icon: const Icon(Icons.edit, size: 16), label: const Text('Sửa giá')),
+              OutlinedButton.icon(onPressed: () => _replaceVideoFile(video), icon: const Icon(Icons.swap_horiz, size: 16), label: const Text('Thay file')),
+              OutlinedButton.icon(onPressed: () => _deleteVideo(video), icon: const Icon(Icons.delete_outline, size: 16), label: const Text('Xóa')),
+            ],
+          ),
         ],
       ),
     );
   }
+
+  Future<void> _showUploadVideoDialog() async {
+    final session = AppSession.current;
+    if (session == null) return;
+    final picked = await FilePicker.platform.pickFiles(type: FileType.video, withData: true);
+    if (picked == null || picked.files.isEmpty) return;
+    final file = picked.files.first;
+    final titleController = TextEditingController(text: file.name);
+    final descController = TextEditingController();
+    final priceController = TextEditingController(text: '0');
+    if (!mounted) return;
+    final shouldUpload = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Đăng video trả phí'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: titleController, decoration: const InputDecoration(labelText: 'Tiêu đề')),
+            TextField(controller: descController, decoration: const InputDecoration(labelText: 'Mô tả')),
+            TextField(controller: priceController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Gia Xu')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Upload')),
+        ],
+      ),
+    );
+    if (shouldUpload != true) return;
+    await _lmsApi.uploadCreatorVideo(
+      creatorUserId: session.userId,
+      title: titleController.text.trim().isEmpty ? file.name : titleController.text.trim(),
+      descriptionText: descController.text.trim(),
+      priceAmount: num.tryParse(priceController.text.trim()) ?? 0,
+      file: file,
+    );
+    await _loadVideos();
+  }
+
+  Future<void> _showEditVideoDialog(CreatorPaidContent video) async {
+    final titleController = TextEditingController(text: video.title);
+    final descController = TextEditingController(text: video.descriptionText ?? '');
+    final priceController = TextEditingController(text: '${video.priceAmount}');
+    final shouldSave = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cập nhật video'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: titleController, decoration: const InputDecoration(labelText: 'Tiêu đề')),
+            TextField(controller: descController, decoration: const InputDecoration(labelText: 'Mô tả')),
+            TextField(controller: priceController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Gia Xu')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Lưu')),
+        ],
+      ),
+    );
+    if (shouldSave != true) return;
+    await _lmsApi.updateCreatorVideo(
+      contentId: video.contentId,
+      title: titleController.text.trim(),
+      descriptionText: descController.text.trim(),
+      priceAmount: num.tryParse(priceController.text.trim()) ?? 0,
+    );
+    await _loadVideos();
+  }
+
+  Future<void> _replaceVideoFile(CreatorPaidContent video) async {
+    final picked = await FilePicker.platform.pickFiles(type: FileType.video, withData: true);
+    if (picked == null || picked.files.isEmpty) return;
+    await _lmsApi.replaceCreatorVideoFile(contentId: video.contentId, file: picked.files.first);
+    await _loadVideos();
+  }
+
+  Future<void> _deleteVideo(CreatorPaidContent video) async {
+    await _lmsApi.deleteCreatorVideo(video.contentId);
+    await _loadVideos();
+  }
 }
 
-// =========================================================================
 // 3. PROFILE TAB - LUCY SUPER
 // =========================================================================
 class LucySuperProfile extends StatefulWidget {
@@ -396,14 +482,14 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
                 backgroundColor: Color(0xFF6366F1),
                 child: Text("S", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(AppSession.current?.fullName.trim().isNotEmpty == true ? AppSession.current!.fullName : 'Creator', style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
-                    SizedBox(height: 4),
-                    Text("Creator", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+                    const SizedBox(height: 4),
+                    const Text("Creator", style: TextStyle(color: AppColors.textSecondary, fontSize: 11)),
                   ],
                 ),
               ),

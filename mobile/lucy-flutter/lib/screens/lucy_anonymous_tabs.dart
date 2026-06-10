@@ -1,9 +1,11 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:math' as math;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/auth_api.dart';
+import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -349,10 +351,53 @@ class LucyAnonymousLibrary extends StatefulWidget {
 }
 
 class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
+  final LmsApi _lmsApi = LmsApi();
+  final PaymentApi _paymentApi = PaymentApi();
+  List<CreatorPaidContent> _purchasedVideos = [];
+  List<CreatorPaidContent> _marketVideos = [];
+  PaymentWallet? _wallet;
+  bool _isVideoLoading = false;
+  String? _videoError;
   final List<Map<String, String>> _downloads = [
     {'title': 'Keigo: Polite Business Japanese 🙇', 'duration': '18:40', 'size': '12.4 MB'},
     {'title': 'Survival Speaking Level 3: Airport Slangs ✈️', 'duration': '12:15', 'size': '8.2 MB'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadVideoLibrary();
+  }
+
+  Future<void> _loadVideoLibrary() async {
+    final session = AppSession.current;
+    setState(() {
+      _isVideoLoading = true;
+      _videoError = null;
+    });
+    try {
+      final market = await _lmsApi.getPublishedVideos();
+      final purchased = session == null ? <CreatorPaidContent>[] : await _lmsApi.getPurchasedVideos(session.userId);
+      final wallet = session == null ? null : await _paymentApi.getWallet();
+      if (!mounted) return;
+      setState(() {
+        _marketVideos = market;
+        _purchasedVideos = purchased;
+        _wallet = wallet;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _videoError = '$e';
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isVideoLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -371,6 +416,7 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
         ),
         const SizedBox(height: 20),
 
+
         // Personal Saved Shelves Grid
         Row(
           children: [
@@ -383,6 +429,12 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
 
         // Bookmarked words list
         _buildSavedVocabularySection(),
+        const SizedBox(height: 24),
+
+        _buildPurchasedVideosSection(),
+        const SizedBox(height: 24),
+
+        _buildCreatorVideoMarketSection(),
         const SizedBox(height: 24),
 
         // Offline Downloads
@@ -416,6 +468,125 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
     );
   }
 
+  Widget _buildWalletTopUpSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.account_balance_wallet_outlined, color: AppColors.primary, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Ví học viên', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 4),
+                Text('${(_wallet?.balance ?? 0).toStringAsFixed(0)} Xu', style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: _showTopUpDialog,
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            child: const Text('Nạp'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showTopUpDialog() async {
+    final amountController = TextEditingController(text: '100000');
+    var previewCoins = 100;
+    final shouldTopUp = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Nap tien vao vi'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'So tien VND'),
+                onChanged: (value) {
+                  setDialogState(() {
+                    previewCoins = ((num.tryParse(value.trim()) ?? 0) / 1000).floor();
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text('Ban se nhan: $previewCoins Xu', style: const TextStyle(fontSize: 13, color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              const Text('Ty le: 1.000 VND = 1 Xu', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Huy')),
+            ElevatedButton(onPressed: previewCoins > 0 ? () => Navigator.pop(context, true) : null, child: const Text('Tao don')),
+          ],
+        ),
+      ),
+    );
+    if (shouldTopUp != true) return;
+    try {
+      final order = await _paymentApi.depositVnd(num.tryParse(amountController.text.trim()) ?? 0);
+      await _loadVideoLibrary();
+      if (!mounted) return;
+      _showTopUpInstructions(order);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Khong tao duoc don nap tien: ' + e.toString())),
+      );
+    }
+  }
+
+  Future<void> _showTopUpInstructions(TopUpOrder order) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Cho admin duyet'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (order.qrImageUrl != null && order.qrImageUrl!.isNotEmpty) ...[
+                Image.network(_paymentImageUrl(order.qrImageUrl!), height: 180, fit: BoxFit.contain),
+                const SizedBox(height: 12),
+              ],
+              Text('So tien: ${order.amount.toStringAsFixed(0)} VND'),
+              Text('So Xu se nhan: ${order.coins.toStringAsFixed(0)} Xu'),
+              if (order.receiverName != null) Text('Nguoi nhan: ${order.receiverName}'),
+              if (order.receiverPhone != null) Text('So MoMo: ${order.receiverPhone}'),
+              const SizedBox(height: 8),
+              const Text('Noi dung chuyen khoan:', style: TextStyle(fontWeight: FontWeight.bold)),
+              SelectableText(order.transferContent ?? order.topUpOrderId),
+              const SizedBox(height: 12),
+              const Text('Sau khi chuyen khoan, vui long cho admin kiem tra va duyet. Xu se duoc cong vao vi khi don duoc duyet.'),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Da hieu')),
+        ],
+      ),
+    );
+  }
+
+  String _paymentImageUrl(String value) {
+    if (value.startsWith('http://') || value.startsWith('https://')) return value;
+    final base = _paymentApi.baseUrl.endsWith('/') ? _paymentApi.baseUrl.substring(0, _paymentApi.baseUrl.length - 1) : _paymentApi.baseUrl;
+    return value.startsWith('/') ? '$base$value' : '$base/$value';
+  }
   Widget _buildSavedVocabularySection() {
     return Container(
       padding: const EdgeInsets.all(18),
@@ -461,6 +632,116 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
         ],
       ),
     );
+  }
+
+  Widget _buildPurchasedVideosSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Video Creator đã mua",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (_isVideoLoading) const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        if (_videoError != null) Text(_videoError!, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+        if (!_isVideoLoading && _purchasedVideos.isEmpty)
+          _buildInfoBox('Chưa có video đã mua trong ContentPurchases. Sau khi thanh toán thật được triển khai, video sẽ xuất hiện ở đây.'),
+        if (!_isVideoLoading) ..._purchasedVideos.map((video) => _buildLearnerVideoCard(video, purchased: true)),
+      ],
+    );
+  }
+
+  Widget _buildCreatorVideoMarketSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Video Creator đang bán",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (!_isVideoLoading && _marketVideos.isEmpty)
+          _buildInfoBox('Chưa có video nào được publish trong PaidContents.'),
+        if (!_isVideoLoading) ..._marketVideos.map((video) => _buildLearnerVideoCard(video, purchased: false)),
+      ],
+    );
+  }
+
+  Widget _buildInfoBox(String text) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Text(text, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+    );
+  }
+
+  Widget _buildLearnerVideoCard(CreatorPaidContent video, {required bool purchased}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Icon(purchased ? Icons.play_circle_fill : Icons.lock_outline, color: AppColors.primary, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(video.title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(video.displayPrice, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(purchased ? Icons.play_arrow_rounded : Icons.shopping_bag_outlined, color: AppColors.primary),
+            onPressed: () {
+              if (purchased) {
+                final url = video.absoluteMediaUrl(_lmsApi.baseUrl);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(video.title),
+                    content: Text(url.isEmpty ? 'Video này chưa có media URL.' : 'Media URL: $url'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Đóng')),
+                    ],
+                  ),
+                );
+              } else {
+                _purchaseVideo(video);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _purchaseVideo(CreatorPaidContent video) async {
+    try {
+      await _paymentApi.purchaseContent(video.contentId);
+      await _loadVideoLibrary();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Thanh toán thành công. Video đã được thêm vào thư viện.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không mua được video: $e')),
+      );
+    }
   }
 
   Widget _buildOfflineDownloadsSection() {
@@ -535,9 +816,12 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
   // Accessory state: 0 = none, 1 = crown 👑, 2 = glasses 🕶️, 3 = headphones 🎧
   int _activeAccessory = 0;
   final _authApi = AuthApi();
+  final PaymentApi _paymentApi = PaymentApi();
   final _displayNameController = TextEditingController();
   PlatformFile? _avatarFile;
   String? _avatarUrl;
+  PaymentWallet? _wallet;
+  bool _isWalletLoading = false;
   bool _isSavingProfile = false;
 
   @override
@@ -546,6 +830,32 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
     final session = AppSession.current;
     _displayNameController.text = session?.displayName ?? '';
     _avatarUrl = session?.avatarUrl;
+    _loadWallet();
+  }
+
+  Future<void> _loadWallet() async {
+    if (AppSession.current == null) return;
+    setState(() {
+      _isWalletLoading = true;
+    });
+    try {
+      final wallet = await _paymentApi.getWallet();
+      if (!mounted) return;
+      setState(() {
+        _wallet = wallet;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _wallet = null;
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isWalletLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -571,6 +881,9 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
         ),
         const SizedBox(height: 20),
 
+        _buildWalletTopUpSection(),
+        const SizedBox(height: 24),
+
         // 1. Avatar personalization studio
         _buildProfileCard(),
         const SizedBox(height: 24),
@@ -585,6 +898,127 @@ class _LucyAnonymousProfileState extends State<LucyAnonymousProfile> {
         _buildSpeakingAnalyticsCard(),
       ],
     );
+  }
+
+  Widget _buildWalletTopUpSection() {
+    final balanceText = _isWalletLoading ? 'Dang tai...' : '${(_wallet?.balance ?? 0).toStringAsFixed(0)} Xu';
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.account_balance_wallet_outlined, color: AppColors.primary, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Ví học viên', style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
+                const SizedBox(height: 4),
+                Text(balanceText, style: const TextStyle(color: AppColors.textSecondary, fontSize: 11)),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: _showTopUpDialog,
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            child: const Text('Nạp'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showTopUpDialog() async {
+    final amountController = TextEditingController(text: '100000');
+    var previewCoins = 100;
+    final shouldTopUp = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Nạp tiền vào ví'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Số tiền VND'),
+                onChanged: (value) {
+                  setDialogState(() {
+                    previewCoins = ((num.tryParse(value.trim()) ?? 0) / 1000).floor();
+                  });
+                },
+              ),
+              const SizedBox(height: 8),
+              Text('Bạn sẽ nhận: $previewCoins Xu', style: const TextStyle(fontSize: 13, color: AppColors.primaryDark, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              const Text('Tỷ lệ: 1.000 VND = 1 Xu', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Hủy')),
+            ElevatedButton(onPressed: previewCoins > 0 ? () => Navigator.pop(context, true) : null, child: const Text('Tạo đơn')),
+          ],
+        ),
+      ),
+    );
+    if (shouldTopUp != true) return;
+    try {
+      final order = await _paymentApi.depositVnd(num.tryParse(amountController.text.trim()) ?? 0);
+      await _loadWallet();
+      if (!mounted) return;
+      _showTopUpInstructions(order);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không tạo được đơn nạp tiền: $e')),
+      );
+    }
+  }
+
+  Future<void> _showTopUpInstructions(TopUpOrder order) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chờ admin duyệt'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (order.qrImageUrl != null && order.qrImageUrl!.isNotEmpty) ...[
+                Image.network(_paymentImageUrl(order.qrImageUrl!), height: 180, fit: BoxFit.contain),
+                const SizedBox(height: 12),
+              ],
+              Text('Số tiền: ${order.amount.toStringAsFixed(0)} VND'),
+              Text('Số Xu sẽ nhận: ${order.coins.toStringAsFixed(0)} Xu'),
+              if (order.receiverName != null) Text('Người nhận: ${order.receiverName}'),
+              if (order.receiverPhone != null) Text('Số MoMo: ${order.receiverPhone}'),
+              const SizedBox(height: 8),
+              const Text('Nội dung chuyển khoản:', style: TextStyle(fontWeight: FontWeight.bold)),
+              SelectableText(order.transferContent ?? order.topUpOrderId),
+              const SizedBox(height: 12),
+              const Text('Sau khi chuyển khoản, vui lòng chờ admin kiểm tra và duyệt. Xu sẽ được cộng vào ví khi đơn được duyệt.'),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text('Đã hiểu')),
+        ],
+      ),
+    );
+  }
+
+  String _paymentImageUrl(String value) {
+    if (value.startsWith('http://') || value.startsWith('https://')) return value;
+    final base = _paymentApi.baseUrl.endsWith('/') ? _paymentApi.baseUrl.substring(0, _paymentApi.baseUrl.length - 1) : _paymentApi.baseUrl;
+    return value.startsWith('/') ? '$base$value' : '$base/$value';
   }
 
   Widget _buildProfileCard() {
@@ -983,3 +1417,5 @@ class SpeakingPieChartPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+
+

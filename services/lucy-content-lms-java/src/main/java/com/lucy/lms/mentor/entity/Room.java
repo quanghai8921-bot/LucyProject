@@ -28,6 +28,9 @@ public class Room {
     @Column(name = "LanguageId", length = 50)
     private String languageId;
 
+    @Column(name = "ImportedDocxFileId", length = 50)
+    private String importedDocxFileId;
+
     @Column(name = "RoomTitle", length = 100, nullable = false)
     private String roomTitle;
 
@@ -68,6 +71,7 @@ public class Room {
     }
 
     public Room(String roomId, String hostUserId, String hostRole, String levelId, String languageId,
+            String importedDocxFileId,
             String roomTitle, String roomType, String accessType, BigDecimal priceAmount,
             LocalDateTime scheduledStartAt, String roomStatus, Integer maxParticipants,
             LocalDateTime createdAt) {
@@ -76,6 +80,7 @@ public class Room {
         this.hostRole = hostRole;
         this.levelId = levelId;
         this.languageId = languageId;
+        this.importedDocxFileId = importedDocxFileId;
         this.roomTitle = roomTitle;
         this.roomType = roomType;
         this.accessType = accessType;
@@ -104,6 +109,10 @@ public class Room {
 
     public String getLanguageId() {
         return languageId;
+    }
+
+    public String getImportedDocxFileId() {
+        return importedDocxFileId;
     }
 
     public String getRoomTitle() {

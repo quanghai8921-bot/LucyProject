@@ -50,4 +50,9 @@ public class RoomQuizController {
     public List<RoomQuizOption> getOptionsByQuestion(@PathVariable String roomQuizQuestionId) {
         return roomQuizService.getOptionsByQuestion(roomQuizQuestionId);
     }
+
+    @PostMapping("/{quizId}/publish")
+    public RoomQuiz publishQuiz(@PathVariable String quizId) {
+        return roomQuizService.publishQuiz(quizId);
+    }
 }

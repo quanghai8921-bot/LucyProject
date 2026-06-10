@@ -12,6 +12,7 @@ public class LearnerRoomDto {
     private final String hostRole;
     private final String levelId;
     private final String languageId;
+    private final String importedDocxFileId;
     private final String roomTitle;
     private final String roomType;
     private final String accessType;
@@ -29,6 +30,7 @@ public class LearnerRoomDto {
         this.hostRole = room.getHostRole();
         this.levelId = room.getLevelId();
         this.languageId = room.getLanguageId();
+        this.importedDocxFileId = room.getImportedDocxFileId();
         this.roomTitle = room.getRoomTitle();
         this.roomType = room.getRoomType();
         this.accessType = room.getAccessType();
@@ -58,6 +60,10 @@ public class LearnerRoomDto {
 
     public String getLanguageId() {
         return languageId;
+    }
+
+    public String getImportedDocxFileId() {
+        return importedDocxFileId;
     }
 
     public String getRoomTitle() {

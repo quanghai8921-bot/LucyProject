@@ -7,7 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucy.Auth.Api", "src\Lucy.Auth.Api\Lucy.Auth.Api.csproj", "{D37DBB27-5E0E-46D3-884E-192503AFBE98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucy.Payment.Api", "src\Lucy.Payment.Api\Lucy.Payment.Api.csproj", "{6872B0EB-E9D4-4D1C-B560-D51363431CC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucy.AuthPayment.Api", "src\Lucy.AuthPayment.Api\Lucy.AuthPayment.Api.csproj", "{6872B0EB-E9D4-4D1C-B560-D51363431CC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lucy.Shared", "src\Lucy.Shared\Lucy.Shared.csproj", "{10C7AFD1-AA55-4C83-95C4-D0375EC7F061}"
 EndProject

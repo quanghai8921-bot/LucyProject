@@ -28,11 +28,17 @@ public class RoomQuiz {
     @Column(name = "QuizTitle", length = 150, nullable = false)
     private String quizTitle;
 
+    @Column(name = "DurationMinutes")
+    private Integer durationMinutes;
+
     @Column(name = "PassingScorePercent")
     private BigDecimal passingScorePercent;
 
     @Column(name = "QuizStatus", length = 30)
     private String quizStatus;
+
+    @Column(name = "PublishedAt")
+    private LocalDateTime publishedAt;
 
     @Column(name = "CreatedAt")
     private LocalDateTime createdAt;
@@ -46,6 +52,7 @@ public class RoomQuiz {
             String levelId,
             String createdBy,
             String quizTitle,
+            Integer durationMinutes,
             BigDecimal passingScorePercent,
             String quizStatus,
             LocalDateTime createdAt) {
@@ -55,9 +62,15 @@ public class RoomQuiz {
         this.levelId = levelId;
         this.createdBy = createdBy;
         this.quizTitle = quizTitle;
+        this.durationMinutes = durationMinutes;
         this.passingScorePercent = passingScorePercent;
         this.quizStatus = quizStatus;
         this.createdAt = createdAt;
+    }
+
+    public void publish(LocalDateTime publishedAt) {
+        this.quizStatus = "PUBLISHED";
+        this.publishedAt = publishedAt;
     }
 
     public String getQuizId() {
@@ -80,12 +93,20 @@ public class RoomQuiz {
         return quizTitle;
     }
 
+    public Integer getDurationMinutes() {
+        return durationMinutes;
+    }
+
     public BigDecimal getPassingScorePercent() {
         return passingScorePercent;
     }
 
     public String getQuizStatus() {
         return quizStatus;
+    }
+
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
     }
 
     public LocalDateTime getCreatedAt() {

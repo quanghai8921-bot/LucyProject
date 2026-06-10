@@ -1,6 +1,7 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -359,7 +360,9 @@ class LucyProProfile extends StatefulWidget {
 }
 
 class _LucyProProfileState extends State<LucyProProfile> {
+  final PaymentApi _paymentApi = PaymentApi();
   double _balance = 0.0;
+  bool _isWalletLoading = false;
   bool _isWithdrawing = false;
 
   final List<Map<String, String>> _testimonials = [];
@@ -367,6 +370,36 @@ class _LucyProProfileState extends State<LucyProProfile> {
   String get _mentorDisplayName {
     final fullName = AppSession.current?.fullName.trim();
     return fullName == null || fullName.isEmpty ? 'Mentor' : fullName;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWallet();
+  }
+
+  Future<void> _loadWallet() async {
+    setState(() {
+      _isWalletLoading = true;
+    });
+    try {
+      final wallet = await _paymentApi.getWallet();
+      if (!mounted) return;
+      setState(() {
+        _balance = wallet.balance.toDouble();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không tải được ví: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isWalletLoading = false;
+        });
+      }
+    }
   }
 
   @override
@@ -508,7 +541,7 @@ class _LucyProProfileState extends State<LucyProProfile> {
                 ],
               ),
               Text(
-                "Ví: \$${_balance.toStringAsFixed(2)}",
+                _isWalletLoading ? "Đang tải ví..." : "Ví: ${_balance.toStringAsFixed(0)} Xu",
                 style: TextStyle(color: Colors.orange.shade800, fontSize: 13, fontWeight: FontWeight.bold),
               ),
             ],
@@ -533,7 +566,7 @@ class _LucyProProfileState extends State<LucyProProfile> {
           ),
           const SizedBox(height: 16),
           ElevatedButton(
-            onPressed: _balance > 0 ? _simulateBankWithdraw : null,
+            onPressed: _balance > 0 ? _showWithdrawDialog : null,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange.shade600,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -549,44 +582,61 @@ class _LucyProProfileState extends State<LucyProProfile> {
     );
   }
 
-  void _simulateBankWithdraw() {
+  Future<void> _showWithdrawDialog() async {
+    final bankNameController = TextEditingController();
+    final accountNumberController = TextEditingController();
+    final accountNameController = TextEditingController(text: _mentorDisplayName.toUpperCase());
+    final amountController = TextEditingController(text: _balance.toStringAsFixed(0));
+
+    final shouldSubmit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Yeu cau rut tien'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: amountController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'So Xu muon rut')),
+            TextField(controller: bankNameController, decoration: const InputDecoration(labelText: 'Tên ngân hàng')),
+            TextField(controller: accountNumberController, decoration: const InputDecoration(labelText: 'So tai khoan')),
+            TextField(controller: accountNameController, decoration: const InputDecoration(labelText: 'Ten chu tai khoan')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Huy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Gui yeu cau')),
+        ],
+      ),
+    );
+    if (shouldSubmit != true) return;
+
     setState(() {
       _isWithdrawing = true;
     });
 
-    Timer(const Duration(seconds: 2), () {
+    try {
+      await _paymentApi.withdraw(
+        amount: num.tryParse(amountController.text.trim()) ?? 0,
+        bankName: bankNameController.text.trim(),
+        bankAccountNumber: accountNumberController.text.trim(),
+        bankAccountName: accountNameController.text.trim(),
+      );
+      await _loadWallet();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Da gui yeu cau rut tien, dang cho admin duyet.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Khong tao duoc yeu cau rut tien: ' + e.toString())),
+      );
+    } finally {
       if (mounted) {
         setState(() {
           _isWithdrawing = false;
-          _balance = 0.0;
         });
-
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            title: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green),
-                SizedBox(width: 8),
-                Text("Giao Dịch Thành Công!", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-              ],
-            ),
-            content: const Text(
-              "Yêu cầu rút tiền đã được ghi nhận.",
-              style: TextStyle(fontSize: 12, height: 1.4),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text("ĐỒNG Ý", style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
-              )
-            ],
-          ),
-        );
       }
-    });
+    }
   }
 
   Widget _buildTestimonialsSection() {
@@ -653,3 +703,5 @@ class _LucyProProfileState extends State<LucyProProfile> {
     );
   }
 }
+
+
