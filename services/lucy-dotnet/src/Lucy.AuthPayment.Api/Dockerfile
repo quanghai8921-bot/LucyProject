@@ -12,5 +12,4 @@ WORKDIR /app
 
 COPY --from=build /app/publish ./
 
-ENV ASPNETCORE_URLS=http://0.0.0.0:${PORT}
-ENTRYPOINT ["dotnet", "Lucy.AuthPayment.Api.dll"]
+ENTRYPOINT ["sh", "-c", "dotnet Lucy.AuthPayment.Api.dll --urls http://0.0.0.0:${PORT:-8080}"]
