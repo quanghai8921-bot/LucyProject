@@ -1,0 +1,12 @@
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\bin\Debug\net10.0\Lucy.Shared.deps.json
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\bin\Debug\net10.0\Lucy.Shared.dll
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\bin\Debug\net10.0\Lucy.Shared.pdb
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.GeneratedMSBuildEditorConfig.editorconfig
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.AssemblyInfoInputs.cache
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.AssemblyInfo.cs
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.csproj.CoreCompileInputs.cache
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.sourcelink.json
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.dll
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\refint\Lucy.Shared.dll
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\Lucy.Shared.pdb
+D:\LucyProject\services\lucy-dotnet\src\Lucy.Shared\obj\Debug\net10.0\ref\Lucy.Shared.dll
