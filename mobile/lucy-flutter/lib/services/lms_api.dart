@@ -83,6 +83,7 @@ class LmsApi {
     String? uploadedBy,
   }) async {
     final request = http.MultipartRequest('POST', _uri('/api/import-docx/upload'));
+    request.fields['fileName'] = file.name;
     if (uploadedBy != null && uploadedBy.isNotEmpty) {
       request.fields['uploadedBy'] = uploadedBy;
     }

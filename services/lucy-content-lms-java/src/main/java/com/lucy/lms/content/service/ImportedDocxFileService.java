@@ -31,11 +31,13 @@ public class ImportedDocxFileService {
     }
 
     @Transactional
-    public ImportedDocxFile uploadAndImport(MultipartFile file, String uploadedBy, String importDocxPath) {
+    public ImportedDocxFile uploadAndImport(MultipartFile file, String explicitFileName, String uploadedBy, String importDocxPath) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("File DOCX khong duoc de trong.");
         }
-        String originalName = safeFileName(file.getOriginalFilename());
+        String originalName = explicitFileName != null && !explicitFileName.isBlank() 
+                ? safeFileName(explicitFileName) 
+                : safeFileName(file.getOriginalFilename());
         if (!originalName.toLowerCase(Locale.ROOT).endsWith(".docx")) {
             throw new IllegalArgumentException("Chi ho tro upload file .docx.");
         }

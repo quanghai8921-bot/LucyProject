@@ -39,8 +39,9 @@ public class ContentImportController {
     @PostMapping("/upload")
     public ImportedDocxFile uploadFile(
             @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "fileName", required = false) String fileName,
             @RequestParam(value = "uploadedBy", required = false) String uploadedBy) {
-        return importedDocxFileService.uploadAndImport(file, uploadedBy, importDocxPath);
+        return importedDocxFileService.uploadAndImport(file, fileName, uploadedBy, importDocxPath);
     }
 
     @GetMapping("/files")
