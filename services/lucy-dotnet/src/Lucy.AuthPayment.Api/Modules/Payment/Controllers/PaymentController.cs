@@ -27,6 +27,12 @@ public class PaymentController : ControllerBase
         return Ok(await _paymentService.GetTransactionsAsync(GetCurrentUserId()));
     }
 
+    [HttpGet("gifts")]
+    public async Task<IActionResult> GetGifts()
+    {
+        return Ok(await _paymentService.GetGiftsAsync());
+    }
+
     [HttpPost("deposit")]
     public async Task<IActionResult> Deposit([FromBody] DepositRequest request)
     {

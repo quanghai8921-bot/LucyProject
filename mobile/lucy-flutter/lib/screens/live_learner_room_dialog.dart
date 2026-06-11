@@ -8,6 +8,7 @@ import 'package:lucy_app/services/file_download/file_download.dart';
 import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/services/realtime_socket_service.dart';
 import 'package:lucy_app/services/app_session.dart';
+import 'package:lucy_app/services/payment_api.dart';
 
 class LiveLearnerRoomDialog extends StatefulWidget {
   final String roomId;
@@ -35,6 +36,7 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
   final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
   final AgoraAudioService _agoraAudio = AgoraAudioService();
   final LmsApi _lmsApi = LmsApi();
+  final PaymentApi _paymentApi = PaymentApi();
   
   bool _isDialogClosed = false;
   bool _isAgoraConnected = false;
@@ -42,15 +44,15 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
   bool _isMentorMuted = false;
   bool _isMyMuted = true;
   bool _isHandRaised = false;
+  bool _isConnectingAgora = true;
   String? _agoraError;
+  int _onlineCheckCount = 0;
   int _secondsElapsed = 0;
   Timer? _stopwatchTimer;
   Timer? _attendanceTimer;
   RoomStudyPlan? _studyPlan;
   
-  String _currentlyPinnedTitle = 'Chưa chọn slide nào';
-  String? _currentlyPinnedBase64;
-  String? _currentlyPinnedMimeType;
+  final List<Map<String, dynamic>> _pinnedMaterials = [];
   
   final List<Map<String, String>> _chatMessages = [];
   final ScrollController _chatScrollController = ScrollController();
@@ -148,15 +150,20 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
     _realtimeSocket.onSlidePinned((payload) {
       if (mounted) {
         setState(() {
-          _currentlyPinnedTitle = payload['filename'] ?? payload['fileName'] ?? 'Tài liệu mới';
+          final title = payload['filename'] ?? payload['fileName'] ?? 'Tài liệu mới';
           final fileBase64 = '${payload['fileBase64'] ?? ''}';
-          _currentlyPinnedBase64 = fileBase64.isEmpty ? null : fileBase64;
           final fileType = '${payload['fileType'] ?? ''}';
-          _currentlyPinnedMimeType = fileType.isEmpty ? null : fileType;
+          
+          _pinnedMaterials.add({
+             'title': title,
+             'base64': fileBase64.isEmpty ? null : fileBase64,
+             'mimeType': fileType.isEmpty ? null : fileType,
+          });
+
           _chatMessages.add({
             'name': 'Hệ thống LUCY',
             'avatar': '🤖',
-            'text': 'Mentor vừa ghim tài liệu mới: $_currentlyPinnedTitle',
+            'text': 'Mentor vừa ghim tài liệu mới: $title',
             'time': _formatCurrentTime(),
             'isSystem': 'true'
           });
@@ -164,6 +171,151 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
         _scrollToBottom();
       }
     });
+
+    _realtimeSocket.socket.on('PAYMENT_NOTIFICATION', (data) {
+      if (mounted) {
+        final payload = data is String ? jsonDecode(data) : data;
+        if (payload != null && payload['refType'] == 'DONATION') {
+          setState(() {
+             _chatMessages.add({
+               'name': 'Hệ thống LUCY',
+               'avatar': '💎',
+               'text': '🎉 Mentor vừa nhận được quà tặng kim cương từ học viên!',
+               'time': _formatCurrentTime(),
+               'isSystem': 'true'
+             });
+          });
+          _scrollToBottom();
+        }
+      }
+    });
+
+    _realtimeSocket.socket.on('ONLINE_CHECK_REQUEST', (_) {
+      if (mounted) {
+        _showOnlineCheckPopup();
+      }
+    });
+
+    _realtimeSocket.socket.on('room:ended', (data) {
+      if (mounted) {
+        _handleEndSession();
+      }
+    });
+  }
+
+  void _showOnlineCheckPopup() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        int secondsLeft = 10;
+        Timer? countdownTimer;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            countdownTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (secondsLeft > 0) {
+                setDialogState(() => secondsLeft--);
+              } else {
+                timer.cancel();
+                Navigator.pop(ctx);
+              }
+            });
+            return AlertDialog(
+              title: const Text("Bạn còn ở đó không?"),
+              content: Text("Vui lòng xác nhận sự có mặt của bạn. Popup sẽ tự đóng sau $secondsLeft giây."),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    countdownTimer?.cancel();
+                    setState(() {
+                      _onlineCheckCount++;
+                    });
+                    Navigator.pop(ctx);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Đã xác nhận trực tuyến.")));
+                  },
+                  child: const Text("Xác nhận có mặt"),
+                )
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _handleEndSession() {
+    if (_onlineCheckCount >= 3) {
+      // Đủ điều kiện nhận bài kiểm tra
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (ctx) => AlertDialog(
+          title: const Text("Bài Kiểm Tra Mở Khóa"),
+          content: const Text("Bạn đã có mặt đủ thời gian. Xin chúc mừng, bạn đã nhận được bài kiểm tra từ Mentor! (Mô phỏng bài test 80% điểm)"),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _simulateQuizResult();
+              },
+              child: const Text("Làm Bài Ngay"),
+            )
+          ],
+        ),
+      );
+    } else {
+      // Không đủ điều kiện
+      _showKickCountdown("Bạn không đủ điều kiện (có mặt < 3 lần) để nhận bài kiểm tra.");
+    }
+  }
+
+  void _simulateQuizResult() {
+    // Mô phỏng kết quả bài kiểm tra (ngẫu nhiên đậu/rớt cho demo)
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Kết quả kiểm tra"),
+        content: const Text("Bạn làm bài được 70% (Dưới 80%). Bạn KHÔNG đủ điều kiện pass."),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              _showKickCountdown("Bạn không vượt qua bài kiểm tra. Buộc rời phòng.");
+            },
+            child: const Text("Đóng"),
+          )
+        ],
+      ),
+    );
+  }
+
+  void _showKickCountdown(String reason) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        int secondsLeft = 5;
+        Timer? countdownTimer;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            countdownTimer ??= Timer.periodic(const Duration(seconds: 1), (timer) {
+              if (secondsLeft > 0) {
+                setDialogState(() => secondsLeft--);
+              } else {
+                timer.cancel();
+                Navigator.pop(ctx);
+                if (mounted) Navigator.pop(context); // Thoát phòng học
+              }
+            });
+            return AlertDialog(
+              title: const Text("Thông Báo", style: TextStyle(color: Colors.red)),
+              content: Text("$reason\n\nBạn sẽ rời phòng sau $secondsLeft giây..."),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _joinAgoraAudio() async {
@@ -226,7 +378,6 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
       if (!mounted) return;
       setState(() {
         _studyPlan = plan;
-        _currentlyPinnedTitle = plan.importedDocxFile?.fileName ?? _currentlyPinnedTitle;
       });
     } catch (_) {}
   }
@@ -291,14 +442,15 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  void _downloadPinnedFile() async {
-    if (_currentlyPinnedBase64 == null) return;
+  void _downloadPinnedFile(Map<String, dynamic> material) async {
+    final base64String = material['base64'];
+    if (base64String == null) return;
     try {
-      final bytes = base64Decode(_currentlyPinnedBase64!);
+      final bytes = base64Decode(base64String);
       final savedTo = await downloadBytes(
-        fileName: _currentlyPinnedTitle,
+        fileName: material['title'] ?? 'Tai_lieu',
         bytes: bytes,
-        mimeType: _currentlyPinnedMimeType,
+        mimeType: material['mimeType'],
       );
       
       if (mounted) {
@@ -337,7 +489,9 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
                     padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                     child: Column(
                       children: [
-                        _buildActiveSlideBoard(),
+                        _buildMentorAudioVisualizer(),
+                        const SizedBox(height: 16),
+                        _buildMaterialsList(),
                         const SizedBox(height: 16),
                         _buildCourseOutcomeCard(),
                         const SizedBox(height: 16),
@@ -439,9 +593,10 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
     );
   }
 
-  Widget _buildActiveSlideBoard() {
+  Widget _buildMaterialsList() {
     return Container(
       width: double.infinity,
+      constraints: const BoxConstraints(maxHeight: 250),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -458,85 +613,117 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          const Row(
             children: [
-              const Row(
-                children: [
-                  Icon(Icons.slideshow, color: AppColors.primary, size: 18),
-                  SizedBox(width: 6),
-                  Text(
-                    "SLIDE GIÁO TRÌNH ĐANG CHIẾU",
-                    style: TextStyle(color: AppColors.primary, fontSize: 9, fontWeight: FontWeight.w900, letterSpacing: 0.8),
-                  ),
-                ],
+              Icon(Icons.library_books, color: AppColors.primary, size: 18),
+              SizedBox(width: 6),
+              Text(
+                "TÀI LIỆU MENTOR ĐÃ GHIM",
+                style: TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.8),
               ),
-              if (_currentlyPinnedBase64 != null)
-                GestureDetector(
-                  onTap: _downloadPinnedFile,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.orange.shade50,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.orange.shade200),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.download, size: 12, color: Colors.orange.shade700),
-                        const SizedBox(width: 4),
-                        Text("Tải xuống", style: TextStyle(color: Colors.orange.shade700, fontSize: 9, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
             ],
           ),
           const SizedBox(height: 14),
-          Text(
-            _currentlyPinnedTitle,
-            style: const TextStyle(color: AppColors.textPrimary, fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Mentor: ${widget.mentor}",
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
-          ),
-          if (_agoraError != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              _agoraError!,
-              style: const TextStyle(color: Colors.redAccent, fontSize: 10.5, fontWeight: FontWeight.w600),
-            ),
-          ],
-          const SizedBox(height: 16),
-          Container(
-            height: 50,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade50,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.inputBorder),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: AnimatedBuilder(
-                animation: _waveformController,
-                builder: (context, child) {
-                  return CustomPaint(
-                    painter: AudioWaveformPainter(
-                      animationValue: _waveformController.value,
-                      color: _isMentorMuted ? Colors.red.shade400.withOpacity(0.5) : AppColors.primary,
-                      isMuted: _isMentorMuted,
+          if (_pinnedMaterials.isEmpty)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 20),
+              child: Center(
+                child: Text(
+                  "Chưa có tài liệu nào được ghim.",
+                  style: TextStyle(color: AppColors.textSecondary, fontSize: 12, fontStyle: FontStyle.italic),
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: ListView.separated(
+                itemCount: _pinnedMaterials.length,
+                separatorBuilder: (context, index) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final mat = _pinnedMaterials[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      mat['title'] ?? 'Tài liệu',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                     ),
+                    subtitle: Text(
+                      "Được ghim bởi: ${widget.mentor}",
+                      style: const TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                    ),
+                    trailing: mat['base64'] != null
+                        ? GestureDetector(
+                            onTap: () => _downloadPinnedFile(mat),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.orange.shade200),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.download, size: 14, color: Colors.orange.shade700),
+                                  const SizedBox(width: 4),
+                                  Text("Tải", style: TextStyle(color: Colors.orange.shade700, fontSize: 10, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                          )
+                        : null,
                   );
                 },
               ),
             ),
-          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMentorAudioVisualizer() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_agoraError != null) ...[
+          Text(
+            _agoraError!,
+            style: const TextStyle(color: Colors.redAccent, fontSize: 10.5, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+        ],
+        Container(
+          height: 50,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.inputBorder),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AnimatedBuilder(
+              animation: _waveformController,
+              builder: (context, child) {
+                return CustomPaint(
+                  painter: AudioWaveformPainter(
+                    animationValue: _waveformController.value,
+                    color: _isMentorMuted ? Colors.red.shade400.withOpacity(0.5) : AppColors.primary,
+                    isMuted: _isMentorMuted,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -557,16 +744,10 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
             plan?.levelTitle ?? widget.title,
             style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13),
           ),
-          const SizedBox(height: 4),
-          Text(
-            plan?.levelDescription ?? 'Nội dung buổi học sẽ được mentor mở theo file DOCX đã chọn.',
-            style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, height: 1.35),
-          ),
-          if (plan?.importedDocxFile != null) ...[
-            const SizedBox(height: 8),
+          if (plan?.levelDescription != null && plan!.levelDescription!.isNotEmpty) ...[
             Text(
-              plan!.importedDocxFile!.fileName,
-              style: const TextStyle(color: AppColors.primaryDark, fontSize: 10, fontWeight: FontWeight.bold),
+              plan.levelDescription!,
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 11, height: 1.35),
             ),
           ],
         ],
@@ -581,7 +762,179 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
         _buildMicButton(),
         const SizedBox(width: 24),
         _buildHandButton(),
+        const SizedBox(width: 24),
+        _buildDonateButton(),
       ],
+    );
+  }
+
+  Widget _buildDonateButton() {
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => _showDonateBottomSheet(),
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.white,
+              border: Border.all(color: Colors.pink.shade300, width: 2),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.pink.withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                )
+              ],
+            ),
+            child: Icon(Icons.diamond_outlined, color: Colors.pink.shade400, size: 28),
+          ),
+        ),
+        const SizedBox(height: 6),
+        const Text(
+          "Tặng Quà",
+          style: TextStyle(
+            color: Colors.pink,
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+          ),
+        )
+      ],
+    );
+  }
+
+  void _showDonateBottomSheet() async {
+    List<PaymentGift> gifts = [];
+    bool isLoading = true;
+    String? error;
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setModalState) {
+            if (isLoading && gifts.isEmpty && error == null) {
+              _paymentApi.getGifts().then((value) {
+                setModalState(() {
+                  gifts = value;
+                  isLoading = false;
+                });
+              }).catchError((e) {
+                setModalState(() {
+                  error = e.toString();
+                  isLoading = false;
+                });
+              });
+            }
+
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                left: 16, right: 16, top: 24,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Tặng Kim Cương", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+                  const SizedBox(height: 8),
+                  const Text("Ủng hộ Mentor bằng kim cương. 1 Kim Cương = 10 Xu.", style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                  const SizedBox(height: 16),
+                  if (isLoading)
+                    const SizedBox(height: 150, child: Center(child: CircularProgressIndicator()))
+                  else if (error != null)
+                    SizedBox(height: 150, child: Center(child: Text(error!, style: const TextStyle(color: Colors.red))))
+                  else if (gifts.isEmpty)
+                    const SizedBox(height: 150, child: Center(child: Text("Hệ thống chưa có quà tặng nào.")))
+                  else
+                    SizedBox(
+                      height: 250,
+                      child: GridView.builder(
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          childAspectRatio: 0.8,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                        itemCount: gifts.length,
+                        itemBuilder: (context, index) {
+                          final gift = gifts[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              _confirmDonate(gift);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.pink.shade50,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(color: Colors.pink.shade100),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Icon(Icons.diamond, color: Colors.pinkAccent, size: 36),
+                                  const SizedBox(height: 8),
+                                  Text(gift.giftName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.textPrimary), textAlign: TextAlign.center),
+                                  const SizedBox(height: 4),
+                                  Text("${gift.priceAmount.toInt()} KC", style: const TextStyle(color: Colors.pink, fontSize: 11, fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _confirmDonate(PaymentGift gift) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: const Text("Xác nhận tặng quà"),
+        content: Text("Bạn có chắc muốn tặng '${gift.giftName}' với giá ${gift.priceAmount.toInt()} Kim Cương (tương đương ${gift.priceAmount.toInt() * 10} Xu) cho Mentor ${widget.mentor} không?"),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Hủy", style: TextStyle(color: AppColors.textSecondary))),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                // 1 Diamond = 10 Xu, so amount to deduct is gift.priceAmount * 10
+                final xuAmount = gift.priceAmount * 10;
+                await _paymentApi.donate(
+                  toUserId: widget.hostUserId,
+                  amount: xuAmount,
+                  roomId: widget.roomId,
+                  messageText: "Tặng ${gift.giftName}",
+                  giftImageUrl: gift.giftImageUrl ?? "https://cdn3.iconfinder.com/data/icons/object-emoji/50/Diamond-512.png",
+                );
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tặng quà thành công!")));
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+                }
+              }
+            },
+            child: const Text("Tặng Ngay", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

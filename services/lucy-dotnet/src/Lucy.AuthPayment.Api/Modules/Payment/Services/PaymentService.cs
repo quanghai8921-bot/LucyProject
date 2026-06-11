@@ -237,6 +237,8 @@ public class PaymentService : IPaymentService
                 purchase.PurchaseId, "10% podcast/content commission");
         }
 
+        await _context.SaveChangesAsync();
+
         _context.ContentPurchases.Add(purchase);
         await _context.SaveChangesAsync();
         await dbTransaction.CommitAsync();
@@ -296,6 +298,8 @@ public class PaymentService : IPaymentService
             AddBalance(adminWallet, split.FeeAmount, "Commission", buyerUserId, "LIVE_TICKET",
                 purchase.PurchaseId, $"{feeRate:P0} live commission");
         }
+
+        await _context.SaveChangesAsync();
 
         _context.ContentPurchases.Add(purchase);
         var ticket = new LiveAccessTicket
@@ -359,6 +363,8 @@ public class PaymentService : IPaymentService
                 $"{feeRate:P0} donation commission");
         }
 
+        await _context.SaveChangesAsync();
+
         _context.Donations.Add(donation);
         await _context.SaveChangesAsync();
         await dbTransaction.CommitAsync();
@@ -373,7 +379,8 @@ public class PaymentService : IPaymentService
             split.FeeAmount,
             split.NetAmount,
             fromUserId,
-            request.RoomId);
+            request.RoomId,
+            request.GiftImageUrl);
         return donation;
     }
 
@@ -629,7 +636,8 @@ public class PaymentService : IPaymentService
         decimal feeAmount,
         decimal netAmount,
         string? fromUserId = null,
-        string? roomId = null)
+        string? roomId = null,
+        string? giftImageUrl = null)
     {
         var notification = new Notification
         {
@@ -645,7 +653,7 @@ public class PaymentService : IPaymentService
 
         _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
-        await DispatchRealtimeNotificationAsync(notification, refId, grossAmount, feeAmount, netAmount, fromUserId, roomId);
+        await DispatchRealtimeNotificationAsync(notification, refId, grossAmount, feeAmount, netAmount, fromUserId, roomId, giftImageUrl);
     }
 
     private async Task DispatchRealtimeNotificationAsync(
@@ -655,7 +663,8 @@ public class PaymentService : IPaymentService
         decimal feeAmount,
         decimal netAmount,
         string? fromUserId,
-        string? roomId)
+        string? roomId,
+        string? giftImageUrl = null)
     {
         var baseUrl = _configuration["Realtime:InternalBaseUrl"];
         if (string.IsNullOrWhiteSpace(baseUrl)) return;
@@ -678,6 +687,7 @@ public class PaymentService : IPaymentService
                 GrossAmount = grossAmount,
                 FeeAmount = feeAmount,
                 NetAmount = netAmount,
+                GiftImageUrl = giftImageUrl,
                 notification.CreatedAt
             });
         }
@@ -703,6 +713,11 @@ public class PaymentService : IPaymentService
     {
         if (percent < 0 || percent > 100) throw new InvalidOperationException("Fee percent must be between 0 and 100.");
         return percent;
+    }
+
+    public Task<List<Gift>> GetGiftsAsync()
+    {
+        return _context.Gifts.OrderBy(g => g.PriceAmount).ToListAsync();
     }
 
     private static (decimal FeeAmount, decimal NetAmount) Split(decimal amount, decimal feeRate)

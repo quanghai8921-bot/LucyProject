@@ -1994,6 +1994,10 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
   String? _agoraError;
   String _currentlyPinnedTitle = 'Chưa chọn slide nào';
 
+  bool _showDonationOverlay = false;
+  String? _donationImageUrl;
+  String? _donationMessage;
+
   int _promptIndex = 0;
   final List<String> _aiPrompts = [
     "Hãy mô tả hoạt động cuối tuần yêu thích nhất của bạn tại quán Cafe bằng tiếng nước ngoài?",
@@ -2154,6 +2158,30 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
         });
         _scrollToBottom();
       });
+
+      _realtimeSocket.onPaymentDonation((payload) {
+        final rId = '${payload['roomId'] ?? payload['RoomId'] ?? ''}';
+        if (rId != widget.roomId) return;
+        if (!mounted) return;
+
+        final name = '${payload['fromUserId'] ?? payload['FromUserId'] ?? 'Học viên'}';
+        final amount = '${payload['netAmount'] ?? payload['NetAmount'] ?? '0'}';
+        final giftUrl = payload['giftImageUrl'] ?? payload['GiftImageUrl'];
+
+        setState(() {
+          _showDonationOverlay = true;
+          _donationImageUrl = giftUrl?.toString();
+          _donationMessage = '$name đã tặng bạn $amount Xu';
+        });
+
+        Future.delayed(const Duration(seconds: 5), () {
+          if (mounted) {
+            setState(() {
+              _showDonationOverlay = false;
+            });
+          }
+        });
+      });
     }
   }
 
@@ -2244,6 +2272,7 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
     _realtimeSocket.offMicChanged();
     _realtimeSocket.offChatMessage();
     _realtimeSocket.offHandRaised();
+    _realtimeSocket.offPaymentDonation();
     _realtimeSocket.disconnect();
     super.dispose();
   }
@@ -2400,8 +2429,10 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
+    return Stack(
+      children: [
+        Scaffold(
+          body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
@@ -2448,6 +2479,48 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
           ),
         ),
       ),
+        if (_showDonationOverlay)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black54,
+              child: Center(
+                child: TweenAnimationBuilder<double>(
+                  tween: Tween<double>(begin: 0.5, end: 1.0),
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.elasticOut,
+                  builder: (context, scale, child) {
+                    return Transform.scale(
+                      scale: scale,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (_donationImageUrl != null && _donationImageUrl!.startsWith('http'))
+                            Image.network(_donationImageUrl!, width: 140, height: 140)
+                          else if (_donationImageUrl != null)
+                            Text(_donationImageUrl!, style: const TextStyle(fontSize: 100))
+                          else
+                            const Icon(Icons.card_giftcard, size: 100, color: Colors.pinkAccent),
+                          const SizedBox(height: 16),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Colors.pinkAccent.withOpacity(0.9),
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Text(
+                              _donationMessage ?? '',
+                              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

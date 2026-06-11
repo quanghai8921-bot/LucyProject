@@ -1,7 +1,8 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/payment_api.dart';
+import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -223,6 +224,7 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
     {'title': 'LISA Lesson Plan 3: Travel Dialogue ✈️', 'category': 'LISA Core', 'color': const Color(0xFF64C3A5)},
     {'title': 'JLPT N4 Polite Japanese Keigo Standard 🙇', 'category': 'Japanese Prep', 'color': Colors.purple.shade200},
   ];
+  final LmsApi _lmsApi = LmsApi();
 
   @override
   Widget build(BuildContext context) {
@@ -323,6 +325,15 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
             Expanded(child: _buildFolderCard("Lớp HSK Business", "8 Học viên", Colors.orange)),
           ],
         ),
+        const SizedBox(height: 20),
+
+        // 3. Quizzes
+        const Text(
+          "Quản lý bài kiểm tra 📝",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        _buildQuizManagementSection(),
       ],
     );
   }
@@ -345,6 +356,124 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
           Text(count, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
         ],
       ),
+    );
+  }
+
+  Widget _buildQuizManagementSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.blue.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.quiz, color: Colors.blueAccent, size: 24),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Tạo bài kiểm tra mới", style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 13)),
+                    SizedBox(height: 4),
+                    Text("Hỗ trợ trắc nghiệm và tự luận.", style: TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: _showQuizCreationDialog,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                ),
+                child: const Text("TẠO NGAY", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showQuizCreationDialog() {
+    String quizTitle = "";
+    String passingScore = "80";
+    String quizType = "MULTIPLE_CHOICE";
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text("Tạo Bài Kiểm Tra"),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      decoration: const InputDecoration(labelText: "Tiêu đề bài kiểm tra"),
+                      onChanged: (val) => quizTitle = val,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: "Điểm đạt (%) (Mặc định 80)"),
+                      keyboardType: TextInputType.number,
+                      onChanged: (val) => passingScore = val,
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: quizType,
+                      decoration: const InputDecoration(labelText: "Loại bài kiểm tra"),
+                      items: const [
+                        DropdownMenuItem(value: "MULTIPLE_CHOICE", child: Text("Trắc nghiệm")),
+                        DropdownMenuItem(value: "ESSAY", child: Text("Tự luận")),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) {
+                          setDialogState(() => quizType = val);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Hủy")),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (quizTitle.isEmpty) return;
+                    Navigator.pop(ctx);
+                    try {
+                      final quiz = await _lmsApi.createQuiz({
+                        'roomId': 'R-000', // Need to pass active room ID, but for now we put a placeholder
+                        'title': quizTitle,
+                        'quizType': quizType,
+                        'passingScore': num.tryParse(passingScore) ?? 80,
+                        'status': 'PUBLISHED',
+                      });
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Tạo bài kiểm tra thành công: ${quiz.title}")));
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+                      }
+                    }
+                  },
+                  child: const Text("Tạo"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 }

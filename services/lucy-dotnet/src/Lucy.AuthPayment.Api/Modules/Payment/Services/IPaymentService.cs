@@ -21,4 +21,5 @@ public interface IPaymentService
     Task<WithdrawRequestEntity> WithdrawAsync(string userId, WithdrawRequest request);
     Task<WithdrawRequestEntity> ApproveWithdrawAsync(string withdrawRequestId);
     Task<WithdrawRequestEntity> RejectWithdrawAsync(string withdrawRequestId, string? rejectReason);
+    Task<List<Gift>> GetGiftsAsync();
 }

@@ -96,12 +96,16 @@ public class RoomService {
         }
 
         String stageIdPrefix = request.getLanguageId().trim().toUpperCase(Locale.ROOT) + "_STAGE_";
-        LearningLevel level = learningLevelRepository
-                .findFirstByStageIdStartingWithAndLevelNumberOrderByStageIdAsc(stageIdPrefix,
-                        request.getLevelNumber())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Level " + request.getLevelNumber() + " khong ton tai cho ngon ngu "
-                                + request.getLanguageId() + "."));
+        List<LearningLevel> levels = learningLevelRepository
+                .findByStageIdStartingWithOrderByStageIdAscLevelNumberAsc(stageIdPrefix);
+                
+        if (levels.isEmpty() || request.getLevelNumber() > levels.size()) {
+            throw new IllegalArgumentException(
+                    "Level " + request.getLevelNumber() + " khong ton tai cho ngon ngu "
+                            + request.getLanguageId() + ".");
+        }
+        
+        LearningLevel level = levels.get(request.getLevelNumber() - 1);
         return level.getLevelId();
     }
 

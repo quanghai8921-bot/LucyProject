@@ -16,6 +16,7 @@ public class DonateRequest
     public string? RoomId { get; set; }
     public decimal Amount { get; set; }
     public string? MessageText { get; set; }
+    public string? GiftImageUrl { get; set; }
 }
 
 public class RejectWithdrawRequest

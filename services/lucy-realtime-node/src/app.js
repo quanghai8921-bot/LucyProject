@@ -12,7 +12,11 @@ const app = express();
 
 app.set('trust proxy', 1);
 app.use(cors({
-    origin: "https://lucyproject.vercel.app",
+    origin: [
+        "https://lucyproject.vercel.app",
+        /^http:\/\/localhost:\d+$/,
+        /^http:\/\/127\.0\.0\.1:\d+$/
+    ],
     credentials: true
 }));
 app.use(express.json());

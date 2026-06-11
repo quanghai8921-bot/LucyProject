@@ -182,6 +182,7 @@ class PaymentApi {
     required num amount,
     String? roomId,
     String? messageText,
+    String? giftImageUrl,
   }) async {
     final response = await _client.post(
       _uri('/api/payment/donate'),
@@ -191,6 +192,7 @@ class PaymentApi {
         'amount': amount,
         if (roomId != null) 'roomId': roomId,
         if (messageText != null) 'messageText': messageText,
+        if (giftImageUrl != null) 'giftImageUrl': giftImageUrl,
       }),
     );
     _successMap(response, 'Donate that bai.');
@@ -213,6 +215,16 @@ class PaymentApi {
       }),
     );
     _successMap(response, 'Tao yeu cau rut tien that bai.');
+  }
+
+  Future<List<PaymentGift>> getGifts() async {
+    final response = await _client.get(_uri('/api/payment/gifts'), headers: _headers());
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw PaymentApiException(_messageFrom(body, 'Khong tai duoc danh sach qua tang.'));
+    }
+    final data = body is List<dynamic> ? body : body['data'] as List<dynamic>? ?? [];
+    return data.map((item) => PaymentGift.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
 
   Map<String, dynamic> _successMap(http.Response response, String fallback) {
@@ -427,6 +439,29 @@ num _numOrZero(Object? value) {
   if (value is num) return value;
   if (value is String) return num.tryParse(value) ?? 0;
   return 0;
+}
+
+class PaymentGift {
+  const PaymentGift({
+    required this.giftId,
+    required this.giftName,
+    required this.priceAmount,
+    this.giftImageUrl,
+  });
+
+  final String giftId;
+  final String giftName;
+  final num priceAmount;
+  final String? giftImageUrl;
+
+  factory PaymentGift.fromJson(Map<String, dynamic> json) {
+    return PaymentGift(
+      giftId: '${json['giftId'] ?? ''}',
+      giftName: '${json['giftName'] ?? ''}',
+      priceAmount: _numOrZero(json['priceAmount']),
+      giftImageUrl: json['giftImageUrl'] as String?,
+    );
+  }
 }
 
 class PaymentApiException implements Exception {

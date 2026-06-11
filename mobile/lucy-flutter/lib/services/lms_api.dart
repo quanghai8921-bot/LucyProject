@@ -17,6 +17,55 @@ class LmsApi {
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
 
+  Future<List<MentorRoomQuiz>> getRoomQuizzes(String roomId) async {
+    final response = await _client.get(_uri('/api/mentor/room-quizzes/room/$roomId'));
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong tai duoc danh sach bai kiem tra.'));
+    }
+    final data = body is List<dynamic> ? body : body['data'] as List<dynamic>? ?? [];
+    return data.map((item) => MentorRoomQuiz.fromJson(Map<String, dynamic>.from(item as Map))).toList();
+  }
+
+  Future<MentorRoomQuiz> createQuiz(Map<String, dynamic> payload) async {
+    final response = await _client.post(
+      _uri('/api/mentor/room-quizzes'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong tao duoc bai kiem tra.'));
+    }
+    return MentorRoomQuiz.fromJson(body);
+  }
+
+  Future<RoomQuizQuestion> createQuestion(Map<String, dynamic> payload) async {
+    final response = await _client.post(
+      _uri('/api/mentor/room-quizzes/questions'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong tao duoc cau hoi.'));
+    }
+    return RoomQuizQuestion.fromJson(body);
+  }
+
+  Future<RoomQuizOption> createOption(Map<String, dynamic> payload) async {
+    final response = await _client.post(
+      _uri('/api/mentor/room-quizzes/options'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(payload),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong tao duoc dap an.'));
+    }
+    return RoomQuizOption.fromJson(body);
+  }
+
   Future<List<ImportedDocxFile>> getImportedDocxFiles({String? languageId}) async {
     final suffix = languageId == null || languageId.isEmpty ? '' : '?languageId=$languageId';
     final response = await _client.get(_uri('/api/import-docx/files$suffix'));
@@ -918,6 +967,93 @@ class QuizSubmitResult {
       attemptId: '${json['attemptId'] ?? ''}',
       scorePercent: LearnerRoom._numOrNull(json['scorePercent']) ?? 0,
       passed: json['passed'] == true,
+    );
+  }
+}
+
+class MentorRoomQuiz {
+  const MentorRoomQuiz({
+    required this.quizId,
+    required this.roomId,
+    required this.title,
+    this.description,
+    required this.quizType,
+    required this.status,
+    required this.passingScore,
+  });
+
+  final String quizId;
+  final String roomId;
+  final String title;
+  final String? description;
+  final String quizType;
+  final String status;
+  final num passingScore;
+
+  factory MentorRoomQuiz.fromJson(Map<String, dynamic> json) {
+    return MentorRoomQuiz(
+      quizId: '${json['quizId'] ?? ''}',
+      roomId: '${json['roomId'] ?? ''}',
+      title: '${json['title'] ?? ''}',
+      description: json['description'] as String?,
+      quizType: '${json['quizType'] ?? 'MULTIPLE_CHOICE'}',
+      status: '${json['status'] ?? 'DRAFT'}',
+      passingScore: json['passingScore'] is num ? (json['passingScore'] as num) : num.tryParse('${json['passingScore']}') ?? 80,
+    );
+  }
+}
+
+class RoomQuizQuestion {
+  const RoomQuizQuestion({
+    required this.questionId,
+    required this.quizId,
+    required this.content,
+    required this.questionType,
+    required this.points,
+  });
+
+  final String questionId;
+  final String quizId;
+  final String content;
+  final String questionType;
+  final num points;
+
+  factory RoomQuizQuestion.fromJson(Map<String, dynamic> json) {
+    return RoomQuizQuestion(
+      questionId: '${json['questionId'] ?? ''}',
+      quizId: '${json['quizId'] ?? ''}',
+      content: '${json['content'] ?? ''}',
+      questionType: '${json['questionType'] ?? 'SINGLE_CHOICE'}',
+      points: json['points'] is num ? (json['points'] as num) : num.tryParse('${json['points']}') ?? 10,
+    );
+  }
+}
+
+class RoomQuizOption {
+  const RoomQuizOption({
+    required this.optionId,
+    required this.questionId,
+    required this.content,
+    required this.isCorrect,
+  });
+
+  final String optionId;
+  final String questionId;
+  final String content;
+  final bool isCorrect;
+
+  factory RoomQuizOption.fromJson(Map<String, dynamic> json) {
+    bool correct = false;
+    if (json['isCorrect'] is bool) {
+      correct = json['isCorrect'] as bool;
+    } else if (json['isCorrect'] is num) {
+      correct = (json['isCorrect'] as num) > 0;
+    }
+    return RoomQuizOption(
+      optionId: '${json['optionId'] ?? ''}',
+      questionId: '${json['questionId'] ?? ''}',
+      content: '${json['content'] ?? ''}',
+      isCorrect: correct,
     );
   }
 }

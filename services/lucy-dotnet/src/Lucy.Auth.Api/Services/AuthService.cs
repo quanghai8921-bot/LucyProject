@@ -71,9 +71,6 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
             return (null, "LanguageId khong ton tai.");
         }
 
-        var learnerRole = await db.Roles.FindAsync(RoleCodes.LearnerId)
-            ?? throw new InvalidOperationException("Role R002 khong ton tai trong DB.");
-
         var user = new User
         {
             UserId = NewId("U"),
@@ -105,7 +102,6 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
         user.AvatarPersona = avatarPersona;
 
         db.Users.Add(user);
-        db.UserRoles.Add(new UserRole { UserId = user.UserId, RoleId = learnerRole.RoleId });
         db.AvatarPersonas.Add(avatarPersona);
         db.MentorApplications.Add(application);
         await db.SaveChangesAsync();
@@ -127,6 +123,9 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
             return (null, "Tai khoan da bi khoa.");
 
         var roles = user.UserRoles.Select(ur => ur.Role).ToList();
+        if (roles.Count == 0)
+            return (null, "Tai khoan cua ban dang cho admin phe duyet hoac chua duoc cap quyen.");
+
         return (BuildAuthTokenResponse(user, roles, "Dang nhap thanh cong"), null);
     }
 

@@ -106,8 +106,7 @@ builder.Services.AddSwaggerGen(options =>
 // ── CORS & Forwarded Headers ─────────────────────────────────────────────────
 builder.Services.AddCors(options =>
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins("https://lucyproject.vercel.app")
-              .SetIsOriginAllowedToAllowWildcardSubdomains()
+        policy.SetIsOriginAllowed(origin => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials()));

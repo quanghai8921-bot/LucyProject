@@ -195,6 +195,16 @@ class RealtimeSocketService {
     _socket?.off('slide:pinned');
   }
 
+  void onPaymentDonation(void Function(JsonMap payload) handler) {
+    socket.on('payment:donation', (payload) {
+      if (payload is Map) handler(Map<String, dynamic>.from(payload));
+    });
+  }
+
+  void offPaymentDonation() {
+    _socket?.off('payment:donation');
+  }
+
   Future<JsonMap> _emitWithAck(
     String event,
     JsonMap payload, {

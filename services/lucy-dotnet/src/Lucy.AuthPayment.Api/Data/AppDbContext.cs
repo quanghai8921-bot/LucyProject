@@ -33,7 +33,11 @@ public class AppDbContext : DbContext
 
         if (!await Users.AnyAsync(user => user.UserId == "Uadmin"))
         {
-            return;
+            Users.Add(new PaymentUser
+            {
+                UserId = "Uadmin"
+            });
+            await SaveChangesAsync();
         }
 
         Wallets.Add(new Wallet
@@ -43,6 +47,25 @@ public class AppDbContext : DbContext
             Balance = 0,
             CurrencyCode = "XU",
             WalletStatus = "ACTIVE",
+            CreatedAt = DateTime.Now
+        });
+        await SaveChangesAsync();
+    }
+
+    public async Task EnsureGiftExistsAsync()
+    {
+        if (await Gifts.AnyAsync(g => g.GiftId == "G-DIAMOND-001"))
+        {
+            return;
+        }
+
+        Gifts.Add(new Gift
+        {
+            GiftId = "G-DIAMOND-001",
+            GiftName = "Kim Cương",
+            PriceAmount = 10m,
+            IconUrl = "💎",
+            IsActive = true,
             CreatedAt = DateTime.Now
         });
         await SaveChangesAsync();
@@ -113,6 +136,16 @@ public class AppDbContext : DbContext
             entity.ToTable("Gifts");
             entity.HasKey(e => e.GiftId);
             entity.Property(e => e.PriceAmount).HasColumnType("decimal(12,2)");
+
+            entity.HasData(new Gift
+            {
+                GiftId = "G-DIAMOND-001",
+                GiftName = "Kim Cương",
+                PriceAmount = 10m,
+                IconUrl = "💎",
+                IsActive = true,
+                CreatedAt = new DateTime(2024, 1, 1)
+            });
         });
 
         modelBuilder.Entity<Donation>(entity =>
