@@ -2479,7 +2479,8 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
           ),
         ),
       ),
-        if (_showDonationOverlay)
+    ),
+    if (_showDonationOverlay)
           Positioned.fill(
             child: Container(
               color: Colors.black54,
