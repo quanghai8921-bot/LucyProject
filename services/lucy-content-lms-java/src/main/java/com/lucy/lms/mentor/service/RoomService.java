@@ -13,10 +13,17 @@ import com.lucy.lms.mentor.dto.CreateMentorRoomRequest;
 import com.lucy.lms.mentor.dto.RoomStudyPlanDto;
 import com.lucy.lms.mentor.entity.Room;
 import com.lucy.lms.mentor.entity.RoomSubLevel;
+import com.lucy.lms.mentor.entity.LiveRecording;
 import com.lucy.lms.mentor.repository.RoomRepository;
 import com.lucy.lms.mentor.repository.RoomSubLevelRepository;
+import com.lucy.lms.mentor.repository.LiveRecordingRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +44,7 @@ public class RoomService {
     private final LearningLevelRepository learningLevelRepository;
     private final LevelGroupRepository levelGroupRepository;
     private final SubLevelRepository subLevelRepository;
+    private final LiveRecordingRepository liveRecordingRepository;
 
     public RoomService(
             RoomRepository roomRepository,
@@ -45,7 +53,8 @@ public class RoomService {
             ImportedDocxFileRepository importedDocxFileRepository,
             LearningLevelRepository learningLevelRepository,
             LevelGroupRepository levelGroupRepository,
-            SubLevelRepository subLevelRepository) {
+            SubLevelRepository subLevelRepository,
+            LiveRecordingRepository liveRecordingRepository) {
         this.roomRepository = roomRepository;
         this.participantRepository = participantRepository;
         this.roomSubLevelRepository = roomSubLevelRepository;
@@ -53,6 +62,7 @@ public class RoomService {
         this.learningLevelRepository = learningLevelRepository;
         this.levelGroupRepository = levelGroupRepository;
         this.subLevelRepository = subLevelRepository;
+        this.liveRecordingRepository = liveRecordingRepository;
     }
 
     @Transactional
@@ -67,7 +77,7 @@ public class RoomService {
                 request.getLanguageId(),
                 request.getImportedDocxFileId(),
                 request.getRoomTitle(),
-                "LIVE",
+                request.getRoomType() != null && !request.getRoomType().isBlank() ? request.getRoomType() : "LIVE",
                 normalizeAccessType(request.getAccessType(), request.getPriceAmount()),
                 request.getPriceAmount() != null ? request.getPriceAmount() : BigDecimal.ZERO,
                 request.getScheduledStartAt(),
@@ -92,6 +102,9 @@ public class RoomService {
             throw new IllegalArgumentException("LevelNumber phai lon hon 0.");
         }
         if (request.getLanguageId() == null || request.getLanguageId().isBlank()) {
+            if ("FREESTYLE".equalsIgnoreCase(request.getRoomType())) {
+                return null;
+            }
             throw new IllegalArgumentException("LanguageId la bat buoc khi chon LevelNumber.");
         }
 
@@ -248,5 +261,51 @@ public class RoomService {
         String mentorName = roomRepository.findMentorFullNameByUserId(room.getHostUserId());
         room.setHostUserName(mentorName != null ? mentorName : room.getHostUserId());
         room.setParticipantCount(participantRepository.countByRoomIdAndParticipantStatus(room.getRoomId(), "JOINED"));
+        if (room.getLevelId() != null) {
+            learningLevelRepository.findById(room.getLevelId())
+                .ifPresent(lvl -> room.setLevelNumber(lvl.getLevelNumber()));
+        }
+    }
+
+    @Transactional
+    public LiveRecording startRecording(String roomId) {
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
+        
+        LiveRecording recording = new LiveRecording(
+            UUID.randomUUID().toString(),
+            roomId,
+            room.getHostUserId(),
+            "PROCESSING",
+            LocalDateTime.now()
+        );
+        return liveRecordingRepository.save(recording);
+    }
+
+    @Transactional
+    public ResponseEntity<Resource> stopRecording(String roomId) {
+        LiveRecording recording = liveRecordingRepository.findByRoomIdAndRecordingStatus(roomId, "PROCESSING")
+                .orElseThrow(() -> new IllegalArgumentException("No active recording found for room: " + roomId));
+        
+        recording.setRecordingStatus("COMPLETED");
+        recording.setCompletedAt(LocalDateTime.now());
+        
+        long minutes = java.time.Duration.between(recording.getCreatedAt(), recording.getCompletedAt()).toMinutes();
+        recording.setDurationMinutes((int) minutes);
+        
+        // Mock generating an actual media file in bytes (e.g. a small string pretending to be a file)
+        String mockFileData = "Live Recording Session for Room " + roomId + " by User " + recording.getCreatorUserId() + "\nDuration: " + minutes + " minutes.\n[VIDEO CONTENT BYTE STREAM MOCK]";
+        byte[] fileBytes = mockFileData.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        
+        // Generate a URL or just assume it is stored locally
+        recording.setAudioUrl("/uploads/records/" + recording.getRecordingId() + ".mp4");
+        liveRecordingRepository.save(recording);
+
+        ByteArrayResource resource = new ByteArrayResource(fileBytes);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"Live_Record_" + recording.getRecordingId() + ".mp4\"")
+                .contentLength(fileBytes.length)
+                .contentType(MediaType.parseMediaType("video/mp4"))
+                .body(resource);
     }
 }

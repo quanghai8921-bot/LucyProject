@@ -151,6 +151,45 @@ public sealed class AuthController(AuthService authService, IWebHostEnvironment 
         return StatusCode(201, ApiResponse<ApplicationDto>.Ok(application!, "Yeu cau nang cap Creator da duoc gui"));
     }
 
+    [HttpPost("forgot-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+    {
+        var error = await authService.GenerateForgotPasswordOtpAsync(request.Email);
+        if (error is not null)
+            return BadRequest(ApiResponse<object>.Fail(error));
+
+        return Ok(ApiResponse<object>.Ok(new { }, "Ma OTP da duoc gui vao email cua ban."));
+    }
+
+    [HttpPost("verify-otp")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+    public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpRequest request)
+    {
+        var (isValid, error) = await authService.ValidateResetPasswordOtpAsync(request.Email, request.Otp);
+        if (!isValid)
+            return BadRequest(ApiResponse<object>.Fail(error!));
+
+        return Ok(ApiResponse<object>.Ok(new { }, "Ma OTP hop le. Ban co the dat lai mat khau."));
+    }
+
+    [HttpPost("reset-password")]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+    [ProducesResponseType(typeof(ApiResponse<object>), 400)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+    {
+        var error = await authService.ResetPasswordAsync(request.Email, request.Otp, request.NewPassword);
+        if (error is not null)
+            return BadRequest(ApiResponse<object>.Fail(error));
+
+        return Ok(ApiResponse<object>.Ok(new { }, "Dat lai mat khau thanh cong. Vui long dang nhap lai."));
+    }
+
     private string? GetCurrentUserId()
     {
         return User.FindFirstValue(ClaimTypes.NameIdentifier)

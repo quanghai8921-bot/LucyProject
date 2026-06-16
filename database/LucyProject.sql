@@ -696,7 +696,7 @@ CREATE TABLE RoomQuizzes
 (
     -- lưu bài kiểm tra của một phòng
     QuizId VARCHAR(50) PRIMARY KEY,
-    RoomId VARCHAR(50) NOT NULL,
+    RoomId VARCHAR(50) NULL,
     LevelId VARCHAR(50) NOT NULL,
     CreatedBy VARCHAR(50) NOT NULL,
     QuizTitle VARCHAR(150) NOT NULL,
@@ -706,7 +706,6 @@ CREATE TABLE RoomQuizzes
     PublishedAt DATETIME NULL,
     CreatedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (RoomId) REFERENCES Rooms(RoomId),
-    FOREIGN KEY (LevelId) REFERENCES Levels(LevelId),
     FOREIGN KEY (CreatedBy) REFERENCES Users(UserId)
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -752,7 +751,9 @@ CREATE TABLE RoomQuizAttempts
     -- Phần trăm điểm đạt được
     IsPassed TINYINT NOT NULL DEFAULT 0,
     -- Kết quả
-    StartedAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    AttemptStatus VARCHAR(30) NOT NULL DEFAULT 'ASSIGNED',
+    -- ASSIGNED, IN_PROGRESS, SUBMITTED, EXPIRED
+    StartedAt DATETIME NULL,
     -- Làm bài lúc nào
     SubmittedAt DATETIME NULL,
     -- Nộp bài lúc nào

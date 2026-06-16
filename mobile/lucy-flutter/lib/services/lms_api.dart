@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +17,24 @@ class LmsApi {
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
 
+  Future<List<MentorRoomQuiz>> getMentorQuizzes(String mentorId) async {
+    final response = await _client.get(_uri('/api/mentor/room-quizzes/mentor/$mentorId'));
+    final List<dynamic> body = jsonDecode(response.body);
+    return body.map((e) => MentorRoomQuiz.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<RoomQuizQuestion>> getQuizQuestions(String quizId) async {
+    final response = await _client.get(_uri('/api/mentor/room-quizzes/$quizId/questions'));
+    final List<dynamic> body = jsonDecode(response.body);
+    return body.map((e) => RoomQuizQuestion.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<RoomQuizOption>> getQuestionOptions(String questionId) async {
+    final response = await _client.get(_uri('/api/mentor/room-quizzes/questions/$questionId/options'));
+    final List<dynamic> body = jsonDecode(response.body);
+    return body.map((e) => RoomQuizOption.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   Future<List<MentorRoomQuiz>> getRoomQuizzes(String roomId) async {
     final response = await _client.get(_uri('/api/mentor/room-quizzes/room/$roomId'));
     final body = _decode(response);
@@ -26,6 +44,8 @@ class LmsApi {
     final data = body is List<dynamic> ? body : body['data'] as List<dynamic>? ?? [];
     return data.map((item) => MentorRoomQuiz.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
+
+
 
   Future<MentorRoomQuiz> createQuiz(Map<String, dynamic> payload) async {
     final response = await _client.post(
@@ -114,6 +134,25 @@ class LmsApi {
     return rooms.map(LmsRoom.fromLearnerRoom).toList();
   }
 
+  Future<List<RoomQuizAttempt>> getLearnerAssignedQuizzes(String userId) async {
+    final response = await _client.get(_uri('/api/learner/quizzes/$userId'));
+    final List<dynamic> body = jsonDecode(response.body);
+    return body.map((e) => RoomQuizAttempt.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Map<String, dynamic>> submitQuizAttempt(String attemptId, Map<String, String> answers) async {
+    final response = await _client.post(
+      _uri('/api/learner/quizzes/attempt/$attemptId/submit'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'answers': answers}),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong the nop bai.'));
+    }
+    return body;
+  }
+
   Future<List<LmsRoomHistory>> getJoinedRoomHistory(String userId) async {
     final response = await _client.get(_uri('/api/learner/rooms/history/$userId'));
     if (response.statusCode == 404) return [];
@@ -139,6 +178,7 @@ class LmsApi {
     String? hostRole,
     String? accessType,
     num? priceAmount,
+    String? roomType,
     DateTime? scheduledStartAt,
   }) async {
     final response = await _client.post(
@@ -157,6 +197,7 @@ class LmsApi {
         if (hostRole != null) 'hostRole': hostRole,
         if (accessType != null) 'accessType': accessType,
         if (priceAmount != null) 'priceAmount': priceAmount,
+        if (roomType != null) 'roomType': roomType,
       }),
     );
 
@@ -213,6 +254,23 @@ class LmsApi {
       ...data,
       'participantCount': data['participantCount'] ?? 0,
     });
+  }
+
+  Future<void> startLiveRecord(String roomId) async {
+    final response = await _client.post(_uri('/api/mentor/rooms/$roomId/record/start'));
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong bat dau duoc record.'));
+    }
+  }
+
+  Future<Uint8List> stopLiveRecord(String roomId) async {
+    final response = await _client.post(_uri('/api/mentor/rooms/$roomId/record/stop'));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final body = _decode(response);
+      throw LmsApiException(_messageFrom(body, 'Khong ket thuc duoc record.'));
+    }
+    return response.bodyBytes;
   }
 
   Future<LearnerRoom> startStudy(String roomId) async {
@@ -353,6 +411,16 @@ class LmsApi {
 
     final data = body is Map<String, dynamic> ? body['data'] as Map<String, dynamic>? ?? body : <String, dynamic>{};
     return RoomQuiz.fromJson(data);
+  }
+
+  Future<void> sendQuizToLearners(String quizId, String roomId) async {
+    final response = await _client.post(
+      _uri('/api/mentor/room-quizzes/$quizId/send/$roomId'),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw LmsApiException(_messageFrom(body, 'Khong gui duoc bai kiem tra.'));
+    }
   }
 
   Future<QuizSubmitResult> submitQuiz({
@@ -613,6 +681,7 @@ class LmsRoom {
     this.levelNumber,
     this.accessType,
     this.priceAmount,
+    this.roomType,
   });
 
   final String roomId;
@@ -628,6 +697,7 @@ class LmsRoom {
   final int? levelNumber;
   final String? accessType;
   final num? priceAmount;
+  final String? roomType;
 
   factory LmsRoom.fromLearnerRoom(LearnerRoom room) {
     return LmsRoom(
@@ -644,6 +714,7 @@ class LmsRoom {
       levelNumber: _levelNumberFromLevelId(room.levelId),
       accessType: room.accessType,
       priceAmount: room.priceAmount,
+      roomType: room.roomType,
     );
   }
 
@@ -662,13 +733,15 @@ class LmsRoom {
       levelNumber: LearnerRoom._intOrNull(json['levelNumber']) ?? _levelNumberFromLevelId(json['levelId'] as String?),
       accessType: json['accessType'] as String?,
       priceAmount: LearnerRoom._numOrNull(json['priceAmount']),
+      roomType: json['roomType'] as String?,
     );
   }
 
   static int? _levelNumberFromLevelId(String? levelId) {
     if (levelId == null) return null;
-    final match = RegExp(r'\d+').firstMatch(levelId);
-    return match == null ? null : int.tryParse(match.group(0)!);
+    final matches = RegExp(r'\d+').allMatches(levelId);
+    if (matches.isEmpty) return null;
+    return int.tryParse(matches.last.group(0)!);
   }
 }
 
@@ -687,6 +760,7 @@ class LmsRoomHistory extends LmsRoom {
     super.levelNumber,
     super.accessType,
     super.priceAmount,
+    super.roomType,
     this.endedAt,
   });
 
@@ -708,6 +782,7 @@ class LmsRoomHistory extends LmsRoom {
       levelNumber: room.levelNumber,
       accessType: room.accessType,
       priceAmount: room.priceAmount,
+      roomType: room.roomType,
       endedAt: _dateTimeOrNull(json['endedAt'] ?? json['leftAt']),
     );
   }
@@ -1005,7 +1080,7 @@ class MentorRoomQuiz {
 }
 
 class RoomQuizQuestion {
-  const RoomQuizQuestion({
+  RoomQuizQuestion({
     required this.questionId,
     required this.quizId,
     required this.content,
@@ -1018,6 +1093,7 @@ class RoomQuizQuestion {
   final String content;
   final String questionType;
   final num points;
+  List<RoomQuizOption> options = [];
 
   factory RoomQuizQuestion.fromJson(Map<String, dynamic> json) {
     return RoomQuizQuestion(
@@ -1066,4 +1142,39 @@ class LmsApiException implements Exception {
 
   @override
   String toString() => message;
+}
+
+class RoomQuizAttempt {
+  const RoomQuizAttempt({
+    required this.attemptId,
+    required this.quizId,
+    required this.quizTitle,
+    required this.quizType,
+    required this.durationMinutes,
+    required this.attemptStatus,
+    required this.scorePercent,
+    required this.isPassed,
+  });
+
+  final String attemptId;
+  final String quizId;
+  final String quizTitle;
+  final String quizType;
+  final int durationMinutes;
+  final String attemptStatus;
+  final num scorePercent;
+  final bool isPassed;
+
+  factory RoomQuizAttempt.fromJson(Map<String, dynamic> json) {
+    return RoomQuizAttempt(
+      attemptId: '${json['attemptId'] ?? ''}',
+      quizId: '${json['quizId'] ?? ''}',
+      quizTitle: '${json['quizTitle'] ?? 'Bài kiểm tra'}',
+      quizType: '${json['quizType'] ?? 'MULTIPLE_CHOICE'}',
+      durationMinutes: json['durationMinutes'] is int ? json['durationMinutes'] as int : int.tryParse('${json['durationMinutes']}') ?? 15,
+      attemptStatus: '${json['attemptStatus'] ?? 'ASSIGNED'}',
+      scorePercent: json['scorePercent'] is num ? (json['scorePercent'] as num) : num.tryParse('${json['scorePercent']}') ?? 0,
+      isPassed: json['isPassed'] == true,
+    );
+  }
 }

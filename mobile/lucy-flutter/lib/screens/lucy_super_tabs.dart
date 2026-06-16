@@ -1,8 +1,9 @@
-﻿import 'dart:math' as math;
+import 'dart:math' as math;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/lms_api.dart';
+import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
 
 // =========================================================================
@@ -433,12 +434,53 @@ class LucySuperProfile extends StatefulWidget {
 
 class _LucySuperProfileState extends State<LucySuperProfile> {
   final priceController = TextEditingController(text: '49.00');
+  final PaymentApi _paymentApi = PaymentApi();
+  double _balance = 0.0;
+  bool _isWalletLoading = false;
+  bool _isWithdrawing = false;
+
+  String get _creatorDisplayName {
+    final fullName = AppSession.current?.fullName.trim();
+    return fullName == null || fullName.isEmpty ? 'Creator' : fullName;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWallet();
+  }
+
+  Future<void> _loadWallet() async {
+    setState(() {
+      _isWalletLoading = true;
+    });
+    try {
+      final wallet = await _paymentApi.getWallet();
+      if (!mounted) return;
+      setState(() {
+        _balance = wallet.balance.toDouble();
+      });
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không tải được ví: $e')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isWalletLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Stack(
       children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
         // Header
         const Text(
           "Hồ Sơ Nhà Sáng Tạo Cao Cấp ✪",
@@ -455,14 +497,44 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
         _buildCreatorHubCard(),
         const SizedBox(height: 24),
 
-        // 2. Default package pricing manager
+        // 2. Wallet & Withdraw Transactions (Interactive)
+        _buildInteractiveWalletCard(),
+        const SizedBox(height: 24),
+
+        // 3. Default package pricing manager
         _buildDefaultPricingCard(),
         const SizedBox(height: 24),
 
-        // 3. Revenue Distribution custom chart
+        // 4. Revenue Distribution custom chart
         _buildRevenueDistributionCard(),
       ],
-    );
+    ),
+    // Payout transfering overlay spinner
+    if (_isWithdrawing)
+      Positioned.fill(
+        child: Container(
+          color: Colors.black.withOpacity(0.8),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const CircularProgressIndicator(color: AppColors.primary),
+                const SizedBox(height: 16),
+                const Text(
+                  "Đang kết nối cổng ngân hàng chuyển tiền...",
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  "Đang xử lý yêu cầu rút tiền...",
+                  style: TextStyle(color: Colors.orange.shade300, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    ], );
   }
 
   Widget _buildCreatorHubCard() {
@@ -576,6 +648,126 @@ class _LucySuperProfileState extends State<LucySuperProfile> {
         ],
       ),
     );
+  }
+
+  Widget _buildInteractiveWalletCard() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.orange.shade200.withOpacity(0.8)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.account_balance_wallet, color: Colors.orange, size: 18),
+                  SizedBox(width: 6),
+                  Text("RÚT TIỀN THU NHẬP", style: TextStyle(color: Colors.orange, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 0.5)),
+                ],
+              ),
+              Text(
+                _isWalletLoading ? "Đang tải ví..." : "Ví: ${_balance.toStringAsFixed(0)} Xu",
+                style: TextStyle(color: Colors.orange.shade800, fontSize: 13, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          const Text("Cài đặt tài khoản ngân hàng liên kết:", style: TextStyle(color: AppColors.textPrimary, fontSize: 11, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.inputBorder),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.credit_card, size: 16, color: AppColors.textSecondary),
+                SizedBox(width: 10),
+                Text("Chưa liên kết tài khoản ngân hàng", style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _balance > 0 ? _showWithdrawDialog : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange.shade600,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              minimumSize: const Size(double.infinity, 46),
+            ),
+            child: Text(
+              _balance > 0 ? "YÊU CẦU RÚT SỐ DƯ HIỆN CÓ" : "CHƯA CÓ SỐ DƯ ĐỂ RÚT",
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showWithdrawDialog() async {
+    final bankNameController = TextEditingController();
+    final accountNumberController = TextEditingController();
+    final accountNameController = TextEditingController(text: _creatorDisplayName.toUpperCase());
+    final amountController = TextEditingController(text: _balance.toStringAsFixed(0));
+
+    final shouldSubmit = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Yeu cau rut tien'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: amountController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'So Xu muon rut')),
+            TextField(controller: bankNameController, decoration: const InputDecoration(labelText: 'Tên ngân hàng')),
+            TextField(controller: accountNumberController, decoration: const InputDecoration(labelText: 'So tai khoan')),
+            TextField(controller: accountNameController, decoration: const InputDecoration(labelText: 'Ten chu tai khoan')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Huy')),
+          ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Gui yeu cau')),
+        ],
+      ),
+    );
+    if (shouldSubmit != true) return;
+
+    setState(() {
+      _isWithdrawing = true;
+    });
+
+    try {
+      await _paymentApi.withdraw(
+        amount: num.tryParse(amountController.text.trim()) ?? 0,
+        bankName: bankNameController.text.trim(),
+        bankAccountNumber: accountNumberController.text.trim(),
+        bankAccountName: accountNameController.text.trim(),
+      );
+      await _loadWallet();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Da gui yeu cau rut tien, dang cho admin duyet.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Khong tao duoc yeu cau rut tien: ' + e.toString())),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isWithdrawing = false;
+        });
+      }
+    }
   }
 
   Widget _buildRevenueDistributionCard() {

@@ -10,6 +10,7 @@ import 'package:lucy_app/services/agora_audio_service.dart';
 import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/realtime_socket_service.dart';
+import 'package:lucy_app/services/local_recording/local_recording.dart';
 
 class LucyProHome extends StatefulWidget {
   const LucyProHome({super.key});
@@ -384,6 +385,8 @@ class _LucyProHomeState extends State<LucyProHome> {
             bool isAiModeratorEnabled = true;
             bool openNow = true;
             DateTime scheduledAt = DateTime.now().add(const Duration(hours: 1));
+            bool isFreestyleMode = false;
+            final priceController = TextEditingController(text: '0');
 
             return StatefulBuilder(builder: (context, setInnerState) {
               return SafeArea(
@@ -431,7 +434,41 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ),
                       const SizedBox(height: 20),
 
-                      // 1. Language selector chips
+                      // Mode Toggle
+                      SegmentedButton<bool>(
+                        segments: const [
+                          ButtonSegment<bool>(
+                            value: false,
+                            icon: Icon(Icons.school),
+                            label: Text('Live Dạy Học'),
+                          ),
+                          ButtonSegment<bool>(
+                            value: true,
+                            icon: Icon(Icons.mic_external_on),
+                            label: Text('Live Tự Do'),
+                          ),
+                        ],
+                        selected: {isFreestyleMode},
+                        onSelectionChanged: (values) {
+                          setInnerState(() {
+                            isFreestyleMode = values.first;
+                          });
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                            (Set<WidgetState> states) {
+                              if (states.contains(WidgetState.selected)) {
+                                return AppColors.primary.withOpacity(0.1);
+                              }
+                              return Colors.white;
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      if (!isFreestyleMode) ...[
+                        // 1. Language selector chips
                       const Text(
                         "Ngôn ngữ giảng dạy:",
                         style: TextStyle(
@@ -643,6 +680,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                         );
                       }),
                       const SizedBox(height: 20),
+                      ],
 
                       // 3. Duration slider
                       Row(
@@ -757,6 +795,26 @@ class _LucyProHomeState extends State<LucyProHome> {
                       ],
                       const SizedBox(height: 16),
 
+                      const Text(
+                        "Giá vé vào cửa (Xu):",
+                        style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: priceController,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: 'Nhập số Xu (Ví dụ: 0 hoặc 500)',
+                          border: OutlineInputBorder(),
+                          isDense: true,
+                          prefixIcon: Icon(Icons.monetization_on, color: Colors.orange),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
                       // Confirm button
                       ElevatedButton(
                         onPressed: () async {
@@ -771,13 +829,14 @@ class _LucyProHomeState extends State<LucyProHome> {
                             );
                             return;
                           }
-                          if (levelNumber == null || levelNumber <= 0) {
+                          if (!isFreestyleMode && (levelNumber == null || levelNumber <= 0)) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Vui lòng nhập level hợp lệ.')),
                             );
                             return;
                           }
+                          final priceAmount = num.tryParse(priceController.text.trim()) ?? 0;
 
                           Navigator.pop(context); // Close BottomSheet
                           try {
@@ -786,16 +845,19 @@ class _LucyProHomeState extends State<LucyProHome> {
                               final room = await _lmsApi.createMentorRoom(
                                 hostUserId: session.userId,
                                 roomTitle: roomTitle,
-                                levelNumber: levelNumber,
-                                languageId: selectedLang == 'Anh'
+                                levelNumber: isFreestyleMode ? null : levelNumber,
+                                languageId: isFreestyleMode ? null : (selectedLang == 'Anh'
                                     ? 'ENG'
                                     : selectedLang == 'Trung'
                                         ? 'CHI'
-                                        : 'JAP',
+                                        : 'JAP'),
                                 importedDocxFileId:
-                                    selectedDocxFile?.importedDocxFileId,
+                                    isFreestyleMode ? null : selectedDocxFile?.importedDocxFileId,
                                 maxParticipants: 30,
                                 roomStatus: openNow ? 'OPEN' : 'SCHEDULED',
+                                roomType: isFreestyleMode ? 'FREESTYLE' : 'LIVE',
+                                priceAmount: priceAmount,
+                                accessType: priceAmount > 0 ? 'PAID' : 'FREE',
                                 scheduledStartAt:
                                     openNow ? DateTime.now() : scheduledAt,
                               );
@@ -808,6 +870,7 @@ class _LucyProHomeState extends State<LucyProHome> {
                                   curriculum: selectedCurriculum,
                                   duration: roomDuration.toInt(),
                                   aiEnabled: isAiModeratorEnabled,
+                                  isFreestyleMode: isFreestyleMode,
                                 );
                               } else if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -853,6 +916,7 @@ class _LucyProHomeState extends State<LucyProHome> {
     required String curriculum,
     required int duration,
     required bool aiEnabled,
+    bool isFreestyleMode = false,
   }) {
     showGeneralDialog(
       context: context,
@@ -867,6 +931,7 @@ class _LucyProHomeState extends State<LucyProHome> {
           duration: duration,
           aiEnabled: aiEnabled,
           curriculumDocs: _curriculumDocs,
+          isFreestyleMode: isFreestyleMode,
         );
       },
     );
@@ -1958,6 +2023,7 @@ class LiveStudioRoomDialog extends StatefulWidget {
   final num joinFee;
   final bool enableLocalRecording;
   final List<Map<String, dynamic>> curriculumDocs;
+  final bool isFreestyleMode;
 
   const LiveStudioRoomDialog({
     super.key,
@@ -1969,6 +2035,7 @@ class LiveStudioRoomDialog extends StatefulWidget {
     this.joinFee = 0,
     this.enableLocalRecording = false,
     required this.curriculumDocs,
+    this.isFreestyleMode = false,
   });
 
   @override
@@ -1978,6 +2045,7 @@ class LiveStudioRoomDialog extends StatefulWidget {
 class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
     with TickerProviderStateMixin {
   final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
+  final LocalRecordingService _localRecorder = LocalRecordingService();
   final AgoraAudioService _agoraAudio = AgoraAudioService();
   final LmsApi _lmsApi = LmsApi();
   int _participantCount = 0;
@@ -2164,7 +2232,8 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
         if (rId != widget.roomId) return;
         if (!mounted) return;
 
-        final name = '${payload['fromUserId'] ?? payload['FromUserId'] ?? 'Học viên'}';
+        final name =
+            '${payload['fromDisplayName'] ?? payload['FromDisplayName'] ?? 'Học viên'}';
         final amount = '${payload['netAmount'] ?? payload['NetAmount'] ?? '0'}';
         final giftUrl = payload['giftImageUrl'] ?? payload['GiftImageUrl'];
 
@@ -2469,7 +2538,8 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
                         const SizedBox(height: 16),
 
                         // Pinnable documents slider in-studio
-                        _buildStudioSlideSlider(),
+                        if (!widget.isFreestyleMode)
+                          _buildStudioSlideSlider(),
                       ],
                     ),
                   ),
@@ -2482,41 +2552,44 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
     ),
     if (_showDonationOverlay)
           Positioned.fill(
-            child: Container(
-              color: Colors.black54,
-              child: Center(
-                child: TweenAnimationBuilder<double>(
-                  tween: Tween<double>(begin: 0.5, end: 1.0),
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.elasticOut,
-                  builder: (context, scale, child) {
-                    return Transform.scale(
-                      scale: scale,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_donationImageUrl != null && _donationImageUrl!.startsWith('http'))
-                            Image.network(_donationImageUrl!, width: 140, height: 140)
-                          else if (_donationImageUrl != null)
-                            Text(_donationImageUrl!, style: const TextStyle(fontSize: 100))
-                          else
-                            const Icon(Icons.card_giftcard, size: 100, color: Colors.pinkAccent),
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                            decoration: BoxDecoration(
-                              color: Colors.pinkAccent.withOpacity(0.9),
-                              borderRadius: BorderRadius.circular(24),
+            child: Material(
+              type: MaterialType.transparency,
+              child: Container(
+                color: Colors.black54,
+                child: Center(
+                  child: TweenAnimationBuilder<double>(
+                    tween: Tween<double>(begin: 0.5, end: 1.0),
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.elasticOut,
+                    builder: (context, scale, child) {
+                      return Transform.scale(
+                        scale: scale,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (_donationImageUrl != null && _donationImageUrl!.startsWith('http'))
+                              Image.network(_donationImageUrl!, width: 140, height: 140)
+                            else if (_donationImageUrl != null)
+                              Text(_donationImageUrl!, style: const TextStyle(fontSize: 100))
+                            else
+                              const Icon(Icons.card_giftcard, size: 100, color: Colors.pinkAccent),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: Colors.pinkAccent.withOpacity(0.9),
+                                borderRadius: BorderRadius.circular(24),
+                              ),
+                              child: Text(
+                                _donationMessage ?? '',
+                                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
                             ),
-                            child: Text(
-                              _donationMessage ?? '',
-                              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
@@ -2525,7 +2598,80 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
     );
   }
 
+  String _getNextButtonLabel(RoomStudyPlan? plan, int currentIndex) {
+    if (plan == null) return 'Sublevel tiếp';
+    bool isLast = currentIndex >= plan.subLevels.length - 1;
+    if (isLast) return 'Gửi bài kiểm tra';
+
+    String langId = plan.importedDocxFile?.languageId?.toUpperCase() ?? '';
+    if (langId.contains('ZH') || langId.contains('CHINESE')) {
+      return 'Câu hỏi tiếp theo';
+    }
+    if (langId.contains('JA') || langId.contains('JAPANESE')) {
+      return 'Đã hoàn thành chủ đề level';
+    }
+    return 'Sublevel tiếp';
+  }
+
+  void _showSendQuizDialog() async {
+    if (widget.roomId == null) return;
+    try {
+      final session = AppSession.current;
+      if (session == null) return;
+      final quizzes = await _lmsApi.getMentorQuizzes(session.userId);
+      if (!mounted) return;
+      if (quizzes.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Chưa có bài kiểm tra nào trong thư viện của bạn.')));
+        return;
+      }
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text('Chọn bài kiểm tra để gửi'),
+            content: SizedBox(
+              width: double.maxFinite,
+              height: 200,
+              child: ListView.builder(
+                itemCount: quizzes.length,
+                itemBuilder: (context, index) {
+                  final quiz = quizzes[index];
+                  return ListTile(
+                    title: Text(quiz.title),
+                    subtitle: Text(quiz.quizType == 'ESSAY' ? 'Tự luận' : 'Trắc nghiệm'),
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      try {
+                        await _lmsApi.sendQuizToLearners(quiz.quizId, widget.roomId!);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã gửi bài kiểm tra thành công!')));
+                        }
+                      } catch (e) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+                        }
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Đóng')),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Lỗi: $e')));
+      }
+    }
+  }
+
   Widget _buildStudyPlanCard() {
+    if (widget.isFreestyleMode) return const SizedBox.shrink();
+
     final plan = _studyPlan;
     final activeIndex = plan == null || plan.subLevels.isEmpty
         ? 0
@@ -2637,13 +2783,17 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _isStudyStarted && active != null
-                      ? _completeActiveSubLevel
+                      ? () {
+                          final isLast = _activeSubLevelIndex >= ((plan?.subLevels.length ?? 1) - 1);
+                          if (isLast) {
+                            _showSendQuizDialog();
+                          } else {
+                            _completeActiveSubLevel();
+                          }
+                        }
                       : null,
                   icon: const Icon(Icons.skip_next, size: 16),
-                  label: Text(_activeSubLevelIndex >=
-                          ((plan?.subLevels.length ?? 1) - 1)
-                      ? 'Hoàn tất'
-                      : 'Sublevel tiếp'),
+                  label: Text(_getNextButtonLabel(plan, _activeSubLevelIndex)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,
                     side: const BorderSide(color: AppColors.primary),
@@ -2712,7 +2862,62 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
               ),
             ),
           ),
-          IconButton(
+          Row(
+            children: [
+              IconButton(
+                onPressed: () async {
+                  if (widget.roomId == null || widget.roomId!.isEmpty) return;
+                  if (_isRecording) {
+                    try {
+                      final bytes = await _lmsApi.stopLiveRecord(widget.roomId!);
+                      setState(() {
+                        _isRecording = false;
+                      });
+                      final savedTo = await downloadBytes(
+                        fileName: 'LiveRecord_${widget.roomId}.mp4',
+                        bytes: bytes,
+                        mimeType: 'video/mp4',
+                      );
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Đã lưu file Record tại: $savedTo')),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Lỗi tải Record: $e')),
+                        );
+                      }
+                    }
+                  } else {
+                    try {
+                      await _lmsApi.startLiveRecord(widget.roomId!);
+                      setState(() {
+                        _isRecording = true;
+                        _recordingStartedAt = DateTime.now();
+                      });
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Đã bắt đầu ghi hình Server!')),
+                        );
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Lỗi bắt đầu Record: $e')),
+                        );
+                      }
+                    }
+                  }
+                },
+                icon: Icon(
+                  _isRecording ? Icons.stop_circle : Icons.fiber_manual_record,
+                  color: _isRecording ? Colors.red : Colors.grey,
+                  size: 28,
+                ),
+              ),
+              IconButton(
             onPressed: () {
               // Confirm exit dialog inside light theme
               showDialog(
@@ -2770,6 +2975,8 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
             },
             icon: const Icon(Icons.power_settings_new, color: Colors.redAccent),
           ),
+            ],
+          ),
         ],
       ),
     );
@@ -2794,87 +3001,89 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.slideshow, color: AppColors.primary, size: 18),
-                  SizedBox(width: 6),
-                  Text(
-                    "SLIDE GIÁO TRÌNH ĐANG CHIẾU",
-                    style: TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 9,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.8),
+          if (!widget.isFreestyleMode) ...[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Row(
+                  children: [
+                    Icon(Icons.slideshow, color: AppColors.primary, size: 18),
+                    SizedBox(width: 6),
+                    Text(
+                      "SLIDE GIÁO TRÌNH ĐANG CHIẾU",
+                      style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.8),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                ],
-              ),
+                  child: Text(
+                    _isAgoraConnected
+                        ? (widget.language == 'Anh'
+                            ? "🇬🇧 English"
+                            : widget.language == 'Trung'
+                                ? "🇨🇳 Chinese"
+                                : "🇯🇵 Japanese")
+                        : 'Audio dang ket noi',
+                    style: const TextStyle(
+                        color: AppColors.primaryDark,
+                        fontSize: 9,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Text(
+              _currentlyPinnedTitle,
+              style: const TextStyle(
+                  color: AppColors.textPrimary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Học viên sẽ nghe thấy giọng nói của bạn kết hợp với nội dung slide này.",
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
+            ),
+            if (widget.joinFee > 0) ...[
+              const SizedBox(height: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange.shade200),
                 ),
                 child: Text(
-                  _isAgoraConnected
-                      ? (widget.language == 'Anh'
-                          ? "🇬🇧 English"
-                          : widget.language == 'Trung'
-                              ? "🇨🇳 Chinese"
-                              : "🇯🇵 Japanese")
-                      : 'Audio dang ket noi',
-                  style: const TextStyle(
-                      color: AppColors.primaryDark,
-                      fontSize: 9,
+                  'Phong Creator tra phi: ${widget.joinFee.toStringAsFixed(0)} Xu',
+                  style: TextStyle(
+                      color: Colors.orange.shade800,
+                      fontSize: 10.5,
                       fontWeight: FontWeight.bold),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: 14),
-          Text(
-            _currentlyPinnedTitle,
-            style: const TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            "Học viên sẽ nghe thấy giọng nói của bạn kết hợp với nội dung slide này.",
-            style: TextStyle(color: AppColors.textSecondary, fontSize: 10.5),
-          ),
-          if (widget.joinFee > 0) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade50,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.orange.shade200),
-              ),
-              child: Text(
-                'Phong Creator tra phi: ${widget.joinFee.toStringAsFixed(0)} Xu',
-                style: TextStyle(
-                    color: Colors.orange.shade800,
+            if (_agoraError != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                _agoraError!,
+                style: const TextStyle(
+                    color: Colors.redAccent,
                     fontSize: 10.5,
-                    fontWeight: FontWeight.bold),
+                    fontWeight: FontWeight.w600),
               ),
-            ),
+            ],
+            const SizedBox(height: 16),
           ],
-          if (_agoraError != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              _agoraError!,
-              style: const TextStyle(
-                  color: Colors.redAccent,
-                  fontSize: 10.5,
-                  fontWeight: FontWeight.w600),
-            ),
-          ],
-          const SizedBox(height: 16),
 
           // Custom Painted Animated waveform visualizer inside active board
           Container(
@@ -3039,43 +3248,40 @@ class LiveStudioRoomDialogState extends State<LiveStudioRoomDialog>
 
   Future<void> _toggleLocalRecording() async {
     if (!_isRecording) {
+      final success = await _localRecorder.start();
+      if (!success) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Khong the bat dau ghi man hinh.')),
+          );
+        }
+        return;
+      }
+      
       setState(() {
         _isRecording = true;
         _recordingStartedAt = DateTime.now();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Da bat dau ghi local tren may.')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Da bat dau ghi local tren may.')),
+        );
+      }
       return;
     }
 
-    final startedAt = _recordingStartedAt ?? DateTime.now();
     final endedAt = DateTime.now();
     setState(() {
       _isRecording = false;
       _recordingStartedAt = null;
     });
-    final summary = [
-      'Lucy live recording',
-      'RoomId: ${widget.roomId ?? ''}',
-      'Curriculum: ${widget.curriculum}',
-      'Language: ${widget.language}',
-      'JoinFee: ${widget.joinFee}',
-      'StartedAt: ${startedAt.toIso8601String()}',
-      'EndedAt: ${endedAt.toIso8601String()}',
-      'DurationSeconds: ${endedAt.difference(startedAt).inSeconds}',
-      'PinnedMaterial: $_currentlyPinnedTitle',
-    ].join('\n');
-    final fileName =
-        'lucy_live_recording_${endedAt.millisecondsSinceEpoch}.txt';
-    await downloadBytes(
-      fileName: fileName,
-      bytes: Uint8List.fromList(utf8.encode(summary)),
-      mimeType: 'text/plain',
-    );
+    
+    final fileName = 'lucy_live_recording_${endedAt.millisecondsSinceEpoch}';
+    await _localRecorder.stop(fileName);
+    
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Da luu ban ghi local: $fileName')),
+        SnackBar(content: Text('Da luu ban ghi video local: $fileName.webm')),
       );
     }
   }

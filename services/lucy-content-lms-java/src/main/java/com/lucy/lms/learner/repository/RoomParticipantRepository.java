@@ -16,4 +16,6 @@ public interface RoomParticipantRepository extends JpaRepository<RoomParticipant
     List<RoomParticipant> findByRoomIdAndParticipantStatus(String roomId, String participantStatus);
 
     Integer countByRoomIdAndParticipantStatus(String roomId, String participantStatus);
+
+    List<RoomParticipant> findByUserIdOrderByJoinedAtDesc(String userId);
 }

@@ -13,6 +13,8 @@ import com.lucy.lms.learner.repository.AttendanceCheckRepository;
 import com.lucy.lms.learner.repository.LearningSessionRepository;
 import com.lucy.lms.learner.repository.RoomParticipantRepository;
 import com.lucy.lms.learner.repository.UserProgressRepository;
+import com.lucy.lms.common.entity.Notification;
+import com.lucy.lms.common.repository.NotificationRepository;
 import com.lucy.lms.content.repository.SubLevelRepository;
 import com.lucy.lms.mentor.entity.Room;
 import com.lucy.lms.mentor.entity.RoomQuiz;
@@ -61,6 +63,7 @@ public class LearnerRoomService {
     private final RoomQuizAttemptAnswerRepository roomQuizAttemptAnswerRepository;
     private final UserProgressRepository userProgressRepository;
     private final SubLevelRepository subLevelRepository;
+    private final NotificationRepository notificationRepository;
 
     public LearnerRoomService(
             RoomRepository roomRepository,
@@ -73,7 +76,8 @@ public class LearnerRoomService {
             RoomQuizAttemptRepository roomQuizAttemptRepository,
             RoomQuizAttemptAnswerRepository roomQuizAttemptAnswerRepository,
             UserProgressRepository userProgressRepository,
-            SubLevelRepository subLevelRepository) {
+            SubLevelRepository subLevelRepository,
+            NotificationRepository notificationRepository) {
         this.roomRepository = roomRepository;
         this.participantRepository = participantRepository;
         this.learningSessionRepository = learningSessionRepository;
@@ -85,12 +89,26 @@ public class LearnerRoomService {
         this.roomQuizAttemptAnswerRepository = roomQuizAttemptAnswerRepository;
         this.userProgressRepository = userProgressRepository;
         this.subLevelRepository = subLevelRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     public List<LearnerRoomDto> getAvailableRooms() {
         return roomRepository.findAll().stream()
                 .filter(this::canLearnerJoin)
                 .sorted(Comparator.comparing(Room::getScheduledStartAt))
+                .map(this::toRoomDto)
+                .toList();
+    }
+
+    public List<LearnerRoomDto> getJoinedRoomHistory(String userId) {
+        requireText(userId, "userId is required.");
+        List<String> roomIds = participantRepository.findByUserIdOrderByJoinedAtDesc(userId).stream()
+                .map(RoomParticipant::getRoomId)
+                .distinct()
+                .toList();
+        return roomIds.stream()
+                .map(roomId -> roomRepository.findById(roomId).orElse(null))
+                .filter(room -> room != null)
                 .map(this::toRoomDto)
                 .toList();
     }
@@ -257,6 +275,25 @@ public class LearnerRoomService {
         completeLearningSessions(request, passed);
         if (passed) {
             markProgressPassed(request);
+            Notification notification = new Notification(
+                    UUID.randomUUID().toString(),
+                    request.getUserId(),
+                    "Hoàn thành xuất sắc",
+                    "Bạn đủ điều kiện nâng lên 1 level mới.",
+                    "LEVEL_UP_ELIGIBLE",
+                    "ROOM"
+            );
+            notificationRepository.save(notification);
+        } else {
+            Notification notification = new Notification(
+                    UUID.randomUUID().toString(),
+                    request.getUserId(),
+                    "Chưa đủ điểm vượt qua",
+                    "Bạn không đủ điều kiện nâng level mới do điểm số chưa đạt mức yêu cầu.",
+                    "LEVEL_UP_FAILED",
+                    "ROOM"
+            );
+            notificationRepository.save(notification);
         }
         return new QuizSubmitResultDto(attempt.getAttemptId(), scorePercent, passed, results);
     }

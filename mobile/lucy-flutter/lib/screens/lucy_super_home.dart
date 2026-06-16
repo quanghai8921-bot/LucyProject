@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
@@ -15,7 +15,30 @@ class _LucySuperHomeState extends State<LucySuperHome> {
   final List<Map<String, dynamic>> _podcasts = [];
   final List<Map<String, dynamic>> _premiumSeries = [];
   final List<Map<String, dynamic>> _curriculumDocs = [];
+  final List<LearnerRoom> _creatorRooms = [];
   final LmsApi _lmsApi = LmsApi();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCreatorRooms();
+  }
+
+  Future<void> _fetchCreatorRooms() async {
+    final session = AppSession.current;
+    if (session == null || session.userId.isEmpty) return;
+    try {
+      final rooms = await _lmsApi.getMentorRooms(session.userId);
+      if (mounted) {
+        setState(() {
+          _creatorRooms.clear();
+          _creatorRooms.addAll(rooms);
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching creator rooms: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +51,21 @@ class _LucySuperHomeState extends State<LucySuperHome> {
 
         // 2. Inherited Action: Create Live Room (Tận dụng Dialog từ Pro)
         _buildInheritedActions(),
+        const SizedBox(height: 12),
+        if (_creatorRooms.isNotEmpty) ...[
+          SizedBox(
+            height: 140,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _creatorRooms.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final room = _creatorRooms[index];
+                return _buildRoomCard(room);
+              },
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
 
         // 3. PodcastStudioWidget (Horizontal List View & Management)
@@ -142,6 +180,68 @@ class _LucySuperHomeState extends State<LucySuperHome> {
     );
   }
 
+  Widget _buildRoomCard(LearnerRoom room) {
+    return Container(
+      width: 240,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: room.roomStatus == 'LIVE' ? Colors.red.withOpacity(0.1) : Colors.orange.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              room.roomStatus ?? 'UNKNOWN',
+              style: TextStyle(
+                color: room.roomStatus == 'LIVE' ? Colors.red : Colors.orange,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            room.roomTitle ?? 'Phòng học Live',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              const Icon(Icons.people_outline, size: 14, color: AppColors.textSecondary),
+              const SizedBox(width: 4),
+              Text(
+                '${room.maxParticipants ?? 0} người',
+                style: const TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // ==========================================
   // INHERITED ACTION BUTTONS (CREATES ROOM USING PRO STUDIO DIALOG)
   // ==========================================
@@ -211,14 +311,16 @@ class _LucySuperHomeState extends State<LucySuperHome> {
             double roomDuration = 60.0;
             bool isAiModeratorEnabled = true;
             final livePriceController = TextEditingController(text: '0');
+            bool isFreestyleMode = false;
 
             return StatefulBuilder(builder: (context, setInnerState) {
               return Padding(
                 padding: EdgeInsets.fromLTRB(24, 20, 24, MediaQuery.of(context).viewInsets.bottom + 32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
                     Center(
                       child: Container(
                         width: 44,
@@ -250,74 +352,105 @@ class _LucySuperHomeState extends State<LucySuperHome> {
                       style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
                     ),
                     const SizedBox(height: 20),
-                    const Text(
-                      "Ngôn ngữ giảng dạy:",
-                      style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: ['Anh', 'Trung', 'Nhật'].map((lang) {
-                        bool isCurrent = selectedLang == lang;
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 12.0),
-                          child: ChoiceChip(
-                            label: Text(
-                              lang == 'Anh' ? '🇬🇧 Tiếng Anh' : lang == 'Trung' ? '🇨🇳 Tiếng Trung' : '🇯🇵 Tiếng Nhật',
-                              style: TextStyle(
-                                color: isCurrent ? Colors.white : AppColors.textPrimary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                            selected: isCurrent,
-                            onSelected: (selected) {
-                              setInnerState(() {
-                                selectedLang = lang;
-                              });
-                            },
-                            selectedColor: AppColors.primary,
-                            backgroundColor: Colors.grey.shade50,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: BorderSide(
-                                color: isCurrent ? AppColors.primary : AppColors.inputBorder,
-                              ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Giáo trình giảng dạy:",
-                      style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Column(
-                      children: [
-                        RadioListTile<String>(
-                          title: const Text("LISA Core Curriculum (Học cùng Robot AI)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                          value: 'LISA',
-                          groupValue: selectedCurriculum,
-                          activeColor: AppColors.primary,
-                          onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment<bool>(
+                          value: false,
+                          label: Text('Live Dạy Học', style: TextStyle(fontSize: 12)),
+                          icon: Icon(Icons.school, size: 16),
                         ),
-                        RadioListTile<String>(
-                          title: const Text("Chinese Standard Course (HSK Tương Tác)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                          value: 'Chinese',
-                          groupValue: selectedCurriculum,
-                          activeColor: AppColors.primary,
-                          onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
-                        ),
-                        RadioListTile<String>(
-                          title: const Text("JLPT Preparation Standard (Giáo trình tiếng Nhật)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                          value: 'Japanese',
-                          groupValue: selectedCurriculum,
-                          activeColor: AppColors.primary,
-                          onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
+                        ButtonSegment<bool>(
+                          value: true,
+                          label: Text('Live Tự Do', style: TextStyle(fontSize: 12)),
+                          icon: Icon(Icons.mic, size: 16),
                         ),
                       ],
+                      selected: {isFreestyleMode},
+                      onSelectionChanged: (Set<bool> newSelection) {
+                        setInnerState(() {
+                          isFreestyleMode = newSelection.first;
+                        });
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                          if (states.contains(MaterialState.selected)) {
+                            return AppColors.primary.withOpacity(0.1);
+                          }
+                          return Colors.transparent;
+                        }),
+                      ),
                     ),
+                    if (!isFreestyleMode) ...[
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Ngôn ngữ giảng dạy:",
+                        style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: ['Anh', 'Trung', 'Nhật'].map((lang) {
+                          bool isCurrent = selectedLang == lang;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 12.0),
+                            child: ChoiceChip(
+                              label: Text(
+                                lang == 'Anh' ? '🇬🇧 Tiếng Anh' : lang == 'Trung' ? '🇨🇳 Tiếng Trung' : '🇯🇵 Tiếng Nhật',
+                                style: TextStyle(
+                                  color: isCurrent ? Colors.white : AppColors.textPrimary,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                              selected: isCurrent,
+                              onSelected: (selected) {
+                                setInnerState(() {
+                                  selectedLang = lang;
+                                });
+                              },
+                              selectedColor: AppColors.primary,
+                              backgroundColor: Colors.grey.shade50,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: BorderSide(
+                                  color: isCurrent ? AppColors.primary : AppColors.inputBorder,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 20),
+                      const Text(
+                        "Giáo trình giảng dạy:",
+                        style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Column(
+                        children: [
+                          RadioListTile<String>(
+                            title: const Text("LISA Core Curriculum (Học cùng Robot AI)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                            value: 'LISA',
+                            groupValue: selectedCurriculum,
+                            activeColor: AppColors.primary,
+                            onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
+                          ),
+                          RadioListTile<String>(
+                            title: const Text("Chinese Standard Course (HSK Tương Tác)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                            value: 'Chinese',
+                            groupValue: selectedCurriculum,
+                            activeColor: AppColors.primary,
+                            onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
+                          ),
+                          RadioListTile<String>(
+                            title: const Text("JLPT Preparation Standard (Giáo trình tiếng Nhật)", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                            value: 'Japanese',
+                            groupValue: selectedCurriculum,
+                            activeColor: AppColors.primary,
+                            onChanged: (val) => setInnerState(() => selectedCurriculum = val!),
+                          ),
+                        ],
+                      ),
+                    ],
                     const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -390,9 +523,10 @@ class _LucySuperHomeState extends State<LucySuperHome> {
                         try {
                           final room = await _lmsApi.createMentorRoom(
                             hostUserId: session.userId,
-                            roomTitle: selectedCurriculum,
-                            languageId: selectedLang == 'Anh' ? 'ENG' : selectedLang == 'Trung' ? 'CHI' : 'JAP',
+                            roomTitle: isFreestyleMode ? 'Live Tự Do: Tâm sự Podcast' : selectedCurriculum,
+                            languageId: isFreestyleMode ? null : (selectedLang == 'Anh' ? 'ENG' : selectedLang == 'Trung' ? 'CHI' : 'JAP'),
                             maxParticipants: 30,
+                            roomType: isFreestyleMode ? 'FREESTYLE' : null,
                             roomStatus: 'OPEN',
                             hostRole: 'CREATOR',
                             accessType: price > 0 ? 'PAID' : 'FREE',
@@ -406,6 +540,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
                             duration: roomDuration.toInt(),
                             aiEnabled: isAiModeratorEnabled,
                             joinFee: price,
+                            isFreestyleMode: isFreestyleMode,
                           );
                         } catch (e) {
                           if (context.mounted) {
@@ -425,6 +560,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
                     ),
                   ],
                 ),
+                ), // Close SingleChildScrollView
               );
             });
           },
@@ -440,6 +576,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
     required int duration,
     required bool aiEnabled,
     required num joinFee,
+    bool isFreestyleMode = false,
   }) {
     showGeneralDialog(
       context: context,
@@ -456,6 +593,7 @@ class _LucySuperHomeState extends State<LucySuperHome> {
           joinFee: joinFee,
           enableLocalRecording: true,
           curriculumDocs: _curriculumDocs,
+          isFreestyleMode: isFreestyleMode,
         );
       },
     );

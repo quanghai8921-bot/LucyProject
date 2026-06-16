@@ -16,6 +16,8 @@ public interface LearningLevelRepository extends JpaRepository<LearningLevel, St
 
     List<LearningLevel> findByStageIdOrderByLevelNumberAsc(String stageId);
 
+    Optional<LearningLevel> findByStageIdAndLevelNumber(String stageId, Integer levelNumber);
+
     Optional<LearningLevel> findFirstByStageIdStartingWithAndLevelNumberOrderByStageIdAsc(String stageIdPrefix,
             Integer levelNumber);
 

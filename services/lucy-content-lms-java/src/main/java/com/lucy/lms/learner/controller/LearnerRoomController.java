@@ -30,6 +30,11 @@ public class LearnerRoomController {
         return learnerRoomService.getAvailableRooms();
     }
 
+    @GetMapping("/history/{userId}")
+    public List<LearnerRoomDto> getJoinedRoomHistory(@PathVariable String userId) {
+        return learnerRoomService.getJoinedRoomHistory(userId);
+    }
+
     @PostMapping("/{roomId}/join")
     public RoomParticipantDto joinRoom(@PathVariable String roomId, @RequestBody JoinRoomRequest request) {
         return learnerRoomService.joinRoom(roomId, request.getUserId());

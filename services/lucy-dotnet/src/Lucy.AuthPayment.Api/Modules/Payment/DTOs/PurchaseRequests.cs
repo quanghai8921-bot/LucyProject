@@ -17,6 +17,8 @@ public class DonateRequest
     public decimal Amount { get; set; }
     public string? MessageText { get; set; }
     public string? GiftImageUrl { get; set; }
+    public string? GiftId { get; set; }
+    public int? Quantity { get; set; }
 }
 
 public class RejectWithdrawRequest

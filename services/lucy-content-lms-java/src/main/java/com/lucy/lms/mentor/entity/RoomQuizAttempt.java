@@ -27,7 +27,10 @@ public class RoomQuizAttempt {
     @Column(name = "IsPassed", nullable = false)
     private Boolean isPassed;
 
-    @Column(name = "StartedAt", nullable = false)
+    @Column(name = "AttemptStatus", length = 30, nullable = false)
+    private String attemptStatus;
+
+    @Column(name = "StartedAt")
     private LocalDateTime startedAt;
 
     @Column(name = "SubmittedAt")
@@ -42,12 +45,18 @@ public class RoomQuizAttempt {
         this.userId = userId;
         this.scorePercent = BigDecimal.ZERO;
         this.isPassed = false;
+        this.attemptStatus = "ASSIGNED";
+    }
+
+    public void start() {
+        this.attemptStatus = "IN_PROGRESS";
         this.startedAt = LocalDateTime.now();
     }
 
     public void submit(BigDecimal scorePercent, boolean passed) {
         this.scorePercent = scorePercent;
         this.isPassed = passed;
+        this.attemptStatus = "SUBMITTED";
         this.submittedAt = LocalDateTime.now();
     }
 
@@ -61,5 +70,17 @@ public class RoomQuizAttempt {
 
     public Boolean getIsPassed() {
         return isPassed;
+    }
+
+    public String getAttemptStatus() {
+        return attemptStatus;
+    }
+
+    public LocalDateTime getStartedAt() {
+        return startedAt;
+    }
+
+    public String getQuizId() {
+        return quizId;
     }
 }

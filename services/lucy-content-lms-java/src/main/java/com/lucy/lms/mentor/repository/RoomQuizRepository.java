@@ -8,4 +8,5 @@ import java.util.List;
 public interface RoomQuizRepository extends JpaRepository<RoomQuiz, String> {
 
     List<RoomQuiz> findByRoomId(String roomId);
+    List<RoomQuiz> findByCreatedBy(String createdBy);
 }

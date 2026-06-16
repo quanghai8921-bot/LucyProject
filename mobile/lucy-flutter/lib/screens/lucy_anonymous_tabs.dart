@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +7,8 @@ import 'package:lucy_app/services/auth_api.dart';
 import 'package:lucy_app/services/lms_api.dart';
 import 'package:lucy_app/services/payment_api.dart';
 import 'package:lucy_app/theme/app_colors.dart';
+import 'package:lucy_app/screens/learner_quiz_screen.dart';
+import 'package:video_player/video_player.dart';
 
 // =========================================================================
 // 1. EXPLORE TAB - LUCY ANONYMOUS
@@ -354,7 +356,6 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
   final LmsApi _lmsApi = LmsApi();
   final PaymentApi _paymentApi = PaymentApi();
   List<CreatorPaidContent> _purchasedVideos = [];
-  List<CreatorPaidContent> _marketVideos = [];
   PaymentWallet? _wallet;
   bool _isVideoLoading = false;
   String? _videoError;
@@ -363,10 +364,32 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
     {'title': 'Survival Speaking Level 3: Airport Slangs ✈️', 'duration': '12:15', 'size': '8.2 MB'},
   ];
 
+  List<RoomQuizAttempt> _assignedQuizzes = [];
+  bool _isQuizLoading = false;
+  String? _quizError;
+
   @override
   void initState() {
     super.initState();
     _loadVideoLibrary();
+    _loadQuizzes();
+  }
+
+  Future<void> _loadQuizzes() async {
+    final session = AppSession.current;
+    if (session == null) return;
+    setState(() {
+      _isQuizLoading = true;
+      _quizError = null;
+    });
+    try {
+      final quizzes = await _lmsApi.getLearnerAssignedQuizzes(session.userId);
+      if (mounted) setState(() => _assignedQuizzes = quizzes);
+    } catch (e) {
+      if (mounted) setState(() => _quizError = '$e');
+    } finally {
+      if (mounted) setState(() => _isQuizLoading = false);
+    }
   }
 
   Future<void> _loadVideoLibrary() async {
@@ -376,12 +399,10 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
       _videoError = null;
     });
     try {
-      final market = await _lmsApi.getPublishedVideos();
       final purchased = session == null ? <CreatorPaidContent>[] : await _lmsApi.getPurchasedVideos(session.userId);
       final wallet = session == null ? null : await _paymentApi.getWallet();
       if (!mounted) return;
       setState(() {
-        _marketVideos = market;
         _purchasedVideos = purchased;
         _wallet = wallet;
       });
@@ -431,14 +452,82 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
         _buildSavedVocabularySection(),
         const SizedBox(height: 24),
 
-        _buildPurchasedVideosSection(),
+        _buildMyQuizzesSection(),
         const SizedBox(height: 24),
 
-        _buildCreatorVideoMarketSection(),
+        _buildPurchasedVideosSection(),
         const SizedBox(height: 24),
 
         // Offline Downloads
         _buildOfflineDownloadsSection(),
+      ],
+    );
+  }
+
+  Widget _buildMyQuizzesSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Bài kiểm tra được giao 📝",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (_isQuizLoading) const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        if (_quizError != null) Text(_quizError!, style: const TextStyle(color: Colors.redAccent, fontSize: 12)),
+        if (!_isQuizLoading && _assignedQuizzes.isEmpty)
+          _buildInfoBox('Chưa có bài kiểm tra nào được Mentor giao cho bạn.'),
+        if (!_isQuizLoading)
+          ..._assignedQuizzes.map((quiz) {
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.blue.shade200),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.quiz, color: Colors.blueAccent, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(quiz.quizTitle, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        const SizedBox(height: 4),
+                        Text('Thời gian: ${quiz.durationMinutes} phút • Loại: ${quiz.quizType == "ESSAY" ? "Tự luận" : "Trắc nghiệm"}', style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context, 
+                        MaterialPageRoute(
+                          builder: (ctx) => LearnerQuizScreen(
+                            attemptId: quiz.attemptId, 
+                            quizId: quiz.quizId,
+                            durationMinutes: quiz.durationMinutes, 
+                            quizTitle: quiz.quizTitle
+                          )
+                        )
+                      ).then((_) => _loadQuizzes());
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14),
+                    ),
+                    child: const Text("LÀM BÀI", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11)),
+                  ),
+                ],
+              ),
+            );
+          }),
       ],
     );
   }
@@ -652,22 +741,6 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
     );
   }
 
-  Widget _buildCreatorVideoMarketSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Video Creator đang bán",
-          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        if (!_isVideoLoading && _marketVideos.isEmpty)
-          _buildInfoBox('Chưa có video nào được publish trong PaidContents.'),
-        if (!_isVideoLoading) ..._marketVideos.map((video) => _buildLearnerVideoCard(video, purchased: false)),
-      ],
-    );
-  }
-
   Widget _buildInfoBox(String text) {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -710,12 +783,9 @@ class _LucyAnonymousLibraryState extends State<LucyAnonymousLibrary> {
                 final url = video.absoluteMediaUrl(_lmsApi.baseUrl);
                 showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: Text(video.title),
-                    content: Text(url.isEmpty ? 'Video này chưa có media URL.' : 'Media URL: $url'),
-                    actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Đóng')),
-                    ],
+                  builder: (context) => VideoPlayerDialog(
+                    title: video.title,
+                    url: url.isEmpty ? 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4' : url,
                   ),
                 );
               } else {
@@ -1418,4 +1488,111 @@ class SpeakingPieChartPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
+class VideoPlayerDialog extends StatefulWidget {
+  final String title;
+  final String url;
+  const VideoPlayerDialog({super.key, required this.title, required this.url});
 
+  @override
+  State<VideoPlayerDialog> createState() => _VideoPlayerDialogState();
+}
+
+class _VideoPlayerDialogState extends State<VideoPlayerDialog> {
+  late VideoPlayerController _controller;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
+      ..initialize().then((_) {
+        if (mounted) {
+          setState(() {});
+          _controller.play();
+        }
+      }).catchError((e) {
+        if (mounted) {
+          setState(() {
+            _hasError = true;
+          });
+        }
+      });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: _hasError
+          ? const Text('Không thể phát video này do lỗi định dạng hoặc URL không hợp lệ.')
+          : _controller.value.isInitialized
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                    const SizedBox(height: 12),
+                    VideoProgressIndicator(
+                      _controller,
+                      allowScrubbing: true,
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      colors: const VideoProgressColors(
+                        playedColor: AppColors.primary,
+                        bufferedColor: Colors.black12,
+                        backgroundColor: Colors.black12,
+                      ),
+                    ),
+                  ],
+                )
+              : const SizedBox(
+                  width: 300,
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+      actions: [
+        if (_controller.value.isInitialized) ...[
+          SizedBox(
+            width: 100,
+            child: Row(
+              children: [
+                const Icon(Icons.volume_up, size: 16),
+                Expanded(
+                  child: Slider(
+                    value: _controller.value.volume,
+                    min: 0.0,
+                    max: 1.0,
+                    onChanged: (value) {
+                      setState(() {
+                        _controller.setVolume(value);
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                _controller.value.isPlaying ? _controller.pause() : _controller.play();
+              });
+            },
+            child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+          ),
+        ],
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Đóng'),
+        ),
+      ],
+    );
+  }
+}

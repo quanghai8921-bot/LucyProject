@@ -183,6 +183,8 @@ class PaymentApi {
     String? roomId,
     String? messageText,
     String? giftImageUrl,
+    String? giftId,
+    int? quantity,
   }) async {
     final response = await _client.post(
       _uri('/api/payment/donate'),
@@ -193,6 +195,8 @@ class PaymentApi {
         if (roomId != null) 'roomId': roomId,
         if (messageText != null) 'messageText': messageText,
         if (giftImageUrl != null) 'giftImageUrl': giftImageUrl,
+        if (giftId != null) 'giftId': giftId,
+        if (quantity != null) 'quantity': quantity,
       }),
     );
     _successMap(response, 'Donate that bai.');
@@ -459,7 +463,7 @@ class PaymentGift {
       giftId: '${json['giftId'] ?? ''}',
       giftName: '${json['giftName'] ?? ''}',
       priceAmount: _numOrZero(json['priceAmount']),
-      giftImageUrl: json['giftImageUrl'] as String?,
+      giftImageUrl: (json['iconUrl'] ?? json['giftImageUrl']) as String?,
     );
   }
 }

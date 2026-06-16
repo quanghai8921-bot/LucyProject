@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lucy_app/services/auth_api.dart';
@@ -29,6 +29,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   final RealtimeSocketService _realtimeSocket = RealtimeSocketService();
   List<LmsRoom> _allRooms = [];
   List<LmsRoomHistory> _joinedRoomHistory = [];
+  List<CreatorPaidContent> _publishedVideos = [];
   bool _isLoading = false;
   bool _isHistoryLoading = false;
   Timer? _refreshTimer;
@@ -36,7 +37,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, initialIndex: 1, vsync: this);
+    _tabController = TabController(length: 5, initialIndex: 2, vsync: this);
     _tabController.addListener(() {
       if (!_tabController.indexIsChanging) {
         setState(() {});
@@ -67,9 +68,11 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     });
     try {
       final rooms = await _lmsApi.getAllRooms();
+      final videos = await _lmsApi.getPublishedVideos();
       if (mounted) {
         setState(() {
           _allRooms = rooms;
+          _publishedVideos = videos;
           _isLoading = false;
         });
       }
@@ -144,11 +147,13 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         // Dynamic Live list in clean scannable grid based on selected Tab
         if (_tabController.index == 0)
           _buildJoinedRoomHistorySection()
+        else if (_tabController.index == 1)
+          _buildCreatorContentSection()
         else
           _buildLiveRoomsGrid(
-            _tabController.index == 1
+            _tabController.index == 2
                 ? 'ENG'
-                : _tabController.index == 2
+                : _tabController.index == 3
                     ? 'CHI'
                     : 'JAP',
           ),
@@ -523,7 +528,8 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
           ],
         ),
         tabs: const [
-          Tab(text: "Lich su"),
+          Tab(text: "Lịch sử"),
+          Tab(text: "⭐ Creator"),
           Tab(text: "🇬🇧 Tiếng Anh"),
           Tab(text: "🇨🇳 Tiếng Trung"),
           Tab(text: "🇯🇵 Tiếng Nhật"),
@@ -672,9 +678,9 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
   }
 
   Widget _buildRoomGridCard(LmsRoom room) {
-    final languageKey = _tabController.index == 1
+    final languageKey = _tabController.index == 2
         ? 'ENG'
-        : _tabController.index == 2
+        : _tabController.index == 3
             ? 'CHI'
             : 'JAP';
     Color cardColor;
@@ -814,28 +820,31 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
             const SizedBox(height: 6),
 
             // Level Tag Capsule
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: cardColor.withOpacity(0.15)),
-              ),
-              child: Text(
-                room.levelNumber != null ? 'Level ${room.levelNumber}' : (room.levelId ?? 'Level 1'),
-                style: TextStyle(
-                  color: cardColor.darken(0.1),
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
+            if (room.roomType != 'FREESTYLE')
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: cardColor.withOpacity(0.15)),
                 ),
-                overflow: TextOverflow.ellipsis,
+                child: Text(
+                  room.levelNumber != null ? 'Level ${room.levelNumber}' : (room.levelId ?? 'Level 1'),
+                  style: TextStyle(
+                    color: cardColor.darken(0.1),
+                    fontSize: 8,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
+
+  static final Set<String> _purchasedRoomIds = {};
 
   Future<void> _joinLearnerRoom(LmsRoom room) async {
     final session = AppSession.current;
@@ -847,7 +856,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
     }
 
     final isPaidRoom = room.accessType?.toUpperCase() == 'PAID' || (room.priceAmount ?? 0) > 0;
-    if (isPaidRoom) {
+    if (isPaidRoom && !_purchasedRoomIds.contains(room.roomId)) {
       final confirmed = await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
@@ -862,6 +871,7 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
       if (confirmed != true) return;
       try {
         await _paymentApi.purchaseLive(room.roomId);
+        _purchasedRoomIds.add(room.roomId);
       } catch (e) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1099,6 +1109,120 @@ class _LucyAnonymousHomeState extends State<LucyAnonymousHome> with TickerProvid
         ),
       ],
     );
+  }
+
+  Widget _buildCreatorContentSection() {
+    final creatorLives = _allRooms.where((r) => (r.roomType != null && r.roomType!.toUpperCase().contains('CREATOR')) || (r.priceAmount != null && r.priceAmount! > 0)).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (creatorLives.isNotEmpty) ...[
+          const Text(
+            "Live Creator đang mở",
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.15,
+            ),
+            itemCount: creatorLives.length,
+            itemBuilder: (context, index) => _buildRoomGridCard(creatorLives[index]),
+          ),
+          const SizedBox(height: 24),
+        ],
+        const Text(
+          "Video Creator đang bán",
+          style: TextStyle(color: AppColors.textPrimary, fontSize: 14.5, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        if (!_isLoading && _publishedVideos.isEmpty)
+          _buildInfoBox('Chưa có video nào được publish trong PaidContents.'),
+        if (!_isLoading) ..._publishedVideos.map((video) => _buildLearnerVideoCard(video, purchased: false)),
+      ],
+    );
+  }
+
+  Widget _buildInfoBox(String text) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Text(text, style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+    );
+  }
+
+  Widget _buildLearnerVideoCard(CreatorPaidContent video, {required bool purchased}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.inputBorder),
+      ),
+      child: Row(
+        children: [
+          Icon(purchased ? Icons.play_circle_fill : Icons.lock_outline, color: AppColors.primary, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(video.title, style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 12), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(video.displayPrice, style: const TextStyle(color: AppColors.textSecondary, fontSize: 10)),
+              ],
+            ),
+          ),
+          IconButton(
+            icon: Icon(purchased ? Icons.play_arrow_rounded : Icons.shopping_bag_outlined, color: AppColors.primary),
+            onPressed: () {
+              if (purchased) {
+                final url = video.absoluteMediaUrl(_lmsApi.baseUrl);
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: Text(video.title),
+                    content: Text(url.isEmpty ? 'Video này chưa có media URL.' : 'Media URL: $url'),
+                    actions: [
+                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Đóng')),
+                    ],
+                  ),
+                );
+              } else {
+                _purchaseVideo(video);
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _purchaseVideo(CreatorPaidContent video) async {
+    try {
+      await _paymentApi.purchaseContent(video.contentId);
+      await _fetchRooms();
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Thanh toán thành công. Video đã được thêm vào thư viện.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Không mua được video: $e')),
+      );
+    }
   }
 }
 

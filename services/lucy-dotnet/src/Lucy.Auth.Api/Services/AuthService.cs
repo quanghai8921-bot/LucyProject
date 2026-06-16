@@ -4,9 +4,15 @@ using Lucy.Auth.Api.Entities;
 using Lucy.Shared.Constants;
 using Microsoft.EntityFrameworkCore;
 
+using Microsoft.Extensions.Caching.Memory;
+
 namespace Lucy.Auth.Api.Services;
 
-public sealed class AuthService(AuthDbContext db, JwtService jwtService)
+public sealed class AuthService(
+    AuthDbContext db, 
+    JwtService jwtService, 
+    IMemoryCache cache, 
+    IEmailService emailService)
 {
     public async Task<(AuthTokenResponse? Response, string? Error)> RegisterAsync(RegisterRequest request)
     {
@@ -219,6 +225,55 @@ public sealed class AuthService(AuthDbContext db, JwtService jwtService)
         await db.SaveChangesAsync();
 
         return (MapApplication(upgradeRequest, RoleCodes.Creator), null);
+    }
+
+    public async Task<string?> GenerateForgotPasswordOtpAsync(string email)
+    {
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user is null) return "Email khong ton tai trong he thong.";
+
+        var otp = new Random().Next(100000, 999999).ToString();
+        var cacheKey = $"ForgotPasswordOtp_{email}";
+        
+        cache.Set(cacheKey, otp, TimeSpan.FromMinutes(5));
+
+        var subject = "Yeu cau dat lai mat khau - Lucy App";
+        var body = $"<h2>Ma xac nhan OTP cua ban</h2><p>Ma OTP de dat lai mat khau la: <b style='color:blue;font-size:24px;'>{otp}</b></p><p>Ma nay co hieu luc trong 5 phut. Neu ban khong yeu cau dat lai mat khau, vui long bo qua email nay.</p>";
+
+        await emailService.SendEmailAsync(email, subject, body);
+
+        return null;
+    }
+
+    public Task<(bool IsValid, string? Error)> ValidateResetPasswordOtpAsync(string email, string otp)
+    {
+        var cacheKey = $"ForgotPasswordOtp_{email}";
+        if (cache.TryGetValue(cacheKey, out string? storedOtp))
+        {
+            if (storedOtp == otp)
+            {
+                return Task.FromResult((true, (string?)null));
+            }
+            return Task.FromResult((false, (string?)"Ma OTP khong chinh xac."));
+        }
+        return Task.FromResult((false, (string?)"Ma OTP da het han hoac khong ton tai."));
+    }
+
+    public async Task<string?> ResetPasswordAsync(string email, string otp, string newPassword)
+    {
+        var validation = await ValidateResetPasswordOtpAsync(email, otp);
+        if (!validation.IsValid) return validation.Error;
+
+        var user = await db.Users.FirstOrDefaultAsync(u => u.Email == email);
+        if (user is null) return "Khong tim thay nguoi dung.";
+
+        user.Passwords = BCrypt.Net.BCrypt.HashPassword(newPassword);
+        await db.SaveChangesAsync();
+
+        var cacheKey = $"ForgotPasswordOtp_{email}";
+        cache.Remove(cacheKey);
+
+        return null;
     }
 
     private AuthTokenResponse BuildAuthTokenResponse(User user, IEnumerable<Role> roles, string message)

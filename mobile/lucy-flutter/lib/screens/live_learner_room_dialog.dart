@@ -866,7 +866,7 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
                           return GestureDetector(
                             onTap: () {
                               Navigator.pop(ctx);
-                              _confirmDonate(gift);
+                              _confirmDonateWithQuantity(gift);
                             },
                             child: Container(
                               decoration: BoxDecoration(
@@ -877,7 +877,7 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.diamond, color: Colors.pinkAccent, size: 36),
+                                  _buildGiftIcon(gift.giftImageUrl, 42),
                                   const SizedBox(height: 8),
                                   Text(gift.giftName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: AppColors.textPrimary), textAlign: TextAlign.center),
                                   const SizedBox(height: 4),
@@ -896,6 +896,98 @@ class _LiveLearnerRoomDialogState extends State<LiveLearnerRoomDialog> with Tick
           },
         );
       },
+    );
+  }
+
+  Widget _buildGiftIcon(String? iconUrl, double size) {
+    final source = iconUrl?.trim();
+    if (source != null && source.isNotEmpty && source.startsWith('http')) {
+      return Image.network(
+        source,
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => Icon(Icons.card_giftcard, color: Colors.pinkAccent, size: size),
+      );
+    }
+    if (source != null && source.isNotEmpty) {
+      return Text(source, style: TextStyle(fontSize: size * 0.8), textAlign: TextAlign.center);
+    }
+    return Icon(Icons.card_giftcard, color: Colors.pinkAccent, size: size);
+  }
+
+  void _confirmDonateWithQuantity(PaymentGift gift) {
+    var quantity = 1;
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) {
+          final totalDiamonds = gift.priceAmount * quantity;
+          final xuAmount = totalDiamonds * 10;
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Text("Xác nhận tặng quà"),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildGiftIcon(gift.giftImageUrl, 72),
+                const SizedBox(height: 12),
+                Text(gift.giftName, style: const TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      onPressed: quantity <= 1 ? null : () => setDialogState(() => quantity--),
+                      icon: const Icon(Icons.remove_circle_outline),
+                    ),
+                    Text('$quantity', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    IconButton(
+                      onPressed: () => setDialogState(() => quantity++),
+                      icon: const Icon(Icons.add_circle_outline),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${totalDiamonds.toInt()} KC = ${xuAmount.toInt()} Xu',
+                  style: const TextStyle(color: Colors.pink, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text("Hủy", style: TextStyle(color: AppColors.textSecondary)),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent),
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    await _paymentApi.donate(
+                      toUserId: widget.hostUserId,
+                      amount: xuAmount,
+                      roomId: widget.roomId,
+                      messageText: "Tặng $quantity x ${gift.giftName}",
+                      giftImageUrl: gift.giftImageUrl,
+                      giftId: gift.giftId,
+                      quantity: quantity,
+                    );
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tặng quà thành công!")));
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Lỗi: $e")));
+                    }
+                  }
+                },
+                child: const Text("Tặng ngay", style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 

@@ -68,6 +68,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 
 // ── Services ─────────────────────────────────────────────────────────────────
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<AdminService>();
@@ -145,6 +147,32 @@ using (var scope = app.Services.CreateScope())
             {
                 UserId = adminUser.UserId,
                 RoleId = RoleCodes.AdminId
+            });
+            await db.SaveChangesAsync();
+        }
+
+        // Seed default Content Creator if not exists
+        if (!await db.Users.AnyAsync(u => u.Email == "contentcreator@gmail.com"))
+        {
+            var creatorUser = new User
+            {
+                UserId = "Ucreator",
+                FullName = "Content Creator",
+                Email = "contentcreator@gmail.com",
+                PhoneNumber = "0901234550",
+                Passwords = BCrypt.Net.BCrypt.HashPassword("123456"),
+                IsStatus = 1
+            };
+            db.Users.Add(creatorUser);
+            db.UserRoles.Add(new UserRole
+            {
+                UserId = creatorUser.UserId,
+                RoleId = RoleCodes.CreatorId
+            });
+            db.UserRoles.Add(new UserRole
+            {
+                UserId = creatorUser.UserId,
+                RoleId = RoleCodes.MentorId
             });
             await db.SaveChangesAsync();
         }

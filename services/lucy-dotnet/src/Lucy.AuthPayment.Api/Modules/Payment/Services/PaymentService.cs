@@ -205,9 +205,21 @@ public class PaymentService : IPaymentService
         {
             throw new InvalidOperationException("Content is not published.");
         }
+
+        if (!await IsSuperUserAsync(content.CreatorUserId, null))
+        {
+            throw new InvalidOperationException("Chưa đủ điều kiện bán nội dung số.");
+        }
+
         var existingPurchase = await _context.ContentPurchases
             .FirstOrDefaultAsync(item => item.ContentId == content.ContentId && item.BuyerUserId == buyerUserId);
         if (existingPurchase != null) return existingPurchase;
+
+        var buyerUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == buyerUserId);
+        var buyerAvatar = await _context.AvatarPersonas.FirstOrDefaultAsync(a => a.UserId == buyerUserId);
+        var buyerDisplayName = !string.IsNullOrWhiteSpace(buyerAvatar?.DisplayName) 
+            ? buyerAvatar.DisplayName 
+            : (buyerUser?.FullName ?? buyerUserId);
 
         await using var dbTransaction = await _context.Database.BeginTransactionAsync();
         var buyerWallet = await GetOrCreateWalletInternalAsync(buyerUserId);
@@ -245,14 +257,15 @@ public class PaymentService : IPaymentService
         await CreatePaymentNotificationAsync(
             content.CreatorUserId,
             "Co nguoi mua noi dung",
-            $"{buyerUserId} vua mua {content.Title} voi {amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
+            $"{buyerDisplayName} vua mua {content.Title} voi {amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
             "CONTENT_PURCHASE",
             "CONTENT_PURCHASE",
             purchase.PurchaseId,
             amount,
             split.FeeAmount,
             split.NetAmount,
-            buyerUserId);
+            buyerUserId,
+            fromDisplayName: buyerDisplayName);
         return purchase;
     }
 
@@ -269,6 +282,12 @@ public class PaymentService : IPaymentService
         {
             return await EnsureLiveTicketAsync(room.RoomId, buyerUserId, null);
         }
+
+        var buyerUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == buyerUserId);
+        var buyerAvatar = await _context.AvatarPersonas.FirstOrDefaultAsync(a => a.UserId == buyerUserId);
+        var buyerDisplayName = !string.IsNullOrWhiteSpace(buyerAvatar?.DisplayName) 
+            ? buyerAvatar.DisplayName 
+            : (buyerUser?.FullName ?? buyerUserId);
 
         await using var dbTransaction = await _context.Database.BeginTransactionAsync();
         var buyerWallet = await GetOrCreateWalletInternalAsync(buyerUserId);
@@ -318,7 +337,7 @@ public class PaymentService : IPaymentService
         await CreatePaymentNotificationAsync(
             room.HostUserId,
             "Co hoc vien mua khoa/live",
-            $"{buyerUserId} vua mua ve {room.RoomTitle} voi {amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
+            $"{buyerDisplayName} vua mua ve {room.RoomTitle} voi {amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
             "LIVE_PURCHASE",
             "ROOM",
             room.RoomId,
@@ -326,37 +345,69 @@ public class PaymentService : IPaymentService
             split.FeeAmount,
             split.NetAmount,
             buyerUserId,
-            room.RoomId);
+            room.RoomId,
+            fromDisplayName: buyerDisplayName);
         return ticket;
     }
 
     public async Task<Donation> DonateAsync(string fromUserId, DonateRequest request)
     {
-        if (request.Amount <= 0) throw new InvalidOperationException("Amount must be greater than 0.");
+        Gift? gift = null;
+        var quantity = request.Quantity.GetValueOrDefault(1);
+        if (quantity <= 0) throw new InvalidOperationException("Gift quantity must be greater than 0.");
+
+        var amount = request.Amount;
+        var giftImageUrl = request.GiftImageUrl;
+        string? giftName = null;
+        string? giftId = null;
+        if (!string.IsNullOrWhiteSpace(request.GiftId))
+        {
+            gift = await _context.Gifts.FirstOrDefaultAsync(item => item.GiftId == request.GiftId && item.IsActive)
+                ?? throw new InvalidOperationException("Gift not found or inactive.");
+            giftId = gift.GiftId;
+            giftName = gift.GiftName;
+            giftImageUrl = gift.IconUrl;
+            amount = gift.PriceAmount * quantity * 10m;
+        }
+
+        if (amount <= 0) throw new InvalidOperationException("Amount must be greater than 0.");
+
+        var fromUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fromUserId);
+        var fromAvatar = await _context.AvatarPersonas.FirstOrDefaultAsync(a => a.UserId == fromUserId);
+        var fromDisplayName = !string.IsNullOrWhiteSpace(fromAvatar?.DisplayName) 
+            ? fromAvatar.DisplayName 
+            : (!string.IsNullOrWhiteSpace(fromUser?.FullName) ? fromUser.FullName : "Học viên");
 
         await using var dbTransaction = await _context.Database.BeginTransactionAsync();
         var fromWallet = await GetOrCreateWalletInternalAsync(fromUserId);
         var toWallet = await GetOrCreateWalletInternalAsync(request.ToUserId);
         var adminWallet = await GetOrCreateWalletInternalAsync(AdminUserId, AdminWalletId);
-        EnsureEnoughBalance(fromWallet, request.Amount);
+        EnsureEnoughBalance(fromWallet, amount);
 
         var feeRate = await IsSuperUserAsync(request.ToUserId, null) ? 0.10m : 0.20m;
-        var split = Split(request.Amount, feeRate);
+        var split = Split(amount, feeRate);
+        var messageText = request.MessageText;
+        if (gift != null)
+        {
+            messageText = string.IsNullOrWhiteSpace(messageText)
+                ? $"Tang {quantity} x {gift.GiftName}"
+                : messageText;
+        }
         var donation = new Donation
         {
             DonationId = NewId(),
             FromUserId = fromUserId,
             ToUserId = request.ToUserId,
             RoomId = request.RoomId,
-            Amount = request.Amount,
-            MessageText = request.MessageText,
+            Amount = amount,
+            MessageText = messageText,
             CreatedAt = DateTime.Now
         };
 
-        donation.FromWalletTransactionId = AddBalance(fromWallet, -request.Amount, "Donate", request.ToUserId,
-            "DONATION", donation.DonationId, request.MessageText);
+        donation.FromWalletTransactionId = AddBalance(fromWallet, -amount, "Donate", request.ToUserId,
+            "DONATION", donation.DonationId, messageText);
         donation.ToWalletTransactionId = AddBalance(toWallet, split.NetAmount, "Donate", fromUserId,
-            "DONATION", donation.DonationId, request.MessageText);
+            "DONATION", donation.DonationId, messageText);
         if (split.FeeAmount > 0)
         {
             AddBalance(adminWallet, split.FeeAmount, "Commission", fromUserId, "DONATION", donation.DonationId,
@@ -371,16 +422,20 @@ public class PaymentService : IPaymentService
         await CreatePaymentNotificationAsync(
             request.ToUserId,
             "Ban nhan duoc donate",
-            $"{fromUserId} vua donate {request.Amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
+            $"{fromDisplayName} vua donate {amount:0.##} Xu. Ban nhan {split.NetAmount:0.##} Xu.",
             "DONATION",
             "DONATION",
             donation.DonationId,
-            request.Amount,
+            amount,
             split.FeeAmount,
             split.NetAmount,
             fromUserId,
             request.RoomId,
-            request.GiftImageUrl);
+            giftImageUrl,
+            giftId,
+            giftName,
+            quantity,
+            fromDisplayName);
         return donation;
     }
 
@@ -637,7 +692,11 @@ public class PaymentService : IPaymentService
         decimal netAmount,
         string? fromUserId = null,
         string? roomId = null,
-        string? giftImageUrl = null)
+        string? giftImageUrl = null,
+        string? giftId = null,
+        string? giftName = null,
+        int? giftQuantity = null,
+        string? fromDisplayName = null)
     {
         var notification = new Notification
         {
@@ -653,7 +712,8 @@ public class PaymentService : IPaymentService
 
         _context.Notifications.Add(notification);
         await _context.SaveChangesAsync();
-        await DispatchRealtimeNotificationAsync(notification, refId, grossAmount, feeAmount, netAmount, fromUserId, roomId, giftImageUrl);
+        await DispatchRealtimeNotificationAsync(notification, refId, grossAmount, feeAmount, netAmount, fromUserId,
+            roomId, giftImageUrl, giftId, giftName, giftQuantity, fromDisplayName);
     }
 
     private async Task DispatchRealtimeNotificationAsync(
@@ -664,7 +724,11 @@ public class PaymentService : IPaymentService
         decimal netAmount,
         string? fromUserId,
         string? roomId,
-        string? giftImageUrl = null)
+        string? giftImageUrl = null,
+        string? giftId = null,
+        string? giftName = null,
+        int? giftQuantity = null,
+        string? fromDisplayName = null)
     {
         var baseUrl = _configuration["Realtime:InternalBaseUrl"];
         if (string.IsNullOrWhiteSpace(baseUrl)) return;
@@ -688,6 +752,10 @@ public class PaymentService : IPaymentService
                 FeeAmount = feeAmount,
                 NetAmount = netAmount,
                 GiftImageUrl = giftImageUrl,
+                GiftId = giftId,
+                GiftName = giftName,
+                GiftQuantity = giftQuantity,
+                FromDisplayName = fromDisplayName,
                 notification.CreatedAt
             });
         }

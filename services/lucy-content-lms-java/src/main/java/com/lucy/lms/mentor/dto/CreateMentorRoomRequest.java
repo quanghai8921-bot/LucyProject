@@ -17,6 +17,7 @@ public class CreateMentorRoomRequest {
     private String hostRole;
     private String accessType;
     private BigDecimal priceAmount;
+    private String roomType;
 
     public String getHostUserId() {
         return hostUserId;
@@ -64,5 +65,9 @@ public class CreateMentorRoomRequest {
 
     public BigDecimal getPriceAmount() {
         return priceAmount;
+    }
+
+    public String getRoomType() {
+        return roomType;
     }
 }

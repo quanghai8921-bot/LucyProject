@@ -16,7 +16,7 @@ public class RoomQuiz {
     @Column(name = "QuizId", length = 50)
     private String quizId;
 
-    @Column(name = "RoomId", length = 50, nullable = false)
+    @Column(name = "RoomId", length = 50)
     private String roomId;
 
     @Column(name = "LevelId", length = 50, nullable = false)

@@ -1,6 +1,7 @@
 package com.lucy.lms.mentor.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CreateRoomQuizRequest {
 
@@ -10,6 +11,8 @@ public class CreateRoomQuizRequest {
     private String quizTitle;
     private Integer durationMinutes;
     private BigDecimal passingScorePercent;
+    private String quizType;
+    private List<CreateRoomQuizQuestionDto> questions;
 
     public String getRoomId() {
         return roomId;
@@ -33,5 +36,13 @@ public class CreateRoomQuizRequest {
 
     public BigDecimal getPassingScorePercent() {
         return passingScorePercent;
+    }
+
+    public String getQuizType() {
+        return quizType;
+    }
+
+    public List<CreateRoomQuizQuestionDto> getQuestions() {
+        return questions;
     }
 }

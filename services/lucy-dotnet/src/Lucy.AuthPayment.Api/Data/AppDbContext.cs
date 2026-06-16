@@ -23,6 +23,7 @@ public class AppDbContext : DbContext
     public DbSet<PaymentUser> Users => Set<PaymentUser>();
     public DbSet<PaymentSetting> PaymentSettings => Set<PaymentSetting>();
     public DbSet<Notification> Notifications => Set<Notification>();
+    public DbSet<AvatarPersona> AvatarPersonas => Set<AvatarPersona>();
 
     public async Task EnsureAdminWalletExistsAsync()
     {
@@ -205,6 +206,12 @@ public class AppDbContext : DbContext
             entity.Property(e => e.BodyText).HasMaxLength(255);
             entity.Property(e => e.NotificationType).HasMaxLength(50);
             entity.Property(e => e.RefType).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<AvatarPersona>(entity =>
+        {
+            entity.ToTable("AvatarPersonas");
+            entity.HasKey(e => e.UserId);
         });
     }
 }

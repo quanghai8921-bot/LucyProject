@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lucy_app/screens/dashboard_screen.dart';
+import 'package:lucy_app/screens/forgot_password_screen.dart';
 import 'package:lucy_app/screens/register_screen.dart';
 import 'package:lucy_app/services/app_session.dart';
 import 'package:lucy_app/services/auth_api.dart';
@@ -128,7 +129,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+                          );
+                        },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: Size.zero,

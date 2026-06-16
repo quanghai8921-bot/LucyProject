@@ -86,6 +86,46 @@ class AuthApi {
     return AuthSession.fromAuthResponse(body);
   }
 
+  Future<void> forgotPassword(String email) async {
+    final response = await _client.post(
+      _uri('/api/auth/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw AuthApiException(_messageFrom(body, 'Yêu cầu gửi mã OTP thất bại.'));
+    }
+  }
+
+  Future<void> verifyOtp(String email, String otp) async {
+    final response = await _client.post(
+      _uri('/api/auth/verify-otp'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'otp': otp}),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw AuthApiException(_messageFrom(body, 'Mã OTP không hợp lệ.'));
+    }
+  }
+
+  Future<void> resetPassword(String email, String otp, String newPassword) async {
+    final response = await _client.post(
+      _uri('/api/auth/reset-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'otp': otp,
+        'newPassword': newPassword,
+      }),
+    );
+    final body = _decode(response);
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw AuthApiException(_messageFrom(body, 'Đặt lại mật khẩu thất bại.'));
+    }
+  }
+
   Future<AuthSession> updateAvatar({
     required String token,
     String? displayName,

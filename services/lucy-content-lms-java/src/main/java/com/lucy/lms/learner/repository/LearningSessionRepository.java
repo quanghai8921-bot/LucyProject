@@ -14,4 +14,6 @@ public interface LearningSessionRepository extends JpaRepository<LearningSession
             String subLevelId);
 
     List<LearningSession> findByUserIdAndRoomIdAndLevelId(String userId, String roomId, String levelId);
+
+    List<LearningSession> findByUserIdAndRoomId(String userId, String roomId);
 }

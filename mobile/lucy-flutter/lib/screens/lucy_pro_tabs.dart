@@ -225,6 +225,52 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
     {'title': 'JLPT N4 Polite Japanese Keigo Standard 🙇', 'category': 'Japanese Prep', 'color': Colors.purple.shade200},
   ];
   final LmsApi _lmsApi = LmsApi();
+  List<LearnerRoom> _mentorRooms = [];
+  List<MentorRoomQuiz> _roomQuizzes = [];
+  bool _isLoadingRooms = false;
+  String? _selectedRoomId;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMentorRooms();
+  }
+
+  Future<void> _fetchMentorRooms() async {
+    final session = AppSession.current;
+    if (session == null || session.userId.isEmpty) return;
+    setState(() => _isLoadingRooms = true);
+    try {
+      final rooms = await _lmsApi.getMentorRooms(session.userId);
+      if (mounted) {
+        setState(() {
+          _mentorRooms = rooms;
+          if (rooms.isNotEmpty) {
+            _selectedRoomId = rooms.first.roomId;
+            _fetchQuizzes();
+          }
+          _isLoadingRooms = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingRooms = false);
+    }
+  }
+
+  Future<void> _fetchQuizzes() async {
+    final session = AppSession.current;
+    if (session == null || session.userId.isEmpty) return;
+    try {
+      final quizzes = await _lmsApi.getMentorQuizzes(session.userId);
+      if (mounted) {
+        setState(() {
+          _roomQuizzes = quizzes;
+        });
+      }
+    } catch (e) {
+      // Handle error
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -385,7 +431,7 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
                 ),
               ),
               ElevatedButton(
-                onPressed: _showQuizCreationDialog,
+                onPressed: _mentorRooms.isEmpty ? null : _showQuizCreationDialog,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueAccent,
                   foregroundColor: Colors.white,
@@ -396,6 +442,27 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
               ),
             ],
           ),
+          const SizedBox(height: 16),
+          if (_roomQuizzes.isEmpty)
+            const Text("Chưa có bài kiểm tra nào.", style: TextStyle(color: AppColors.textSecondary, fontSize: 11))
+          else
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _roomQuizzes.length,
+              itemBuilder: (context, index) {
+                final quiz = _roomQuizzes[index];
+                return Card(
+                  elevation: 1,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    title: Text(quiz.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text(quiz.quizType == "ESSAY" ? "Tự luận" : "Trắc nghiệm", style: const TextStyle(fontSize: 11)),
+                    trailing: const Icon(Icons.check_circle, color: Colors.green, size: 16),
+                  ),
+                );
+              },
+            ),
         ],
       ),
     );
@@ -403,8 +470,11 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
 
   void _showQuizCreationDialog() {
     String quizTitle = "";
-    String passingScore = "80";
+    String numberOfQuestions = "1";
     String quizType = "MULTIPLE_CHOICE";
+    String durationMinutes = "15";
+    
+    String? selectedLevelId = "";
 
     showDialog(
       context: context,
@@ -419,21 +489,31 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     TextField(
+                      decoration: const InputDecoration(labelText: "Nhập Cấp độ (Level)"),
+                      onChanged: (val) => selectedLevelId = val,
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
                       decoration: const InputDecoration(labelText: "Tiêu đề bài kiểm tra"),
                       onChanged: (val) => quizTitle = val,
                     ),
                     TextField(
-                      decoration: const InputDecoration(labelText: "Điểm đạt (%) (Mặc định 80)"),
+                      decoration: const InputDecoration(labelText: "Số câu sẽ tạo"),
                       keyboardType: TextInputType.number,
-                      onChanged: (val) => passingScore = val,
+                      onChanged: (val) => numberOfQuestions = val,
+                    ),
+                    TextField(
+                      decoration: const InputDecoration(labelText: "Thời gian làm bài (Phút)"),
+                      keyboardType: TextInputType.number,
+                      onChanged: (val) => durationMinutes = val,
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: quizType,
                       decoration: const InputDecoration(labelText: "Loại bài kiểm tra"),
                       items: const [
-                        DropdownMenuItem(value: "MULTIPLE_CHOICE", child: Text("Trắc nghiệm")),
-                        DropdownMenuItem(value: "ESSAY", child: Text("Tự luận")),
+                         DropdownMenuItem(value: "MULTIPLE_CHOICE", child: Text("Trắc nghiệm")),
+                         DropdownMenuItem(value: "ESSAY", child: Text("Tự luận")),
                       ],
                       onChanged: (val) {
                         if (val != null) {
@@ -447,19 +527,178 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
               actions: [
                 TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Hủy")),
                 ElevatedButton(
-                  onPressed: () async {
-                    if (quizTitle.isEmpty) return;
+                  onPressed: () {
+                    if (quizTitle.isEmpty || selectedLevelId == null || selectedLevelId!.isEmpty) return;
+                    int count = int.tryParse(numberOfQuestions) ?? 1;
+                    int duration = int.tryParse(durationMinutes) ?? 15;
+                    if (count < 1) count = 1;
                     Navigator.pop(ctx);
+                    _showQuizQuestionsDialog(quizTitle, quizType, count, selectedLevelId!, duration);
+                  },
+                  child: const Text("Tiếp tục"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showQuizQuestionsDialog(String title, String quizType, int questionCount, String levelId, int duration) {
+    List<Map<String, dynamic>> questions = List.generate(questionCount, (index) => {
+      'questionText': '',
+      'correctAnswerText': '',
+      'optionsCount': '4',
+      'options': List.generate(4, (i) => {'text': '', 'isCorrect': false}),
+      'correctOptionIndex': 0,
+    });
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: Text("Nhập nội dung $questionCount câu hỏi"),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: MediaQuery.of(context).size.height * 0.7,
+                child: ListView.builder(
+                  shrinkWrap: false,
+                  itemCount: questionCount,
+                  itemBuilder: (context, index) {
+                    final q = questions[index];
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Câu ${index + 1}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                            TextFormField(
+                              initialValue: q['questionText'],
+                              decoration: const InputDecoration(labelText: "Câu hỏi"),
+                              onChanged: (val) => q['questionText'] = val,
+                            ),
+                            if (quizType == "ESSAY")
+                              TextFormField(
+                                initialValue: q['correctAnswerText'],
+                                decoration: const InputDecoration(labelText: "Đáp án đúng"),
+                                onChanged: (val) => q['correctAnswerText'] = val,
+                              ),
+                            if (quizType == "MULTIPLE_CHOICE") ...[
+                              Row(
+                                children: [
+                                  const Text("Số đáp án: "),
+                                  IconButton(
+                                    icon: const Icon(Icons.remove_circle_outline),
+                                    onPressed: () {
+                                      int count = int.tryParse(q['optionsCount'].toString()) ?? 0;
+                                      if (count > 1) {
+                                        setDialogState(() {
+                                          count--;
+                                          q['optionsCount'] = count.toString();
+                                          q['options'] = List.generate(count, (i) => {'text': '', 'isCorrect': i == q['correctOptionIndex']});
+                                        });
+                                      }
+                                    },
+                                  ),
+                                  Text(q['optionsCount'].toString(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle_outline),
+                                    onPressed: () {
+                                      int count = int.tryParse(q['optionsCount'].toString()) ?? 0;
+                                      if (count < 10) {
+                                        setDialogState(() {
+                                          count++;
+                                          q['optionsCount'] = count.toString();
+                                          q['options'] = List.generate(count, (i) => {'text': '', 'isCorrect': i == q['correctOptionIndex']});
+                                        });
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 12),
+                              const Text("Chọn đáp án đúng bằng cách bấm vào ô tròn bên cạnh:", style: TextStyle(color: Colors.blueAccent, fontSize: 11, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 8),
+                              ...(q['options'] as List).asMap().entries.map((entry) {
+                                int optIndex = entry.key;
+                                Map opt = entry.value;
+                                return Row(
+                                  children: [
+                                    Radio<int>(
+                                      value: optIndex,
+                                      groupValue: q['correctOptionIndex'],
+                                      onChanged: (val) {
+                                        setDialogState(() {
+                                          q['correctOptionIndex'] = val;
+                                          for (var o in q['options']) o['isCorrect'] = false;
+                                          q['options'][val]['isCorrect'] = true;
+                                        });
+                                      },
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        initialValue: opt['text'],
+                                        decoration: InputDecoration(labelText: "Đáp án ${optIndex + 1}"),
+                                        onChanged: (val) => opt['text'] = val,
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              }).toList(),
+                            ],
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Hủy")),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    List<Map<String, dynamic>> payloadQuestions = questions.map((q) {
+                      Map<String, dynamic> qPayload = {
+                        'questionText': q['questionText'],
+                        'questionType': quizType,
+                        'correctAnswerText': q['correctAnswerText'],
+                      };
+                      if (quizType == "MULTIPLE_CHOICE") {
+                        qPayload['options'] = (q['options'] as List).map((opt) => {
+                          'optionText': opt['text'],
+                          'isCorrect': opt['isCorrect'],
+                        }).toList();
+                      }
+                      return qPayload;
+                    }).toList();
+
                     try {
+                      final session = AppSession.current;
+                      if (session == null || session.userId.isEmpty) {
+                        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Lỗi: Chưa đăng nhập")));
+                        return;
+                      }
+
                       final quiz = await _lmsApi.createQuiz({
-                        'roomId': 'R-000', // Need to pass active room ID, but for now we put a placeholder
-                        'title': quizTitle,
+                        'levelId': levelId,
+                        'roomId': _selectedRoomId,
+                        'quizTitle': title,
                         'quizType': quizType,
-                        'passingScore': num.tryParse(passingScore) ?? 80,
+                        'durationMinutes': duration,
+                        'questions': payloadQuestions,
                         'status': 'PUBLISHED',
+                        'createdBy': session.userId,
                       });
                       if (mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Tạo bài kiểm tra thành công: ${quiz.title}")));
+                        _fetchQuizzes();
                       }
                     } catch (e) {
                       if (mounted) {
@@ -467,7 +706,7 @@ class _LucyProLibraryState extends State<LucyProLibrary> {
                       }
                     }
                   },
-                  child: const Text("Tạo"),
+                  child: const Text("Lưu"),
                 ),
               ],
             );

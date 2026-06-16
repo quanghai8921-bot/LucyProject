@@ -67,6 +67,9 @@ public class Room {
     @jakarta.persistence.Transient
     private Integer participantCount;
 
+    @jakarta.persistence.Transient
+    private Integer levelNumber;
+
     protected Room() {
     }
 
@@ -181,5 +184,13 @@ public class Room {
 
     public void setParticipantCount(Integer participantCount) {
         this.participantCount = participantCount;
+    }
+
+    public Integer getLevelNumber() {
+        return levelNumber;
+    }
+
+    public void setLevelNumber(Integer levelNumber) {
+        this.levelNumber = levelNumber;
     }
 }

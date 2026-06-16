@@ -8,6 +8,7 @@ import com.lucy.lms.mentor.entity.RoomQuizOption;
 import com.lucy.lms.mentor.entity.RoomQuizQuestion;
 import com.lucy.lms.mentor.service.RoomQuizService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -36,9 +37,9 @@ public class RoomQuizController {
         return roomQuizService.createOption(request);
     }
 
-    @GetMapping("/room/{roomId}")
-    public List<RoomQuiz> getQuizzesByRoom(@PathVariable String roomId) {
-        return roomQuizService.getQuizzesByRoom(roomId);
+    @GetMapping("/mentor/{mentorId}")
+    public List<RoomQuiz> getQuizzesByMentor(@PathVariable String mentorId) {
+        return roomQuizService.getQuizzesByMentor(mentorId);
     }
 
     @GetMapping("/{quizId}/questions")
@@ -54,5 +55,11 @@ public class RoomQuizController {
     @PostMapping("/{quizId}/publish")
     public RoomQuiz publishQuiz(@PathVariable String quizId) {
         return roomQuizService.publishQuiz(quizId);
+    }
+
+    @PostMapping("/{quizId}/send/{roomId}")
+    public ResponseEntity<Void> sendQuiz(@PathVariable String quizId, @PathVariable String roomId) {
+        roomQuizService.sendQuizToLearners(quizId, roomId);
+        return ResponseEntity.ok().build();
     }
 }
