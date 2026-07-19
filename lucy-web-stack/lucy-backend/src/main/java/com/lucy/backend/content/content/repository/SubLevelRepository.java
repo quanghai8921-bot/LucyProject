@@ -1,0 +1,16 @@
+package com.lucy.backend.content.content.repository;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.lucy.backend.content.content.model.SubLevel;
+
+public interface SubLevelRepository extends JpaRepository<SubLevel, String> {
+    long countByLevelIdIn(Collection<String> levelIds);
+
+    List<SubLevel> findByLevelIdIn(Collection<String> levelIds);
+
+    List<SubLevel> findByLevelIdOrderBySubLevelNumberAsc(String levelId);
+}

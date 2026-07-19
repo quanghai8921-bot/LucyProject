@@ -1,0 +1,3056 @@
+{
+    "Languages": [
+        {
+            "LanguageId": "LANG_EN",
+            "LanguageName": "English"
+        }
+    ],
+    "Stages": [
+        {
+            "StageId": "STAGE_1",
+            "LanguageId": "LANG_EN",
+            "StageNumber": 1,
+            "DurationMinutes": 60,
+            "CefrStart": "A1",
+            "CefrEnd": "early A2",
+            "LevelStart": 1,
+            "LevelEnd": 30,
+            "SubDurationMinutes": 10,
+            "SubNumber": 6,
+            "CompletionOutcome": "Speaker reaches Elementary Speaking (A1–A2) Comfortable speaking 60 minutes continuously Fear of speaking largely removed",
+            "Descriptions": "CEFR-aligned (Cambridge A1 → early A2) topic framework for STAGE 1 – BEGINNER (Levels 1–30) of LISA, focusing ONLY on SPEAKING, designed for gamification, daily-life relevance, and psychological safety for shy or low-confidence speakers."
+        },
+        {
+            "StageId": "STAGE_2",
+            "LanguageId": "LANG_EN",
+            "StageNumber": 2,
+            "DurationMinutes": 90,
+            "CefrStart": "A2+",
+            "CefrEnd": "B1-",
+            "LevelStart": 31,
+            "LevelEnd": 60,
+            "SubDurationMinutes": 15,
+            "SubNumber": 6,
+            "CompletionOutcome": "Stable A2+ → B1- speaking Can speak 90 minutes continuously Can explain, compare, give reasons",
+            "Descriptions": "This practice will NOT repeat Stage 1 mechanics, only what is new and expanded, so this is easy for your team to plug into the system. Below is a complete, systematic sub-topic breakdown for STAGE 2 (Levels 31–60), using 15-minute blocks, fully aligned with A2+ → B1- speaking (Cambridge CEFR) and 100% speaking-only for LISA gamification."
+        }
+    ],
+    "LevelGroups": [
+        {
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "GroupTitle": "SURVIVAL SPEAKING",
+            "GrCefrLevel": "A1 – Absolute Beginner"
+        },
+        {
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "GroupTitle": "DAILY LIFE FOUNDATION",
+            "GrCefrLevel": "A1"
+        },
+        {
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "GroupTitle": "FUNCTIONAL COMMUNICATION",
+            "GrCefrLevel": "A1 → A2"
+        },
+        {
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "GroupTitle": "PERSONAL WORLD",
+            "GrCefrLevel": "A2 – Low"
+        },
+        {
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "GroupTitle": "EXPANDING EXPERIENCE",
+            "GrCefrLevel": "A2"
+        },
+        {
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "GroupTitle": "PRE-A2 CONFIDENCE BUILDING",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "GroupTitle": "CONFIDENT DAILY COMMUNICATION",
+            "GrCefrLevel": "A2+"
+        },
+        {
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "GroupTitle": "EXPERIENCES & STORIES",
+            "GrCefrLevel": "A2+ → B1-"
+        },
+        {
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "GroupTitle": "OPINIONS & CHOICES",
+            "GrCefrLevel": "B1- Entry"
+        },
+        {
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "GroupTitle": "SOCIAL & REAL-LIFE INTERACTION",
+            "GrCefrLevel": "B1-"
+        },
+        {
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "GroupTitle": "CONNECTED SPEECH & MEANING",
+            "GrCefrLevel": "B1-"
+        },
+        {
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "GroupTitle": "B1- THRESHOLD SPEAKING",
+            "GrCefrLevel": null
+        }
+    ],
+    "Levels": [
+        {
+            "LevelId": "L_1",
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "SAYING WHO I AM",
+            "LevelNumber": 1
+        },
+        {
+            "LevelId": "L_2",
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "COUNTRIES & LANGUAGES",
+            "LevelNumber": 2
+        },
+        {
+            "LevelId": "L_3",
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "GREETINGS & POLITENESS",
+            "LevelNumber": 3
+        },
+        {
+            "LevelId": "L_4",
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "AGE & FAMILY",
+            "LevelNumber": 4
+        },
+        {
+            "LevelId": "L_5",
+            "GroupId": "G_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "MY HOME",
+            "LevelNumber": 5
+        },
+        {
+            "LevelId": "L_6",
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "DAILY ROUTINE",
+            "LevelNumber": 6
+        },
+        {
+            "LevelId": "L_7",
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "FOOD & DRINKS",
+            "LevelNumber": 7
+        },
+        {
+            "LevelId": "L_8",
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "FREE TIME & HOBBIES",
+            "LevelNumber": 8
+        },
+        {
+            "LevelId": "L_9",
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "PLACES AROUND ME",
+            "LevelNumber": 9
+        },
+        {
+            "LevelId": "L_10",
+            "GroupId": "G_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "YESTERDAY",
+            "LevelNumber": 10
+        },
+        {
+            "LevelId": "L_11",
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "SHOPPING",
+            "LevelNumber": 11
+        },
+        {
+            "LevelId": "L_12",
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "EATING OUT",
+            "LevelNumber": 12
+        },
+        {
+            "LevelId": "L_13",
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "TRANSPORTATION",
+            "LevelNumber": 13
+        },
+        {
+            "LevelId": "L_14",
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "WEATHER & CLOTHES",
+            "LevelNumber": 14
+        },
+        {
+            "LevelId": "L_15",
+            "GroupId": "G_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "WEEKEND",
+            "LevelNumber": 15
+        },
+        {
+            "LevelId": "L_16",
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "JOB / STUDY",
+            "LevelNumber": 16
+        },
+        {
+            "LevelId": "L_17",
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "SKILLS",
+            "LevelNumber": 17
+        },
+        {
+            "LevelId": "L_18",
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "HEALTH",
+            "LevelNumber": 18
+        },
+        {
+            "LevelId": "L_19",
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "FRIENDS",
+            "LevelNumber": 19
+        },
+        {
+            "LevelId": "L_20",
+            "GroupId": "G_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "FAVORITES",
+            "LevelNumber": 20
+        },
+        {
+            "LevelId": "L_21",
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "TRAVEL",
+            "LevelNumber": 21
+        },
+        {
+            "LevelId": "L_22",
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "HOLIDAYS",
+            "LevelNumber": 22
+        },
+        {
+            "LevelId": "L_23",
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "DAILY PROBLEMS",
+            "LevelNumber": 23
+        },
+        {
+            "LevelId": "L_24",
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "PLANS",
+            "LevelNumber": 24
+        },
+        {
+            "LevelId": "L_25",
+            "GroupId": "G_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "TECHNOLOGY",
+            "LevelNumber": 25
+        },
+        {
+            "LevelId": "L_26",
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "LEARNING ENGLISH",
+            "LevelNumber": 26
+        },
+        {
+            "LevelId": "L_27",
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "WORK & LIFE",
+            "LevelNumber": 27
+        },
+        {
+            "LevelId": "L_28",
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "SIMPLE OPINIONS",
+            "LevelNumber": 28
+        },
+        {
+            "LevelId": "L_29",
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "LIFE CHANGES",
+            "LevelNumber": 29
+        },
+        {
+            "LevelId": "L_30",
+            "GroupId": "G_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "MY LIFE STORY (A1–A2 EXIT)",
+            "LevelNumber": 30
+        },
+        {
+            "LevelId": "L_31",
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "MY TYPICAL WEEK",
+            "LevelNumber": 31
+        },
+        {
+            "LevelId": "L_32",
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "TIME MANAGEMENT",
+            "LevelNumber": 32
+        },
+        {
+            "LevelId": "L_33",
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "FOOD, HABITS & LIFESTYLE",
+            "LevelNumber": 33
+        },
+        {
+            "LevelId": "L_34",
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PLACES I OFTEN GO",
+            "LevelNumber": 34
+        },
+        {
+            "LevelId": "L_35",
+            "GroupId": "G_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PEOPLE IN MY DAILY LIFE",
+            "LevelNumber": 35
+        },
+        {
+            "LevelId": "L_36",
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PAST EXPERIENCES",
+            "LevelNumber": 36
+        },
+        {
+            "LevelId": "L_37",
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "TRAVEL & TRANSPORTATION",
+            "LevelNumber": 37
+        },
+        {
+            "LevelId": "L_38",
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "STUDYING & LEARNING",
+            "LevelNumber": 38
+        },
+        {
+            "LevelId": "L_39",
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "WORK TASKS & RESPONSIBILITIES",
+            "LevelNumber": 39
+        },
+        {
+            "LevelId": "L_40",
+            "GroupId": "G_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "COMMUNICATION PROBLEMS",
+            "LevelNumber": 40
+        },
+        {
+            "LevelId": "L_41",
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "LIKES, DISLIKES & REASONS",
+            "LevelNumber": 41
+        },
+        {
+            "LevelId": "L_42",
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "MAKING CHOICES",
+            "LevelNumber": 42
+        },
+        {
+            "LevelId": "L_43",
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "TECHNOLOGY IN DAILY LIFE",
+            "LevelNumber": 43
+        },
+        {
+            "LevelId": "L_44",
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "ENTERTAINMENT & MEDIA",
+            "LevelNumber": 44
+        },
+        {
+            "LevelId": "L_45",
+            "GroupId": "G_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "SHOPPING & SERVICES",
+            "LevelNumber": 45
+        },
+        {
+            "LevelId": "L_46",
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "SOCIAL SITUATIONS",
+            "LevelNumber": 46
+        },
+        {
+            "LevelId": "L_47",
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "WORKING WITH OTHERS",
+            "LevelNumber": 47
+        },
+        {
+            "LevelId": "L_48",
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "DAILY PROBLEMS & SOLUTIONS",
+            "LevelNumber": 48
+        },
+        {
+            "LevelId": "L_49",
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "HEALTH, STRESS & BALANCE",
+            "LevelNumber": 49
+        },
+        {
+            "LevelId": "L_50",
+            "GroupId": "G_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PLANS & DECISIONS",
+            "LevelNumber": 50
+        },
+        {
+            "LevelId": "L_51",
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "LIFE CHANGES",
+            "LevelNumber": 51
+        },
+        {
+            "LevelId": "L_52",
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "GOALS & MOTIVATION",
+            "LevelNumber": 52
+        },
+        {
+            "LevelId": "L_53",
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "DAILY LIFE COMPARISONS",
+            "LevelNumber": 53
+        },
+        {
+            "LevelId": "L_54",
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "GIVING SIMPLE ADVICE",
+            "LevelNumber": 54
+        },
+        {
+            "LevelId": "L_55",
+            "GroupId": "G_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PROBLEM-SOLVING TALK",
+            "LevelNumber": 55
+        },
+        {
+            "LevelId": "L_56",
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "WORK & STUDY EXPERIENCES",
+            "LevelNumber": 56
+        },
+        {
+            "LevelId": "L_57",
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "OPINIONS ABOUT DAILY LIFE",
+            "LevelNumber": 57
+        },
+        {
+            "LevelId": "L_58",
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "EXPLAINING IDEAS CLEARLY",
+            "LevelNumber": 58
+        },
+        {
+            "LevelId": "L_59",
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "PREPARING FOR THE FUTURE",
+            "LevelNumber": 59
+        },
+        {
+            "LevelId": "L_60",
+            "GroupId": "G_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "MY LIFE, MY VOICE (STAGE EXIT)",
+            "LevelNumber": 60
+        }
+    ],
+    "SubLevel": [
+        {
+            "SubLevelId": "SL_1_1",
+            "LevelId": "L_1",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My name",
+            "MainTask": "My full name, My nickname, How people call me"
+        },
+        {
+            "SubLevelId": "SL_1_2",
+            "LevelId": "L_1",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Where I’m from",
+            "MainTask": "Country, City, One simple fact"
+        },
+        {
+            "SubLevelId": "SL_1_3",
+            "LevelId": "L_1",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Me now",
+            "MainTask": "Student / worker, Simple sentence: “I am…”"
+        },
+        {
+            "SubLevelId": "SL_1_4",
+            "LevelId": "L_1",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "One thing about me",
+            "MainTask": "I like…, I don’t like…"
+        },
+        {
+            "SubLevelId": "SL_1_5",
+            "LevelId": "L_1",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Repeat & swap",
+            "MainTask": "Ask and answer with partners"
+        },
+        {
+            "SubLevelId": "SL_1_6",
+            "LevelId": "L_1",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Mini story",
+            "MainTask": "“My name is… I’m from… I am…”"
+        },
+        {
+            "SubLevelId": "SL_2_1",
+            "LevelId": "L_2",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My country",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_2_2",
+            "LevelId": "L_2",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "My language",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_2_3",
+            "LevelId": "L_2",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Languages I hear",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_2_4",
+            "LevelId": "L_2",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "English in my life",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_2_5",
+            "LevelId": "L_2",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Simple comparison (A or B)",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_2_6",
+            "LevelId": "L_2",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Repeat & summarize",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_1",
+            "LevelId": "L_3",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Saying hello",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_2",
+            "LevelId": "L_3",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Saying goodbye",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_3",
+            "LevelId": "L_3",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Thank you & sorry",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_4",
+            "LevelId": "L_3",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Short dialogues",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_5",
+            "LevelId": "L_3",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Role-play (meet & leave)",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_3_6",
+            "LevelId": "L_3",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Natural repetition",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_1",
+            "LevelId": "L_4",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My age",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_2",
+            "LevelId": "L_4",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Family members",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_3",
+            "LevelId": "L_4",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Who I live with",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_4",
+            "LevelId": "L_4",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Simple description",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_5",
+            "LevelId": "L_4",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Ask about family",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_4_6",
+            "LevelId": "L_4",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Family mini-talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_1",
+            "LevelId": "L_5",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Where I live",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_2",
+            "LevelId": "L_5",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "House or apartment",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_3",
+            "LevelId": "L_5",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Rooms",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_4",
+            "LevelId": "L_5",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Favorite place at home",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_5",
+            "LevelId": "L_5",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Describe & compare",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_5_6",
+            "LevelId": "L_5",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Home story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_1",
+            "LevelId": "L_6",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Morning routine",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_2",
+            "LevelId": "L_6",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Work / study time",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_3",
+            "LevelId": "L_6",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Evening routine",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_4",
+            "LevelId": "L_6",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Time words",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_5",
+            "LevelId": "L_6",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Weekday vs weekend",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_6_6",
+            "LevelId": "L_6",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Full day story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_1",
+            "LevelId": "L_7",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Breakfast",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_2",
+            "LevelId": "L_7",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Lunch",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_3",
+            "LevelId": "L_7",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Dinner",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_4",
+            "LevelId": "L_7",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Favorite food",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_5",
+            "LevelId": "L_7",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Like / don’t like",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_7_6",
+            "LevelId": "L_7",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Food day recap",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_1",
+            "LevelId": "L_8",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Free time activities",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_2",
+            "LevelId": "L_8",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Indoor hobbies",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_3",
+            "LevelId": "L_8",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Outdoor hobbies",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_4",
+            "LevelId": "L_8",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Weekend hobby",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_5",
+            "LevelId": "L_8",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Hobby with friends",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_8_6",
+            "LevelId": "L_8",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Hobby story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_1",
+            "LevelId": "L_9",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Shops",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_2",
+            "LevelId": "L_9",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Cafes / restaurants",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_3",
+            "LevelId": "L_9",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Supermarket",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_4",
+            "LevelId": "L_9",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Near / far",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_5",
+            "LevelId": "L_9",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Simple directions",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_9_6",
+            "LevelId": "L_9",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "My area talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_1",
+            "LevelId": "L_10",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Yesterday morning",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_2",
+            "LevelId": "L_10",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Yesterday afternoon",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_3",
+            "LevelId": "L_10",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Yesterday evening",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_4",
+            "LevelId": "L_10",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "One thing I did",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_5",
+            "LevelId": "L_10",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Ask about yesterday",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_10_6",
+            "LevelId": "L_10",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Yesterday story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_1",
+            "LevelId": "L_11",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Things I buy",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_2",
+            "LevelId": "L_11",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Prices",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_3",
+            "LevelId": "L_11",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Asking for things",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_4",
+            "LevelId": "L_11",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Buying clothes",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_5",
+            "LevelId": "L_11",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Simple role-play",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_11_6",
+            "LevelId": "L_11",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Shopping recap",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_1",
+            "LevelId": "L_12",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Restaurant types",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_2",
+            "LevelId": "L_12",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Ordering food",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_3",
+            "LevelId": "L_12",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Drinks",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_4",
+            "LevelId": "L_12",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Paying the bill",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_5",
+            "LevelId": "L_12",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Restaurant role-play",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_12_6",
+            "LevelId": "L_12",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Eating out story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_1",
+            "LevelId": "L_13",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "How I travel",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_2",
+            "LevelId": "L_13",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Bus / bike / car",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_3",
+            "LevelId": "L_13",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Time & distance",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_4",
+            "LevelId": "L_13",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Daily travel",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_5",
+            "LevelId": "L_13",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Travel problems",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_13_6",
+            "LevelId": "L_13",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Travel routine",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_1",
+            "LevelId": "L_14",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Today’s weather",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_2",
+            "LevelId": "L_14",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Hot / cold / rainy",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_3",
+            "LevelId": "L_14",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Clothes I wear",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_4",
+            "LevelId": "L_14",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Weather & clothes",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_5",
+            "LevelId": "L_14",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Favorite weather",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_14_6",
+            "LevelId": "L_14",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Weather talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_1",
+            "LevelId": "L_15",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Last weekend",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_2",
+            "LevelId": "L_15",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Weekend activities",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_3",
+            "LevelId": "L_15",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "With friends/family",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_4",
+            "LevelId": "L_15",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Good or bad weekend",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_5",
+            "LevelId": "L_15",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Ask about weekend",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_15_6",
+            "LevelId": "L_15",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Weekend story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_1",
+            "LevelId": "L_16",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My job/study",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_2",
+            "LevelId": "L_16",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Where I work/study",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_3",
+            "LevelId": "L_16",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Daily tasks",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_4",
+            "LevelId": "L_16",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "People I work with",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_5",
+            "LevelId": "L_16",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Like / don’t like",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_16_6",
+            "LevelId": "L_16",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Work/study talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_1",
+            "LevelId": "L_17",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Things I can do",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_2",
+            "LevelId": "L_17",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Things I can’t do",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_3",
+            "LevelId": "L_17",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Skills at work/study",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_4",
+            "LevelId": "L_17",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Learning now",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_5",
+            "LevelId": "L_17",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Want to learn",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_17_6",
+            "LevelId": "L_17",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Skills summary",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_1",
+            "LevelId": "L_18",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "How I feel",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_2",
+            "LevelId": "L_18",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Body parts",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_3",
+            "LevelId": "L_18",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Simple problems",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_4",
+            "LevelId": "L_18",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Healthy habits",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_5",
+            "LevelId": "L_18",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Doctor role-play",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_18_6",
+            "LevelId": "L_18",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Health routine",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_1",
+            "LevelId": "L_19",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My friends",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_2",
+            "LevelId": "L_19",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "How we met",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_3",
+            "LevelId": "L_19",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "What we do",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_4",
+            "LevelId": "L_19",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Best friend",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_5",
+            "LevelId": "L_19",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Friends & free time",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_19_6",
+            "LevelId": "L_19",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Friend story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_1",
+            "LevelId": "L_20",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Favorite food",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_2",
+            "LevelId": "L_20",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Favorite movie",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_3",
+            "LevelId": "L_20",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Favorite music",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_4",
+            "LevelId": "L_20",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Favorite place",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_5",
+            "LevelId": "L_20",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Simple reasons",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_20_6",
+            "LevelId": "L_20",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Favorites recap",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_1",
+            "LevelId": "L_21",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Places visited",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_2",
+            "LevelId": "L_21",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Transport",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_3",
+            "LevelId": "L_21",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Food on trips",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_4",
+            "LevelId": "L_21",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Good memories",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_5",
+            "LevelId": "L_21",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Travel problems",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_21_6",
+            "LevelId": "L_21",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Travel story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_1",
+            "LevelId": "L_22",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "National holidays",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_2",
+            "LevelId": "L_22",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "What people do",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_3",
+            "LevelId": "L_22",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Food & family",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_4",
+            "LevelId": "L_22",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Last holiday",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_5",
+            "LevelId": "L_22",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Holiday feelings",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_22_6",
+            "LevelId": "L_22",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Holiday talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_1",
+            "LevelId": "L_23",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Being late",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_2",
+            "LevelId": "L_23",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Losing things",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_3",
+            "LevelId": "L_23",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Small problems",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_4",
+            "LevelId": "L_23",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Simple solutions",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_5",
+            "LevelId": "L_23",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Ask for help",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_23_6",
+            "LevelId": "L_23",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Problem story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_1",
+            "LevelId": "L_24",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Tomorrow",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_2",
+            "LevelId": "L_24",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Next week",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_3",
+            "LevelId": "L_24",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Plans with friends",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_4",
+            "LevelId": "L_24",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Work/study plans",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_5",
+            "LevelId": "L_24",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Weekend plans",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_24_6",
+            "LevelId": "L_24",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Plan summary",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_1",
+            "LevelId": "L_25",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My phone",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_2",
+            "LevelId": "L_25",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Apps I use",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_3",
+            "LevelId": "L_25",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Internet use",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_4",
+            "LevelId": "L_25",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Daily tech habits",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_5",
+            "LevelId": "L_25",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Tech problems",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_25_6",
+            "LevelId": "L_25",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Tech talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_1",
+            "LevelId": "L_26",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Why I learn English",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_2",
+            "LevelId": "L_26",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "How I learn",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_3",
+            "LevelId": "L_26",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Using English daily",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_4",
+            "LevelId": "L_26",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Problems learning",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_5",
+            "LevelId": "L_26",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Feeling about English",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_26_6",
+            "LevelId": "L_26",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "English journey",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_1",
+            "LevelId": "L_27",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Busy days",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_2",
+            "LevelId": "L_27",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Free days",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_3",
+            "LevelId": "L_27",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Balance",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_4",
+            "LevelId": "L_27",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Stress & rest",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_5",
+            "LevelId": "L_27",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "What helps me",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_27_6",
+            "LevelId": "L_27",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Life talk",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_1",
+            "LevelId": "L_28",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Like / don’t like",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_2",
+            "LevelId": "L_28",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Prefer A or B",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_3",
+            "LevelId": "L_28",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Food opinions",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_4",
+            "LevelId": "L_28",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Activity opinions",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_5",
+            "LevelId": "L_28",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Easy choices",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_28_6",
+            "LevelId": "L_28",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Opinion recap",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_1",
+            "LevelId": "L_29",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Before",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_2",
+            "LevelId": "L_29",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Now",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_3",
+            "LevelId": "L_29",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Small changes",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_4",
+            "LevelId": "L_29",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Good changes",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_5",
+            "LevelId": "L_29",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Future change",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_29_6",
+            "LevelId": "L_29",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Life change story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_1",
+            "LevelId": "L_30",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My past",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_2",
+            "LevelId": "L_30",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "My present",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_3",
+            "LevelId": "L_30",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "My daily life",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_4",
+            "LevelId": "L_30",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "My people",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_5",
+            "LevelId": "L_30",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "My future wish",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_30_6",
+            "LevelId": "L_30",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Full life story",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_31_1",
+            "LevelId": "L_31",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Weekdays routine",
+            "MainTask": "Talk about a normal weekday from morning to night.(What time you wake up, work/study, rest)"
+        },
+        {
+            "SubLevelId": "SL_31_2",
+            "LevelId": "L_31",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Weekend routine",
+            "MainTask": "Compare what you do on weekends vs weekdays."
+        },
+        {
+            "SubLevelId": "SL_31_3",
+            "LevelId": "L_31",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Busy vs free days",
+            "MainTask": "Describe a busy day and a free day.Say which one you prefer and why (simple reasons)."
+        },
+        {
+            "SubLevelId": "SL_31_4",
+            "LevelId": "L_31",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Study/work balance",
+            "MainTask": "Explain how you balance work/study and rest."
+        },
+        {
+            "SubLevelId": "SL_31_5",
+            "LevelId": "L_31",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Changes in my week",
+            "MainTask": "Talk about changes in your routine recently."
+        },
+        {
+            "SubLevelId": "SL_31_6",
+            "LevelId": "L_31",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Weekly summary story",
+            "MainTask": "Tell the story of one full week in your life."
+        },
+        {
+            "SubLevelId": "SL_32_1",
+            "LevelId": "L_32",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Morning time",
+            "MainTask": "Describe your morning routine and how you use time."
+        },
+        {
+            "SubLevelId": "SL_32_2",
+            "LevelId": "L_32",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Busy hours",
+            "MainTask": "Talk about the busiest time of your day."
+        },
+        {
+            "SubLevelId": "SL_32_3",
+            "LevelId": "L_32",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Being late / early",
+            "MainTask": "Share experiences of being late or early."
+        },
+        {
+            "SubLevelId": "SL_32_4",
+            "LevelId": "L_32",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Planning the day",
+            "MainTask": "Explain how you plan your day (or don’t)."
+        },
+        {
+            "SubLevelId": "SL_32_5",
+            "LevelId": "L_32",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Time problems",
+            "MainTask": "Talk about problems with time (too busy, tired)."
+        },
+        {
+            "SubLevelId": "SL_32_6",
+            "LevelId": "L_32",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Better time habits",
+            "MainTask": "Explain one habit you want to improve."
+        },
+        {
+            "SubLevelId": "SL_33_1",
+            "LevelId": "L_33",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Daily meals",
+            "MainTask": "Describe what you eat in a normal day."
+        },
+        {
+            "SubLevelId": "SL_33_2",
+            "LevelId": "L_33",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Eating habits",
+            "MainTask": "Talk about eating times, snacks, drinks."
+        },
+        {
+            "SubLevelId": "SL_33_3",
+            "LevelId": "L_33",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Cooking vs eating out",
+            "MainTask": "Compare eating at home and eating outside."
+        },
+        {
+            "SubLevelId": "SL_33_4",
+            "LevelId": "L_33",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Healthy vs unhealthy",
+            "MainTask": "Give examples of healthy and unhealthy habits."
+        },
+        {
+            "SubLevelId": "SL_33_5",
+            "LevelId": "L_33",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Food changes",
+            "MainTask": "Talk about changes in your eating habits."
+        },
+        {
+            "SubLevelId": "SL_33_6",
+            "LevelId": "L_33",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Lifestyle reflection",
+            "MainTask": "Explain how food affects your daily life."
+        },
+        {
+            "SubLevelId": "SL_34_1",
+            "LevelId": "L_34",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Work/study places",
+            "MainTask": "Describe places where you work or study."
+        },
+        {
+            "SubLevelId": "SL_34_2",
+            "LevelId": "L_34",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Food & coffee places",
+            "MainTask": "Talk about cafes or restaurants you like."
+        },
+        {
+            "SubLevelId": "SL_34_3",
+            "LevelId": "L_34",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Shopping places",
+            "MainTask": "Describe where you usually shop."
+        },
+        {
+            "SubLevelId": "SL_34_4",
+            "LevelId": "L_34",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Relaxing places",
+            "MainTask": "Talk about places where you relax."
+        },
+        {
+            "SubLevelId": "SL_34_5",
+            "LevelId": "L_34",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Why I like them",
+            "MainTask": "Explain why you like these places."
+        },
+        {
+            "SubLevelId": "SL_34_6",
+            "LevelId": "L_34",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "My daily map",
+            "MainTask": "Describe your daily movement between places."
+        },
+        {
+            "SubLevelId": "SL_35_1",
+            "LevelId": "L_35",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "People at work/school",
+            "MainTask": "Talk about people you meet every day."
+        },
+        {
+            "SubLevelId": "SL_35_2",
+            "LevelId": "L_35",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Friends & classmates",
+            "MainTask": "Describe your friends or classmates."
+        },
+        {
+            "SubLevelId": "SL_35_3",
+            "LevelId": "L_35",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Family contact",
+            "MainTask": "Explain how often you talk to family."
+        },
+        {
+            "SubLevelId": "SL_35_4",
+            "LevelId": "L_35",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Neighbors",
+            "MainTask": "Talk about your neighbors or people nearby."
+        },
+        {
+            "SubLevelId": "SL_35_5",
+            "LevelId": "L_35",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Communication style",
+            "MainTask": "Describe how you communicate with people."
+        },
+        {
+            "SubLevelId": "SL_35_6",
+            "LevelId": "L_35",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "People summary",
+            "MainTask": "Summarize who is important in your daily life."
+        },
+        {
+            "SubLevelId": "SL_36_1",
+            "LevelId": "L_36",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Good experience",
+            "MainTask": "Tell a positive experience from the past."
+        },
+        {
+            "SubLevelId": "SL_36_2",
+            "LevelId": "L_36",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Bad experience",
+            "MainTask": "Describe a difficult or unpleasant experience."
+        },
+        {
+            "SubLevelId": "SL_36_3",
+            "LevelId": "L_36",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "First-time experience",
+            "MainTask": "Talk about doing something for the first time."
+        },
+        {
+            "SubLevelId": "SL_36_4",
+            "LevelId": "L_36",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "What I learned",
+            "MainTask": "Explain what you learned from that experience."
+        },
+        {
+            "SubLevelId": "SL_36_5",
+            "LevelId": "L_36",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Feelings then & now",
+            "MainTask": "Compare how you felt then and now."
+        },
+        {
+            "SubLevelId": "SL_36_6",
+            "LevelId": "L_36",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Experience story",
+            "MainTask": "Tell the full story clearly."
+        },
+        {
+            "SubLevelId": "SL_37_1",
+            "LevelId": "L_37",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Daily commuting",
+            "MainTask": "Describe how you travel daily."
+        },
+        {
+            "SubLevelId": "SL_37_2",
+            "LevelId": "L_37",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Transport problems",
+            "MainTask": "Talk about problems with transport."
+        },
+        {
+            "SubLevelId": "SL_37_3",
+            "LevelId": "L_37",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Travel preferences",
+            "MainTask": "Explain how you prefer to travel and why."
+        },
+        {
+            "SubLevelId": "SL_37_4",
+            "LevelId": "L_37",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Past trip",
+            "MainTask": "Describe a trip you took before."
+        },
+        {
+            "SubLevelId": "SL_37_5",
+            "LevelId": "L_37",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Travel plans",
+            "MainTask": "Talk about a trip you want to take."
+        },
+        {
+            "SubLevelId": "SL_37_6",
+            "LevelId": "L_37",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Travel story",
+            "MainTask": "Tell a complete travel story."
+        },
+        {
+            "SubLevelId": "SL_38_1",
+            "LevelId": "L_38",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Subjects I study",
+            "MainTask": "Describe what you study or learned before."
+        },
+        {
+            "SubLevelId": "SL_38_2",
+            "LevelId": "L_38",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Learning methods",
+            "MainTask": "Explain how you usually study."
+        },
+        {
+            "SubLevelId": "SL_38_3",
+            "LevelId": "L_38",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Learning difficulties",
+            "MainTask": "Talk about difficulties in learning."
+        },
+        {
+            "SubLevelId": "SL_38_4",
+            "LevelId": "L_38",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Studying with others",
+            "MainTask": "Compare studying alone vs with others."
+        },
+        {
+            "SubLevelId": "SL_38_5",
+            "LevelId": "L_38",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Improving learning",
+            "MainTask": "Explain how you want to improve."
+        },
+        {
+            "SubLevelId": "SL_38_6",
+            "LevelId": "L_38",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Learning reflection",
+            "MainTask": "Reflect on your learning journey."
+        },
+        {
+            "SubLevelId": "SL_39_1",
+            "LevelId": "L_39",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My main tasks",
+            "MainTask": "Describe your main daily tasks."
+        },
+        {
+            "SubLevelId": "SL_39_2",
+            "LevelId": "L_39",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Daily responsibilities",
+            "MainTask": "Talk about responsibilities at work/study."
+        },
+        {
+            "SubLevelId": "SL_39_3",
+            "LevelId": "L_39",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Easy tasks",
+            "MainTask": "Explain tasks you find easy."
+        },
+        {
+            "SubLevelId": "SL_39_4",
+            "LevelId": "L_39",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Difficult tasks",
+            "MainTask": "Describe tasks you find difficult."
+        },
+        {
+            "SubLevelId": "SL_39_5",
+            "LevelId": "L_39",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Working with others",
+            "MainTask": "Talk about teamwork experiences."
+        },
+        {
+            "SubLevelId": "SL_39_6",
+            "LevelId": "L_39",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Workday summary",
+            "MainTask": "Describe one full work/study day."
+        },
+        {
+            "SubLevelId": "SL_40_1",
+            "LevelId": "L_40",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Language problems",
+            "MainTask": "Talk about problems speaking or understanding."
+        },
+        {
+            "SubLevelId": "SL_40_2",
+            "LevelId": "L_40",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Misunderstandings",
+            "MainTask": "Describe a misunderstanding."
+        },
+        {
+            "SubLevelId": "SL_40_3",
+            "LevelId": "L_40",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Asking for repetition",
+            "MainTask": "Practice asking people to repeat or explain."
+        },
+        {
+            "SubLevelId": "SL_40_4",
+            "LevelId": "L_40",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Clarifying meaning",
+            "MainTask": "Explain how you clarify information."
+        },
+        {
+            "SubLevelId": "SL_40_5",
+            "LevelId": "L_40",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Solving communication issues",
+            "MainTask": "Talk about solutions."
+        },
+        {
+            "SubLevelId": "SL_40_6",
+            "LevelId": "L_40",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Communication story",
+            "MainTask": "Tell a communication problem story."
+        },
+        {
+            "SubLevelId": "SL_41_1",
+            "LevelId": "L_41",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Things I like in daily life",
+            "MainTask": "Talk about activities, food, places, or habits you like."
+        },
+        {
+            "SubLevelId": "SL_41_2",
+            "LevelId": "L_41",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Things I dislike",
+            "MainTask": "Describe things you don’t enjoy in daily life."
+        },
+        {
+            "SubLevelId": "SL_41_3",
+            "LevelId": "L_41",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Giving reasons",
+            "MainTask": "Explain why you like or dislike something (because, so)."
+        },
+        {
+            "SubLevelId": "SL_41_4",
+            "LevelId": "L_41",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Changing preferences",
+            "MainTask": "Talk about something you liked before but not now (or vice versa)."
+        },
+        {
+            "SubLevelId": "SL_41_5",
+            "LevelId": "L_41",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Comparing preferences",
+            "MainTask": "Compare two things you like or dislike (A vs B)."
+        },
+        {
+            "SubLevelId": "SL_41_6",
+            "LevelId": "L_41",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Personal taste summary",
+            "MainTask": "Summarize what your likes say about you."
+        },
+        {
+            "SubLevelId": "SL_42_1",
+            "LevelId": "L_42",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Daily small choices",
+            "MainTask": "Talk about choices you make every day (food, clothes, time)."
+        },
+        {
+            "SubLevelId": "SL_42_2",
+            "LevelId": "L_42",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Study/work choices",
+            "MainTask": "Describe choices related to study or work."
+        },
+        {
+            "SubLevelId": "SL_42_3",
+            "LevelId": "L_42",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Choosing between two options",
+            "MainTask": "Explain how you choose A or B."
+        },
+        {
+            "SubLevelId": "SL_42_4",
+            "LevelId": "L_42",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Simple pros & cons",
+            "MainTask": "Talk about good and bad points of a choice."
+        },
+        {
+            "SubLevelId": "SL_42_5",
+            "LevelId": "L_42",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Satisfied or regretful choices",
+            "MainTask": "Describe a choice you feel good or bad about."
+        },
+        {
+            "SubLevelId": "SL_42_6",
+            "LevelId": "L_42",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Decision story",
+            "MainTask": "Tell the story of one decision from start to result."
+        },
+        {
+            "SubLevelId": "SL_43_1",
+            "LevelId": "L_43",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Daily phone use",
+            "MainTask": "Describe how you use your phone every day."
+        },
+        {
+            "SubLevelId": "SL_43_2",
+            "LevelId": "L_43",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Apps and tools",
+            "MainTask": "Talk about apps or tools you often use."
+        },
+        {
+            "SubLevelId": "SL_43_3",
+            "LevelId": "L_43",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Benefits of technology",
+            "MainTask": "Explain how technology helps your life."
+        },
+        {
+            "SubLevelId": "SL_43_4",
+            "LevelId": "L_43",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Problems with technology",
+            "MainTask": "Describe problems or stress caused by technology."
+        },
+        {
+            "SubLevelId": "SL_43_5",
+            "LevelId": "L_43",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Technology habits",
+            "MainTask": "Talk about good or bad tech habits."
+        },
+        {
+            "SubLevelId": "SL_43_6",
+            "LevelId": "L_43",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Technology reflection",
+            "MainTask": "Summarize how technology affects your life."
+        },
+        {
+            "SubLevelId": "SL_44_1",
+            "LevelId": "L_44",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Movies and series",
+            "MainTask": "Describe movies or series you watch."
+        },
+        {
+            "SubLevelId": "SL_44_2",
+            "LevelId": "L_44",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Music and audio",
+            "MainTask": "Talk about music you like and when you listen."
+        },
+        {
+            "SubLevelId": "SL_44_3",
+            "LevelId": "L_44",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Online entertainment",
+            "MainTask": "Describe YouTube, TikTok, games, or online content."
+        },
+        {
+            "SubLevelId": "SL_44_4",
+            "LevelId": "L_44",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Entertainment habits",
+            "MainTask": "Explain how often and when you relax with media."
+        },
+        {
+            "SubLevelId": "SL_44_5",
+            "LevelId": "L_44",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Watching alone or with others",
+            "MainTask": "Compare entertainment alone vs with friends."
+        },
+        {
+            "SubLevelId": "SL_44_6",
+            "LevelId": "L_44",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Entertainment story",
+            "MainTask": "Tell a story about a memorable entertainment experience."
+        },
+        {
+            "SubLevelId": "SL_45_1",
+            "LevelId": "L_45",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Shopping habits",
+            "MainTask": "Describe what and how often you shop."
+        },
+        {
+            "SubLevelId": "SL_45_2",
+            "LevelId": "L_45",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Online vs offline shopping",
+            "MainTask": "Compare shopping online and in stores."
+        },
+        {
+            "SubLevelId": "SL_45_3",
+            "LevelId": "L_45",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Price, quality & choice",
+            "MainTask": "Talk about how you choose products."
+        },
+        {
+            "SubLevelId": "SL_45_4",
+            "LevelId": "L_45",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Service experiences",
+            "MainTask": "Describe good or bad service experiences."
+        },
+        {
+            "SubLevelId": "SL_45_5",
+            "LevelId": "L_45",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Customer problems",
+            "MainTask": "Talk about problems and how you solved them."
+        },
+        {
+            "SubLevelId": "SL_45_6",
+            "LevelId": "L_45",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Shopping story",
+            "MainTask": "Tell a full shopping experience story."
+        },
+        {
+            "SubLevelId": "SL_46_1",
+            "LevelId": "L_46",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Meeting new people",
+            "MainTask": "Describe how you meet new people."
+        },
+        {
+            "SubLevelId": "SL_46_2",
+            "LevelId": "L_46",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Starting conversations",
+            "MainTask": "Talk about common small talk topics."
+        },
+        {
+            "SubLevelId": "SL_46_3",
+            "LevelId": "L_46",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Keeping conversations going",
+            "MainTask": "Explain how you continue a conversation."
+        },
+        {
+            "SubLevelId": "SL_46_4",
+            "LevelId": "L_46",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Feeling shy or confident",
+            "MainTask": "Describe your feelings in social situations."
+        },
+        {
+            "SubLevelId": "SL_46_5",
+            "LevelId": "L_46",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Social difficulties",
+            "MainTask": "Talk about problems in social communication."
+        },
+        {
+            "SubLevelId": "SL_46_6",
+            "LevelId": "L_46",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Social experience story",
+            "MainTask": "Tell a story about a social situation."
+        },
+        {
+            "SubLevelId": "SL_47_1",
+            "LevelId": "L_47",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Group tasks",
+            "MainTask": "Describe tasks you do in a group."
+        },
+        {
+            "SubLevelId": "SL_47_2",
+            "LevelId": "L_47",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Roles in teamwork",
+            "MainTask": "Explain your role when working with others."
+        },
+        {
+            "SubLevelId": "SL_47_3",
+            "LevelId": "L_47",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Teamwork problems",
+            "MainTask": "Talk about problems in teamwork."
+        },
+        {
+            "SubLevelId": "SL_47_4",
+            "LevelId": "L_47",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Giving opinions politely",
+            "MainTask": "Practice sharing opinions politely."
+        },
+        {
+            "SubLevelId": "SL_47_5",
+            "LevelId": "L_47",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Solving team issues",
+            "MainTask": "Explain how problems were solved."
+        },
+        {
+            "SubLevelId": "SL_47_6",
+            "LevelId": "L_47",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Teamwork reflection",
+            "MainTask": "Summarize what you learned about teamwork."
+        },
+        {
+            "SubLevelId": "SL_48_1",
+            "LevelId": "L_48",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Common daily problems",
+            "MainTask": "Describe problems at work, study, or home."
+        },
+        {
+            "SubLevelId": "SL_48_2",
+            "LevelId": "L_48",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Causes of problems",
+            "MainTask": "Explain why these problems happen."
+        },
+        {
+            "SubLevelId": "SL_48_3",
+            "LevelId": "L_48",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Asking for help",
+            "MainTask": "Talk about how you ask for help."
+        },
+        {
+            "SubLevelId": "SL_48_4",
+            "LevelId": "L_48",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Giving simple solutions",
+            "MainTask": "Suggest simple ways to solve problems."
+        },
+        {
+            "SubLevelId": "SL_48_5",
+            "LevelId": "L_48",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Results of solutions",
+            "MainTask": "Explain what happened after solving the problem."
+        },
+        {
+            "SubLevelId": "SL_48_6",
+            "LevelId": "L_48",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Problem-solving story",
+            "MainTask": "Tell a full problem → solution story."
+        },
+        {
+            "SubLevelId": "SL_49_1",
+            "LevelId": "L_49",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Feeling tired or stressed",
+            "MainTask": "Describe when and why you feel tired."
+        },
+        {
+            "SubLevelId": "SL_49_2",
+            "LevelId": "L_49",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Sources of stress",
+            "MainTask": "Talk about things that cause stress."
+        },
+        {
+            "SubLevelId": "SL_49_3",
+            "LevelId": "L_49",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Relaxing activities",
+            "MainTask": "Explain what helps you relax."
+        },
+        {
+            "SubLevelId": "SL_49_4",
+            "LevelId": "L_49",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Healthy habits",
+            "MainTask": "Describe habits for better health."
+        },
+        {
+            "SubLevelId": "SL_49_5",
+            "LevelId": "L_49",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Work–life balance",
+            "MainTask": "Talk about balancing work/study and rest."
+        },
+        {
+            "SubLevelId": "SL_49_6",
+            "LevelId": "L_49",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Health reflection",
+            "MainTask": "Summarize your health and balance situation."
+        },
+        {
+            "SubLevelId": "SL_50_1",
+            "LevelId": "L_50",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Short-term plans",
+            "MainTask": "Describe plans for this week or month."
+        },
+        {
+            "SubLevelId": "SL_50_2",
+            "LevelId": "L_50",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Changing plans",
+            "MainTask": "Talk about plans that changed."
+        },
+        {
+            "SubLevelId": "SL_50_3",
+            "LevelId": "L_50",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Planning with others",
+            "MainTask": "Explain how you plan with friends or colleagues."
+        },
+        {
+            "SubLevelId": "SL_50_4",
+            "LevelId": "L_50",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Difficult plans",
+            "MainTask": "Describe plans that are hard to make."
+        },
+        {
+            "SubLevelId": "SL_50_5",
+            "LevelId": "L_50",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Results of planning",
+            "MainTask": "Talk about success or failure of plans."
+        },
+        {
+            "SubLevelId": "SL_50_6",
+            "LevelId": "L_50",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Planning summary",
+            "MainTask": "Summarize your planning style."
+        },
+        {
+            "SubLevelId": "SL_51_1",
+            "LevelId": "L_51",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Life before",
+            "MainTask": "Describe your life in the past."
+        },
+        {
+            "SubLevelId": "SL_51_2",
+            "LevelId": "L_51",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Life now",
+            "MainTask": "Talk about your current life."
+        },
+        {
+            "SubLevelId": "SL_51_3",
+            "LevelId": "L_51",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Big changes",
+            "MainTask": "Describe one important life change."
+        },
+        {
+            "SubLevelId": "SL_51_4",
+            "LevelId": "L_51",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Small daily changes",
+            "MainTask": "Talk about small changes in habits."
+        },
+        {
+            "SubLevelId": "SL_51_5",
+            "LevelId": "L_51",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Positive & negative changes",
+            "MainTask": "Compare good and bad changes."
+        },
+        {
+            "SubLevelId": "SL_51_6",
+            "LevelId": "L_51",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Life change story",
+            "MainTask": "Tell the story of a life change."
+        },
+        {
+            "SubLevelId": "SL_52_1",
+            "LevelId": "L_52",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Personal goals",
+            "MainTask": "Describe goals in your personal life."
+        },
+        {
+            "SubLevelId": "SL_52_2",
+            "LevelId": "L_52",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Study or work goals",
+            "MainTask": "Talk about career or study goals."
+        },
+        {
+            "SubLevelId": "SL_52_3",
+            "LevelId": "L_52",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Motivation sources",
+            "MainTask": "Explain what motivates you."
+        },
+        {
+            "SubLevelId": "SL_52_4",
+            "LevelId": "L_52",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Difficulties and obstacles",
+            "MainTask": "Talk about problems in reaching goals."
+        },
+        {
+            "SubLevelId": "SL_52_5",
+            "LevelId": "L_52",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Staying motivated",
+            "MainTask": "Describe how you keep going."
+        },
+        {
+            "SubLevelId": "SL_52_6",
+            "LevelId": "L_52",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Goal reflection",
+            "MainTask": "Summarize your goals and motivation."
+        },
+        {
+            "SubLevelId": "SL_53_1",
+            "LevelId": "L_53",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Daily routines comparison",
+            "MainTask": "Compare your life with others’."
+        },
+        {
+            "SubLevelId": "SL_53_2",
+            "LevelId": "L_53",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "City vs quiet life",
+            "MainTask": "Compare different living styles."
+        },
+        {
+            "SubLevelId": "SL_53_3",
+            "LevelId": "L_53",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Work/study styles",
+            "MainTask": "Compare ways of working or studying."
+        },
+        {
+            "SubLevelId": "SL_53_4",
+            "LevelId": "L_53",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Past vs present",
+            "MainTask": "Compare your past and present life."
+        },
+        {
+            "SubLevelId": "SL_53_5",
+            "LevelId": "L_53",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Preferences",
+            "MainTask": "Explain which you prefer and why."
+        },
+        {
+            "SubLevelId": "SL_53_6",
+            "LevelId": "L_53",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Comparison summary",
+            "MainTask": "Summarize your comparisons."
+        },
+        {
+            "SubLevelId": "SL_54_1",
+            "LevelId": "L_54",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Common problems",
+            "MainTask": "Describe common problems people have."
+        },
+        {
+            "SubLevelId": "SL_54_2",
+            "LevelId": "L_54",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Giving advice",
+            "MainTask": "Give advice using should / can."
+        },
+        {
+            "SubLevelId": "SL_54_3",
+            "LevelId": "L_54",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Advice to friends",
+            "MainTask": "Talk about advice you gave or received."
+        },
+        {
+            "SubLevelId": "SL_54_4",
+            "LevelId": "L_54",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Good vs bad advice",
+            "MainTask": "Compare helpful and unhelpful advice."
+        },
+        {
+            "SubLevelId": "SL_54_5",
+            "LevelId": "L_54",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Following advice",
+            "MainTask": "Talk about results of following advice."
+        },
+        {
+            "SubLevelId": "SL_54_6",
+            "LevelId": "L_54",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Advice role-play",
+            "MainTask": "Simulate giving advice in a situation."
+        },
+        {
+            "SubLevelId": "SL_55_1",
+            "LevelId": "L_55",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Explaining a problem clearly",
+            "MainTask": "Describe a problem step by step."
+        },
+        {
+            "SubLevelId": "SL_55_2",
+            "LevelId": "L_55",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Causes of the problem",
+            "MainTask": "Explain why it happened."
+        },
+        {
+            "SubLevelId": "SL_55_3",
+            "LevelId": "L_55",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Possible solutions",
+            "MainTask": "Suggest different solutions."
+        },
+        {
+            "SubLevelId": "SL_55_4",
+            "LevelId": "L_55",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Choosing a solution",
+            "MainTask": "Explain why you chose one solution."
+        },
+        {
+            "SubLevelId": "SL_55_5",
+            "LevelId": "L_55",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Results",
+            "MainTask": "Describe the outcome."
+        },
+        {
+            "SubLevelId": "SL_55_6",
+            "LevelId": "L_55",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Problem case story",
+            "MainTask": "Tell the full problem-solving story."
+        },
+        {
+            "SubLevelId": "SL_56_1",
+            "LevelId": "L_56",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Best experiences",
+            "MainTask": "Talk about a positive work/study experience."
+        },
+        {
+            "SubLevelId": "SL_56_2",
+            "LevelId": "L_56",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Difficult moments",
+            "MainTask": "Describe a challenging situation."
+        },
+        {
+            "SubLevelId": "SL_56_3",
+            "LevelId": "L_56",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Mistakes and learning",
+            "MainTask": "Talk about mistakes you made."
+        },
+        {
+            "SubLevelId": "SL_56_4",
+            "LevelId": "L_56",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "People involved",
+            "MainTask": "Describe people in that experience."
+        },
+        {
+            "SubLevelId": "SL_56_5",
+            "LevelId": "L_56",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Changes after experience",
+            "MainTask": "Explain how you changed."
+        },
+        {
+            "SubLevelId": "SL_56_6",
+            "LevelId": "L_56",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Experience summary",
+            "MainTask": "Summarize the experience."
+        },
+        {
+            "SubLevelId": "SL_57_1",
+            "LevelId": "L_57",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Work vs study life",
+            "MainTask": "Share opinions on work and study."
+        },
+        {
+            "SubLevelId": "SL_57_2",
+            "LevelId": "L_57",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Busy vs relaxed life",
+            "MainTask": "Compare two lifestyles."
+        },
+        {
+            "SubLevelId": "SL_57_3",
+            "LevelId": "L_57",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Online vs offline life",
+            "MainTask": "Talk about modern life."
+        },
+        {
+            "SubLevelId": "SL_57_4",
+            "LevelId": "L_57",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Good and bad points",
+            "MainTask": "Explain advantages and disadvantages."
+        },
+        {
+            "SubLevelId": "SL_57_5",
+            "LevelId": "L_57",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Personal opinion",
+            "MainTask": "Share your preference."
+        },
+        {
+            "SubLevelId": "SL_57_6",
+            "LevelId": "L_57",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Opinion reflection",
+            "MainTask": "Summarize your views."
+        },
+        {
+            "SubLevelId": "SL_58_1",
+            "LevelId": "L_58",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Explaining routines",
+            "MainTask": "Explain how you do something daily."
+        },
+        {
+            "SubLevelId": "SL_58_2",
+            "LevelId": "L_58",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Explaining a process",
+            "MainTask": "Describe steps of a simple process."
+        },
+        {
+            "SubLevelId": "SL_58_3",
+            "LevelId": "L_58",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Giving examples",
+            "MainTask": "Support ideas with examples."
+        },
+        {
+            "SubLevelId": "SL_58_4",
+            "LevelId": "L_58",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Clarifying meaning",
+            "MainTask": "Practice making ideas clear."
+        },
+        {
+            "SubLevelId": "SL_58_5",
+            "LevelId": "L_58",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Checking understanding",
+            "MainTask": "Ask if others understand."
+        },
+        {
+            "SubLevelId": "SL_58_6",
+            "LevelId": "L_58",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Clear explanation story",
+            "MainTask": "Explain something from start to end."
+        },
+        {
+            "SubLevelId": "SL_59_1",
+            "LevelId": "L_59",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "Future study or work ideas",
+            "MainTask": "Talk about future directions."
+        },
+        {
+            "SubLevelId": "SL_59_2",
+            "LevelId": "L_59",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "Skills to learn",
+            "MainTask": "Describe skills you want to improve."
+        },
+        {
+            "SubLevelId": "SL_59_3",
+            "LevelId": "L_59",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "Possible challenges",
+            "MainTask": "Talk about future difficulties."
+        },
+        {
+            "SubLevelId": "SL_59_4",
+            "LevelId": "L_59",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "Preparation plans",
+            "MainTask": "Explain how you prepare."
+        },
+        {
+            "SubLevelId": "SL_59_5",
+            "LevelId": "L_59",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "Hope and worries",
+            "MainTask": "Share hopes and worries."
+        },
+        {
+            "SubLevelId": "SL_59_6",
+            "LevelId": "L_59",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Future vision talk",
+            "MainTask": "Describe your future life."
+        },
+        {
+            "SubLevelId": "SL_60_1",
+            "LevelId": "L_60",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "My past",
+            "MainTask": "Talk about where you started."
+        },
+        {
+            "SubLevelId": "SL_60_2",
+            "LevelId": "L_60",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "My present",
+            "MainTask": "Describe your current life."
+        },
+        {
+            "SubLevelId": "SL_60_3",
+            "LevelId": "L_60",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "My strengths",
+            "MainTask": "Talk about what you do well."
+        },
+        {
+            "SubLevelId": "SL_60_4",
+            "LevelId": "L_60",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "My challenges",
+            "MainTask": "Describe difficulties you face."
+        },
+        {
+            "SubLevelId": "SL_60_5",
+            "LevelId": "L_60",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "My future direction",
+            "MainTask": "Talk about where you are going."
+        },
+        {
+            "SubLevelId": "SL_60_6",
+            "LevelId": "L_60",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "Full life narrative",
+            "MainTask": "Tell your life story confidently."
+        }
+    ]
+}

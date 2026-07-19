@@ -1,0 +1,2178 @@
+{
+    "Languages": [
+        {
+            "LanguageId": "LANG_JA",
+            "LanguageName": "Japanese"
+        }
+    ],
+    "Stages": [
+        {
+            "StageId": "STAGE_1",
+            "LanguageId": "LANG_JA",
+            "StageNumber": 1,
+            "DurationMinutes": 60,
+            "CefrStart": "A1",
+            "CefrEnd": "初期A2",
+            "LevelStart": 1,
+            "LevelEnd": 30,
+            "SubDurationMinutes": 10,
+            "SubNumber": 6,
+            "CompletionOutcome": "A1 → A2スピーキング到達 60分連続スピーキング可能 スピーキングへの恐怖の大幅軽減",
+            "Descriptions": "本フレームワークは、CEFR（ケンブリッジ A1→初期A2）に準拠し、スピーキングのみに特化して設計されています。また、ゲーミフィケーション・日常生活との関連性・心理的安全性を重視しています。"
+        },
+        {
+            "StageId": "STAGE_2",
+            "LanguageId": "LANG_JA",
+            "StageNumber": 2,
+            "DurationMinutes": 90,
+            "CefrStart": "A2+",
+            "CefrEnd": "B1-",
+            "LevelStart": 31,
+            "LevelEnd": 60,
+            "SubDurationMinutes": null,
+            "SubNumber": null,
+            "CompletionOutcome": "A2+ → B1-の安定したスピーキング能力 90分連続スピーキング可能 説明・比較・理由付けが可能",
+            "Descriptions": "ステージ1からの連続性 実生活への応用性 安全性と認知成長のバランス ロールプレイとAIに最適 B1への自然な移行"
+        },
+        {
+            "StageId": "STAGE_3",
+            "LanguageId": "LANG_JA",
+            "StageNumber": 3,
+            "DurationMinutes": 120,
+            "CefrStart": "B1",
+            "CefrEnd": "B2",
+            "LevelStart": 61,
+            "LevelEnd": 100,
+            "SubDurationMinutes": 20,
+            "SubNumber": 6,
+            "CompletionOutcome": "会話を継続できる アイデアを明確に説明できる 意見を表現できる 振り返り・比較・ストーリー化ができる B2レベルのスピーキング準備が整う 90分以上一貫して話せる 抽象的・倫理的・哲学的テーマを扱える ストーリー構造と感情表現を維持できる B2後半〜C1初期レベルで自信を持って話せる 英語を思考・生活言語として使える",
+            "Descriptions": "本ステージはケンブリッジCEFRスピーキング（B1 → B2）に完全準拠し、ステージ1・2と一貫した設計ロジックを維持しています。"
+        }
+    ],
+    "LevelGroups": [
+        {
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "GroupTitle": "サバイバルスピーキング",
+            "GrCefrLevel": "A1"
+        },
+        {
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "GroupTitle": "日常生活の基礎",
+            "GrCefrLevel": "A1"
+        },
+        {
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "GroupTitle": "機能的コミュニケーション",
+            "GrCefrLevel": "A1→A2"
+        },
+        {
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "GroupTitle": "個人の世界",
+            "GrCefrLevel": "A2"
+        },
+        {
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "GroupTitle": "経験の拡張",
+            "GrCefrLevel": "A2"
+        },
+        {
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "GroupTitle": "プレA2自信強化",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "GroupTitle": "日常コミュニケーション強化",
+            "GrCefrLevel": "A2+"
+        },
+        {
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "GroupTitle": "経験とストーリー",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "GroupTitle": "意見と選択",
+            "GrCefrLevel": "B1-"
+        },
+        {
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "GroupTitle": "社会的やり取り",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "GroupTitle": "つながったスピーチ",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_12",
+            "StageId": "STAGE_2",
+            "GroupTitle": "B1-到達レベル",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "GroupTitle": "強化B1 → B1+",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "GroupTitle": "B1+ → B2-",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_JA_15",
+            "StageId": "STAGE_3",
+            "GroupTitle": "B2 → C1準備",
+            "GrCefrLevel": null
+        }
+    ],
+    "Levels": [
+        {
+            "LevelId": "L_JA_1",
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "自己紹介",
+            "LevelNumber": 1
+        },
+        {
+            "LevelId": "L_JA_2",
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "国と言語",
+            "LevelNumber": 2
+        },
+        {
+            "LevelId": "L_JA_3",
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "挨拶とマナー",
+            "LevelNumber": 3
+        },
+        {
+            "LevelId": "L_JA_4",
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "年齢と家族",
+            "LevelNumber": 4
+        },
+        {
+            "LevelId": "L_JA_5",
+            "GroupId": "G_JA_1",
+            "StageId": "STAGE_1",
+            "LevelTitle": "私の家",
+            "LevelNumber": 5
+        },
+        {
+            "LevelId": "L_JA_6",
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "日課",
+            "LevelNumber": 6
+        },
+        {
+            "LevelId": "L_JA_7",
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "食べ物と飲み物",
+            "LevelNumber": 7
+        },
+        {
+            "LevelId": "L_JA_8",
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "趣味と自由時間",
+            "LevelNumber": 8
+        },
+        {
+            "LevelId": "L_JA_9",
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "周辺の場所",
+            "LevelNumber": 9
+        },
+        {
+            "LevelId": "L_JA_10",
+            "GroupId": "G_JA_2",
+            "StageId": "STAGE_1",
+            "LevelTitle": "昨日",
+            "LevelNumber": 10
+        },
+        {
+            "LevelId": "L_JA_11",
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "買い物",
+            "LevelNumber": 11
+        },
+        {
+            "LevelId": "L_JA_12",
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "外食",
+            "LevelNumber": 12
+        },
+        {
+            "LevelId": "L_JA_13",
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "交通",
+            "LevelNumber": 13
+        },
+        {
+            "LevelId": "L_JA_14",
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "天気と服装",
+            "LevelNumber": 14
+        },
+        {
+            "LevelId": "L_JA_15",
+            "GroupId": "G_JA_3",
+            "StageId": "STAGE_1",
+            "LevelTitle": "週末",
+            "LevelNumber": 15
+        },
+        {
+            "LevelId": "L_JA_16",
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "仕事／勉強",
+            "LevelNumber": 16
+        },
+        {
+            "LevelId": "L_JA_17",
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "スキル",
+            "LevelNumber": 17
+        },
+        {
+            "LevelId": "L_JA_18",
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "健康",
+            "LevelNumber": 18
+        },
+        {
+            "LevelId": "L_JA_19",
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "友達",
+            "LevelNumber": 19
+        },
+        {
+            "LevelId": "L_JA_20",
+            "GroupId": "G_JA_4",
+            "StageId": "STAGE_1",
+            "LevelTitle": "お気に入り",
+            "LevelNumber": 20
+        },
+        {
+            "LevelId": "L_JA_21",
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "旅行",
+            "LevelNumber": 21
+        },
+        {
+            "LevelId": "L_JA_22",
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "祝日",
+            "LevelNumber": 22
+        },
+        {
+            "LevelId": "L_JA_23",
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "日常問題",
+            "LevelNumber": 23
+        },
+        {
+            "LevelId": "L_JA_24",
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "計画",
+            "LevelNumber": 24
+        },
+        {
+            "LevelId": "L_JA_25",
+            "GroupId": "G_JA_5",
+            "StageId": "STAGE_1",
+            "LevelTitle": "テクノロジー",
+            "LevelNumber": 25
+        },
+        {
+            "LevelId": "L_JA_26",
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "英語学習",
+            "LevelNumber": 26
+        },
+        {
+            "LevelId": "L_JA_27",
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "仕事と生活",
+            "LevelNumber": 27
+        },
+        {
+            "LevelId": "L_JA_28",
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "簡単な意見",
+            "LevelNumber": 28
+        },
+        {
+            "LevelId": "L_JA_29",
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "人生の変化",
+            "LevelNumber": 29
+        },
+        {
+            "LevelId": "L_JA_30",
+            "GroupId": "G_JA_6",
+            "StageId": "STAGE_1",
+            "LevelTitle": "私の人生",
+            "LevelNumber": 30
+        },
+        {
+            "LevelId": "L_JA_31",
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "私の1週間",
+            "LevelNumber": 31
+        },
+        {
+            "LevelId": "L_JA_32",
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "時間管理",
+            "LevelNumber": 32
+        },
+        {
+            "LevelId": "L_JA_33",
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "食事・習慣・ライフスタイル",
+            "LevelNumber": 33
+        },
+        {
+            "LevelId": "L_JA_34",
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "よく行く場所",
+            "LevelNumber": 34
+        },
+        {
+            "LevelId": "L_JA_35",
+            "GroupId": "G_JA_7",
+            "StageId": "STAGE_2",
+            "LevelTitle": "日常の人間関係",
+            "LevelNumber": 35
+        },
+        {
+            "LevelId": "L_JA_36",
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "過去の経験",
+            "LevelNumber": 36
+        },
+        {
+            "LevelId": "L_JA_37",
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "旅行と交通",
+            "LevelNumber": 37
+        },
+        {
+            "LevelId": "L_JA_38",
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "学習",
+            "LevelNumber": 38
+        },
+        {
+            "LevelId": "L_JA_39",
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "仕事と責任",
+            "LevelNumber": 39
+        },
+        {
+            "LevelId": "L_JA_40",
+            "GroupId": "G_JA_8",
+            "StageId": "STAGE_2",
+            "LevelTitle": "コミュニケーション問題",
+            "LevelNumber": 40
+        },
+        {
+            "LevelId": "L_JA_41",
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "好き・嫌い＋理由",
+            "LevelNumber": 41
+        },
+        {
+            "LevelId": "L_JA_42",
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "意思決定",
+            "LevelNumber": 42
+        },
+        {
+            "LevelId": "L_JA_43",
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "テクノロジー",
+            "LevelNumber": 43
+        },
+        {
+            "LevelId": "L_JA_44",
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "エンタメ",
+            "LevelNumber": 44
+        },
+        {
+            "LevelId": "L_JA_45",
+            "GroupId": "G_JA_9",
+            "StageId": "STAGE_2",
+            "LevelTitle": "買い物・サービス",
+            "LevelNumber": 45
+        },
+        {
+            "LevelId": "L_JA_46",
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "社会状況",
+            "LevelNumber": 46
+        },
+        {
+            "LevelId": "L_JA_47",
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "チームワーク",
+            "LevelNumber": 47
+        },
+        {
+            "LevelId": "L_JA_48",
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "問題解決",
+            "LevelNumber": 48
+        },
+        {
+            "LevelId": "L_JA_49",
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "健康とストレス",
+            "LevelNumber": 49
+        },
+        {
+            "LevelId": "L_JA_50",
+            "GroupId": "G_JA_10",
+            "StageId": "STAGE_2",
+            "LevelTitle": "計画と意思決定",
+            "LevelNumber": 50
+        },
+        {
+            "LevelId": "L_JA_51",
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "人生の変化",
+            "LevelNumber": 51
+        },
+        {
+            "LevelId": "L_JA_52",
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "目標とモチベーション",
+            "LevelNumber": 52
+        },
+        {
+            "LevelId": "L_JA_53",
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "比較",
+            "LevelNumber": 53
+        },
+        {
+            "LevelId": "L_JA_54",
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "アドバイス",
+            "LevelNumber": 54
+        },
+        {
+            "LevelId": "L_JA_55",
+            "GroupId": "G_JA_11",
+            "StageId": "STAGE_2",
+            "LevelTitle": "問題解決",
+            "LevelNumber": 55
+        },
+        {
+            "LevelId": "L_JA_60",
+            "GroupId": "G_JA_12",
+            "StageId": "STAGE_2",
+            "LevelTitle": "私の人生",
+            "LevelNumber": 60
+        },
+        {
+            "LevelId": "L_JA_61",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "学習と生活の管理",
+            "LevelNumber": 61
+        },
+        {
+            "LevelId": "L_JA_62",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "学習経験",
+            "LevelNumber": 62
+        },
+        {
+            "LevelId": "L_JA_63",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "人間関係",
+            "LevelNumber": 63
+        },
+        {
+            "LevelId": "L_JA_64",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "コミュニケーション能力",
+            "LevelNumber": 64
+        },
+        {
+            "LevelId": "L_JA_65",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "ストレスと健康",
+            "LevelNumber": 65
+        },
+        {
+            "LevelId": "L_JA_66",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "チームワーク",
+            "LevelNumber": 66
+        },
+        {
+            "LevelId": "L_JA_67",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "意思決定",
+            "LevelNumber": 67
+        },
+        {
+            "LevelId": "L_JA_68",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "デジタル生活",
+            "LevelNumber": 68
+        },
+        {
+            "LevelId": "L_JA_69",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "お金と責任",
+            "LevelNumber": 69
+        },
+        {
+            "LevelId": "L_JA_70",
+            "GroupId": "G_JA_13",
+            "StageId": "STAGE_3",
+            "LevelTitle": "中間レビュー",
+            "LevelNumber": 70
+        },
+        {
+            "LevelId": "L_JA_71",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "将来計画",
+            "LevelNumber": 71
+        },
+        {
+            "LevelId": "L_JA_72",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "価値観",
+            "LevelNumber": 72
+        },
+        {
+            "LevelId": "L_JA_73",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "文化",
+            "LevelNumber": 73
+        },
+        {
+            "LevelId": "L_JA_74",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "問題解決",
+            "LevelNumber": 74
+        },
+        {
+            "LevelId": "L_JA_75",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "リーダーシップ",
+            "LevelNumber": 75
+        },
+        {
+            "LevelId": "L_JA_76",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "意見と議論",
+            "LevelNumber": 76
+        },
+        {
+            "LevelId": "L_JA_77",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "失敗と成長",
+            "LevelNumber": 77
+        },
+        {
+            "LevelId": "L_JA_78",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "成功",
+            "LevelNumber": 78
+        },
+        {
+            "LevelId": "L_JA_79",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "倫理",
+            "LevelNumber": 79
+        },
+        {
+            "LevelId": "L_JA_80",
+            "GroupId": "G_JA_14",
+            "StageId": "STAGE_3",
+            "LevelTitle": "高度な自己振り返り",
+            "LevelNumber": 80
+        },
+        {
+            "LevelId": "L_JA_100",
+            "GroupId": "G_JA_15",
+            "StageId": "STAGE_3",
+            "LevelTitle": "最終ステージ（マスターフルエンシー）",
+            "LevelNumber": 100
+        }
+    ],
+    "SubLevel": [
+        {
+            "SubLevelId": "SL_JA_1_1",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "名前",
+            "MainTask": "フルネーム／ニックネーム"
+        },
+        {
+            "SubLevelId": "SL_JA_1_2",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "出身",
+            "MainTask": "国・都市・簡単な情報"
+        },
+        {
+            "SubLevelId": "SL_JA_1_3",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "現在の自分",
+            "MainTask": "学生／社会人"
+        },
+        {
+            "SubLevelId": "SL_JA_1_4",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "自分について",
+            "MainTask": "好き・嫌い"
+        },
+        {
+            "SubLevelId": "SL_JA_1_5",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "質問と応答",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_1_6",
+            "LevelId": "L_JA_1",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ミニストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_1",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "自分の国",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_2",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "使用言語",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_3",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "周囲の言語",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_4",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "英語との関わり",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_5",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "簡単な比較",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_2_6",
+            "LevelId": "L_JA_2",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "まとめ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_1",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "挨拶",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_2",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "別れの表現",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_3",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "感謝と謝罪",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_4",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "短い会話",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_5",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "ロールプレイ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_3_6",
+            "LevelId": "L_JA_3",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "反復練習",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_1",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "年齢",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_2",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "家族構成",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_3",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "同居者",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_4",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "簡単な説明",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_5",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "家族について質問",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_4_6",
+            "LevelId": "L_JA_4",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ミニトーク",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_1",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "住んでいる場所",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_2",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "家／アパート",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_3",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "部屋",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_4",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "お気に入りの場所",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_5",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "比較",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_5_6",
+            "LevelId": "L_JA_5",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "家のストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_1",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "朝",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_2",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "勉強／仕事",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_3",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "夜",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_4",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "時間表現",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_5",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "平日 vs 週末",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_6_6",
+            "LevelId": "L_JA_6",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "1日のストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_7_1",
+            "LevelId": "L_JA_7",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "朝食・昼食・夕食",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_7_2",
+            "LevelId": "L_JA_7",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "好きな食べ物",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_7_3",
+            "LevelId": "L_JA_7",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "好き／嫌い",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_7_4",
+            "LevelId": "L_JA_7",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "1日のまとめ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_8_1",
+            "LevelId": "L_JA_8",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "自由時間の活動",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_8_2",
+            "LevelId": "L_JA_8",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "室内／屋外",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_8_3",
+            "LevelId": "L_JA_8",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "週末の趣味",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_8_4",
+            "LevelId": "L_JA_8",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "友達と",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_8_5",
+            "LevelId": "L_JA_8",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_9_1",
+            "LevelId": "L_JA_9",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "店・カフェ・スーパー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_9_2",
+            "LevelId": "L_JA_9",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "近い／遠い",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_9_3",
+            "LevelId": "L_JA_9",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "簡単な道案内",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_9_4",
+            "LevelId": "L_JA_9",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "自分のエリア",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_10_1",
+            "LevelId": "L_JA_10",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "朝・昼・夜",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_10_2",
+            "LevelId": "L_JA_10",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "行ったこと",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_10_3",
+            "LevelId": "L_JA_10",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "質問",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_10_4",
+            "LevelId": "L_JA_10",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_1",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "学習理由",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_2",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "学習方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_3",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "日常での使用",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_4",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "困難",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_5",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "感情",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_26_6",
+            "LevelId": "L_JA_26",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "学習ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_27_1",
+            "LevelId": "L_JA_27",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "忙しい日／暇な日",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_27_2",
+            "LevelId": "L_JA_27",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "バランス",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_27_3",
+            "LevelId": "L_JA_27",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "ストレス",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_27_4",
+            "LevelId": "L_JA_27",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "解決方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_27_5",
+            "LevelId": "L_JA_27",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "生活トーク",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_1",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "好き／嫌い",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_2",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "A vs B",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_3",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "食べ物",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_4",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "活動",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_5",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "選択",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_28_6",
+            "LevelId": "L_JA_28",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "まとめ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_29_1",
+            "LevelId": "L_JA_29",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "過去／現在",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_29_2",
+            "LevelId": "L_JA_29",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "小さな変化",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_29_3",
+            "LevelId": "L_JA_29",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "良い変化",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_29_4",
+            "LevelId": "L_JA_29",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "未来",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_29_5",
+            "LevelId": "L_JA_29",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_1",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "過去",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_2",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "現在",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_3",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "日常生活",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_4",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "人間関係",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_5",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "将来",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_30_6",
+            "LevelId": "L_JA_30",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "フルストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_1",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "平日のルーティン",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_2",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "週末との比較",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_3",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "忙しい日 vs 暇な日",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_4",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "勉強／仕事と休息のバランス",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_5",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "最近の変化 ``",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_31_6",
+            "LevelId": "L_JA_31",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "1週間のストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_1",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "朝の時間",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_2",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "忙しい時間帯",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_3",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "遅刻・早到着の経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_4",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "1日の計画",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_5",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "時間に関する問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_32_6",
+            "LevelId": "L_JA_32",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "改善したい習慣",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_1",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "日常の食事",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_2",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "食習慣",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_3",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "自炊 vs 外食",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_4",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "健康 vs 不健康",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_5",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "食生活の変化",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_33_6",
+            "LevelId": "L_JA_33",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ライフスタイルの振り返り",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_1",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "勉強・仕事の場所",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_2",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "カフェ・レストラン",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_3",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "買い物場所",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_4",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "リラックス場所",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_5",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "好きな理由",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_34_6",
+            "LevelId": "L_JA_34",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "日常の移動",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_1",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "職場・学校の人",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_2",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "友人・クラスメート",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_3",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "家族との連絡",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_4",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "近所の人",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_5",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "コミュニケーションスタイル",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_35_6",
+            "LevelId": "L_JA_35",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "人間関係まとめ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_1",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "良い経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_2",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "悪い経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_3",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "初めての経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_4",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "学んだこと",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_5",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "感情の変化",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_36_6",
+            "LevelId": "L_JA_36",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_1",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "通勤",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_2",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "交通問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_3",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "好み",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_4",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "過去の旅行",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_5",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "未来の計画",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_37_6",
+            "LevelId": "L_JA_37",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "旅行ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_1",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "学習内容",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_2",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "学習方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_3",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "困難",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_4",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "一人 vs グループ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_5",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "改善",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_38_6",
+            "LevelId": "L_JA_38",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "振り返り",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_1",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "主なタスク",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_2",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "責任",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_3",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "簡単な仕事",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_4",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "難しい仕事",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_5",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "チームワーク",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_39_6",
+            "LevelId": "L_JA_39",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "1日のまとめ",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_1",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "言語問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_2",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "誤解",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_3",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "聞き返し",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_4",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "意味確認",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_5",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "解決方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_40_6",
+            "LevelId": "L_JA_40",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_1",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "過去",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_2",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "現在",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_3",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "強み",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_4",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "課題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_5",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "将来",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_60_6",
+            "LevelId": "L_JA_60",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "人生ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_1",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "現在のスケジュール",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_2",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "時間管理方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_3",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "忙しい時期 vs 余裕のある時期",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_4",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "時間に関する問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_5",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "バランス改善",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_61_6",
+            "LevelId": "L_JA_61",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "週間ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_1",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "良い学習経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_2",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "難しい科目",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_3",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "学習スタイル比較",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_4",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "学習課題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_5",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "克服方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_62_6",
+            "LevelId": "L_JA_62",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "学習ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_1",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "重要な友人",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_2",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "友人関係の築き方",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_3",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "関係の種類",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_4",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "衝突・誤解",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_5",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "良い関係の条件",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_63_6",
+            "LevelId": "L_JA_63",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_1",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "自分のスタイル",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_2",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "フォーマル vs インフォーマル",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_3",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "誤解経験",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_4",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "コミュニケーション問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_5",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "改善方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_64_6",
+            "LevelId": "L_JA_64",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "振り返り",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_1",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "ストレス要因",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_2",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "心身への影響",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_3",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "対処方法",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_4",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "ストレス状況",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_5",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "セルフケア",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_65_6",
+            "LevelId": "L_JA_65",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "回復ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_1",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "グループ活動",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_2",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "役割",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_3",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "衝突",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_4",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "問題解決",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_5",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "学び",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_66_6",
+            "LevelId": "L_JA_66",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_1",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "重要な決断",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_2",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "影響要因",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_3",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "良い決断 vs 悪い決断",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_4",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "予想外の結果",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_5",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "学び",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_67_6",
+            "LevelId": "L_JA_67",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_1",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "日常習慣",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_2",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "利点",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_3",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "問題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_4",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "オンライン vs オフライン",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_5",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "バランス",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_68_6",
+            "LevelId": "L_JA_68",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "振り返り",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_1",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "消費習慣",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_2",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "必要 vs 欲求",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_3",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "予算管理",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_4",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "失敗",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_5",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "学び",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_69_6",
+            "LevelId": "L_JA_69",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_1",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "現在の生活",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_2",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "コミュニケーションの進歩",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_3",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "強み",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_4",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "課題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_5",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "目標",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_70_6",
+            "LevelId": "L_JA_70",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "成長ストーリー",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_1",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "過去",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_2",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "課題",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_3",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "変化",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_4",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "現在の能力",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_5",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "未来のビジョン",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_JA_100_6",
+            "LevelId": "L_JA_100",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "完全な人生ストーリー（20分連続）",
+            "MainTask": null
+        }
+    ]
+}

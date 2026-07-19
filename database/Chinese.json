@@ -1,0 +1,2954 @@
+{
+    "Languages": [
+        {
+            "LanguageId": "LANG_ZH",
+            "LanguageName": "Chinese"
+        }
+    ],
+    "Stages": [
+        {
+            "StageId": "STAGE_ZH_1",
+            "LanguageId": "LANG_ZH",
+            "StageNumber": 1,
+            "DurationMinutes": null,
+            "CefrStart": null,
+            "CefrEnd": null,
+            "LevelStart": 1,
+            "LevelEnd": 30,
+            "SubDurationMinutes": null,
+            "SubNumber": null,
+            "CompletionOutcome": null,
+            "Descriptions": null
+        },
+        {
+            "StageId": "STAGE_ZH_2",
+            "LanguageId": "LANG_ZH",
+            "StageNumber": 2,
+            "DurationMinutes": null,
+            "CefrStart": null,
+            "CefrEnd": null,
+            "LevelStart": 31,
+            "LevelEnd": 100,
+            "SubDurationMinutes": null,
+            "SubNumber": null,
+            "CompletionOutcome": null,
+            "Descriptions": null
+        }
+    ],
+    "LevelGroups": [
+        {
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "GroupTitle": "Levels 1-30",
+            "GrCefrLevel": null
+        },
+        {
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "GroupTitle": "Levels 31-100",
+            "GrCefrLevel": null
+        }
+    ],
+    "Levels": [
+        {
+            "LevelId": "L_ZH_1",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "介绍",
+            "LevelNumber": 1
+        },
+        {
+            "LevelId": "L_ZH_2",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "我的家",
+            "LevelNumber": 2
+        },
+        {
+            "LevelId": "L_ZH_3",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "我的朋友",
+            "LevelNumber": 3
+        },
+        {
+            "LevelId": "L_ZH_4",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "李老师的女儿",
+            "LevelNumber": 4
+        },
+        {
+            "LevelId": "L_ZH_5",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "我的学校",
+            "LevelNumber": 5
+        },
+        {
+            "LevelId": "L_ZH_6",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "东西在哪儿？",
+            "LevelNumber": 6
+        },
+        {
+            "LevelId": "L_ZH_7",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "喝茶",
+            "LevelNumber": 7
+        },
+        {
+            "LevelId": "L_ZH_8",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "你喜欢做什么？",
+            "LevelNumber": 8
+        },
+        {
+            "LevelId": "L_ZH_9",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "你每天做什么",
+            "LevelNumber": 9
+        },
+        {
+            "LevelId": "L_ZH_10",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "吃饭",
+            "LevelNumber": 10
+        },
+        {
+            "LevelId": "L_ZH_11",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "买东西",
+            "LevelNumber": 11
+        },
+        {
+            "LevelId": "L_ZH_12",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "时间",
+            "LevelNumber": 12
+        },
+        {
+            "LevelId": "L_ZH_13",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "天气",
+            "LevelNumber": 13
+        },
+        {
+            "LevelId": "L_ZH_14",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "怎么去？",
+            "LevelNumber": 14
+        },
+        {
+            "LevelId": "L_ZH_15",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "看电影",
+            "LevelNumber": 15
+        },
+        {
+            "LevelId": "L_ZH_16",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "运动",
+            "LevelNumber": 16
+        },
+        {
+            "LevelId": "L_ZH_17",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "工作",
+            "LevelNumber": 17
+        },
+        {
+            "LevelId": "L_ZH_18",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "学习汉语",
+            "LevelNumber": 18
+        },
+        {
+            "LevelId": "L_ZH_19",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "打电话",
+            "LevelNumber": 19
+        },
+        {
+            "LevelId": "L_ZH_20",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "旅游",
+            "LevelNumber": 20
+        },
+        {
+            "LevelId": "L_ZH_21",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "星期天",
+            "LevelNumber": 21
+        },
+        {
+            "LevelId": "L_ZH_22",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "生日",
+            "LevelNumber": 22
+        },
+        {
+            "LevelId": "L_ZH_23",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "上课",
+            "LevelNumber": 23
+        },
+        {
+            "LevelId": "L_ZH_24",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "你的汉语老师",
+            "LevelNumber": 24
+        },
+        {
+            "LevelId": "L_ZH_25",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "生病",
+            "LevelNumber": 25
+        },
+        {
+            "LevelId": "L_ZH_26",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "请帮助我",
+            "LevelNumber": 26
+        },
+        {
+            "LevelId": "L_ZH_27",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "颜色",
+            "LevelNumber": 27
+        },
+        {
+            "LevelId": "L_ZH_28",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "问距离（Hỏi khoảng cách）",
+            "LevelNumber": 28
+        },
+        {
+            "LevelId": "L_ZH_29",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "你会写汉字吗？",
+            "LevelNumber": 29
+        },
+        {
+            "LevelId": "L_ZH_30",
+            "GroupId": "G_ZH_1",
+            "StageId": "STAGE_ZH_1",
+            "LevelTitle": "问路（Hỏi đường）",
+            "LevelNumber": 30
+        },
+        {
+            "LevelId": "L_ZH_31",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的学习计划",
+            "LevelNumber": 31
+        },
+        {
+            "LevelId": "L_ZH_32",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的周末",
+            "LevelNumber": 32
+        },
+        {
+            "LevelId": "L_ZH_33",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的旅行经历",
+            "LevelNumber": 33
+        },
+        {
+            "LevelId": "L_ZH_34",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习中文的困难",
+            "LevelNumber": 34
+        },
+        {
+            "LevelId": "L_ZH_35",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的梦想",
+            "LevelNumber": 35
+        },
+        {
+            "LevelId": "L_ZH_36",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "手机的使用",
+            "LevelNumber": 36
+        },
+        {
+            "LevelId": "L_ZH_37",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "健康生活",
+            "LevelNumber": 37
+        },
+        {
+            "LevelId": "L_ZH_38",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "压力",
+            "LevelNumber": 38
+        },
+        {
+            "LevelId": "L_ZH_39",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "网络生活",
+            "LevelNumber": 39
+        },
+        {
+            "LevelId": "L_ZH_40",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "看书",
+            "LevelNumber": 40
+        },
+        {
+            "LevelId": "L_ZH_41",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习和生活",
+            "LevelNumber": 41
+        },
+        {
+            "LevelId": "L_ZH_42",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的爱好变化",
+            "LevelNumber": 42
+        },
+        {
+            "LevelId": "L_ZH_43",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的同学",
+            "LevelNumber": 43
+        },
+        {
+            "LevelId": "L_ZH_44",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的老师（进阶）",
+            "LevelNumber": 44
+        },
+        {
+            "LevelId": "L_ZH_45",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的房间",
+            "LevelNumber": 45
+        },
+        {
+            "LevelId": "L_ZH_46",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的作息时间",
+            "LevelNumber": 46
+        },
+        {
+            "LevelId": "L_ZH_47",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "吃饭习惯",
+            "LevelNumber": 47
+        },
+        {
+            "LevelId": "L_ZH_48",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "去超市",
+            "LevelNumber": 48
+        },
+        {
+            "LevelId": "L_ZH_49",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "交通工具",
+            "LevelNumber": 49
+        },
+        {
+            "LevelId": "L_ZH_50",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "天气的影响",
+            "LevelNumber": 50
+        },
+        {
+            "LevelId": "L_ZH_51",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "看电影（进阶）",
+            "LevelNumber": 51
+        },
+        {
+            "LevelId": "L_ZH_52",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "听音乐（进阶）",
+            "LevelNumber": 52
+        },
+        {
+            "LevelId": "L_ZH_53",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "运动习惯",
+            "LevelNumber": 53
+        },
+        {
+            "LevelId": "L_ZH_54",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习方法",
+            "LevelNumber": 54
+        },
+        {
+            "LevelId": "L_ZH_55",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "中文学习（进阶）",
+            "LevelNumber": 55
+        },
+        {
+            "LevelId": "L_ZH_56",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "我的习惯",
+            "LevelNumber": 56
+        },
+        {
+            "LevelId": "L_ZH_57",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "朋友的重要性",
+            "LevelNumber": 57
+        },
+        {
+            "LevelId": "L_ZH_58",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学校生活",
+            "LevelNumber": 58
+        },
+        {
+            "LevelId": "L_ZH_59",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "时间管理",
+            "LevelNumber": 59
+        },
+        {
+            "LevelId": "L_ZH_60",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "未来计划（简单版）",
+            "LevelNumber": 60
+        },
+        {
+            "LevelId": "L_ZH_61",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "人生目标",
+            "LevelNumber": 61
+        },
+        {
+            "LevelId": "L_ZH_62",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "幸福的看法",
+            "LevelNumber": 62
+        },
+        {
+            "LevelId": "L_ZH_63",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习压力",
+            "LevelNumber": 63
+        },
+        {
+            "LevelId": "L_ZH_64",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "工作选择",
+            "LevelNumber": 64
+        },
+        {
+            "LevelId": "L_ZH_65",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "朋友与人际关系",
+            "LevelNumber": 65
+        },
+        {
+            "LevelId": "L_ZH_66",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "网络的影响",
+            "LevelNumber": 66
+        },
+        {
+            "LevelId": "L_ZH_67",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "健康与生活方式",
+            "LevelNumber": 67
+        },
+        {
+            "LevelId": "L_ZH_68",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "文化差异",
+            "LevelNumber": 68
+        },
+        {
+            "LevelId": "L_ZH_69",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习外语的意义",
+            "LevelNumber": 69
+        },
+        {
+            "LevelId": "L_ZH_70",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "时间的重要性",
+            "LevelNumber": 70
+        },
+        {
+            "LevelId": "L_ZH_71",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "未来的自己",
+            "LevelNumber": 71
+        },
+        {
+            "LevelId": "L_ZH_72",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "成功的定义",
+            "LevelNumber": 72
+        },
+        {
+            "LevelId": "L_ZH_73",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "教育的重要性",
+            "LevelNumber": 73
+        },
+        {
+            "LevelId": "L_ZH_74",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "科技的发展",
+            "LevelNumber": 74
+        },
+        {
+            "LevelId": "L_ZH_75",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "人工智能",
+            "LevelNumber": 75
+        },
+        {
+            "LevelId": "L_ZH_76",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "工作与兴趣",
+            "LevelNumber": 76
+        },
+        {
+            "LevelId": "L_ZH_77",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "社会压力",
+            "LevelNumber": 77
+        },
+        {
+            "LevelId": "L_ZH_78",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "人际关系",
+            "LevelNumber": 78
+        },
+        {
+            "LevelId": "L_ZH_79",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "环境保护",
+            "LevelNumber": 79
+        },
+        {
+            "LevelId": "L_ZH_80",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "文化交流",
+            "LevelNumber": 80
+        },
+        {
+            "LevelId": "L_ZH_81",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "自我发展",
+            "LevelNumber": 81
+        },
+        {
+            "LevelId": "L_ZH_82",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "机会与选择",
+            "LevelNumber": 82
+        },
+        {
+            "LevelId": "L_ZH_83",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "金钱观",
+            "LevelNumber": 83
+        },
+        {
+            "LevelId": "L_ZH_84",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "网络对社会的影响",
+            "LevelNumber": 84
+        },
+        {
+            "LevelId": "L_ZH_85",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "阅读的意义",
+            "LevelNumber": 85
+        },
+        {
+            "LevelId": "L_ZH_86",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "时间管理",
+            "LevelNumber": 86
+        },
+        {
+            "LevelId": "L_ZH_87",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "努力与天赋",
+            "LevelNumber": 87
+        },
+        {
+            "LevelId": "L_ZH_88",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "团队合作",
+            "LevelNumber": 88
+        },
+        {
+            "LevelId": "L_ZH_89",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "失败的价值",
+            "LevelNumber": 89
+        },
+        {
+            "LevelId": "L_ZH_90",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "学习态度",
+            "LevelNumber": 90
+        },
+        {
+            "LevelId": "L_ZH_91",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "生活方式选择",
+            "LevelNumber": 91
+        },
+        {
+            "LevelId": "L_ZH_92",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "情绪管理",
+            "LevelNumber": 92
+        },
+        {
+            "LevelId": "L_ZH_93",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "竞争与合作",
+            "LevelNumber": 93
+        },
+        {
+            "LevelId": "L_ZH_94",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "未来社会发展",
+            "LevelNumber": 94
+        },
+        {
+            "LevelId": "L_ZH_95",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "道德与选择",
+            "LevelNumber": 95
+        },
+        {
+            "LevelId": "L_ZH_96",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "人生意义",
+            "LevelNumber": 96
+        },
+        {
+            "LevelId": "L_ZH_97",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "幸福与成功的关系",
+            "LevelNumber": 97
+        },
+        {
+            "LevelId": "L_ZH_98",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "终身学习",
+            "LevelNumber": 98
+        },
+        {
+            "LevelId": "L_ZH_99",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "自信的重要性",
+            "LevelNumber": 99
+        },
+        {
+            "LevelId": "L_ZH_100",
+            "GroupId": "G_ZH_2",
+            "StageId": "STAGE_ZH_2",
+            "LevelTitle": "人生观",
+            "LevelNumber": 100
+        }
+    ],
+    "SubLevel": [
+        {
+            "SubLevelId": "SL_ZH_1_1",
+            "LevelId": "L_ZH_1",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你叫什么名字？nǐ jiào shénme míngzi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_1_2",
+            "LevelId": "L_ZH_1",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你是哪国人？nǐ shì nǎ guó rén?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_1_3",
+            "LevelId": "L_ZH_1",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你做什么工作？nǐ zuò shénme gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_1_4",
+            "LevelId": "L_ZH_1",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你在哪儿工作/学习？nǐ zài nǎr gōngzuò / xuéxí?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_2_1",
+            "LevelId": "L_ZH_2",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你家有几口人？nǐ jiā yǒu jǐ kǒu rén?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_2_2",
+            "LevelId": "L_ZH_2",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你爸爸做什么？nǐ bàba zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_2_3",
+            "LevelId": "L_ZH_2",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你爸爸/妈妈今年多大？nǐ bàba / māma jīnnián duō dà?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_1",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你有好朋友吗？nǐ yǒu hǎo péngyou ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_2",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "他/她是哪国人？tā shì nǎ guó rén?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_3",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "他/她叫什么名字？tā jiào shénme míngzi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_4",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "他/她今年多大？tā jīnnián duō dà?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_5",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "他/她是学生吗？tā shì xuéshēng ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_6",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "他/她在哪儿学习/工作？tā zài nǎr xuéxí / gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_3_7",
+            "LevelId": "L_ZH_3",
+            "SubLevelNumber": 7,
+            "SublevelTitle": "你们做什么？nǐmen zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_4_1",
+            "LevelId": "L_ZH_4",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "李老师的女儿叫什么名字？lǐ lǎoshī de nǚ’ér jiào shénme míngzi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_4_2",
+            "LevelId": "L_ZH_4",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "她今年多大？tā jīnnián duō dà?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_4_3",
+            "LevelId": "L_ZH_4",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "她做什么工作？tā zuò shénme gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_4_4",
+            "LevelId": "L_ZH_4",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "她在哪儿学习/工作？tā zài nǎr xuéxí / gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_4_5",
+            "LevelId": "L_ZH_4",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你知道李老师的女儿喜欢什么吗？nǐ zhīdào lǐ lǎoshī de nǚ’ér xǐhuan shénme ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_1",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的学校大吗？nǐ de xuéxiào dà ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_2",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你几点去学校？nǐ jǐ diǎn qù xuéxiào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_3",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢什么学什么？nǐ xǐhuān xué shénme ?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_4",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你的学校有多少学生？nǐ de xuéxiào yǒu duōshao xuéshēng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_5",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你的学校有哪国老师？nǐ de xuéxiào yǒu nǎ guó lǎoshī?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_6",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "你的学校有哪国学生？nǐ de xuéxiào yǒu nǎ guó xuéshēng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_7",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 7,
+            "SublevelTitle": "你的学校里有商店吗？nǐ de xuéxiào lǐ yǒu shāngdiàn ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_8",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 8,
+            "SublevelTitle": "学校的前面有什么？xuéxiào de qiánmiàn yǒu shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_5_9",
+            "LevelId": "L_ZH_5",
+            "SubLevelNumber": 9,
+            "SublevelTitle": "你爱你的学校吗？nǐ ài nǐ de xuéxiào ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_6_1",
+            "LevelId": "L_ZH_6",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的电脑/汉语书/杯子在哪儿？nǐ de diànnǎo / hànyǔ shū / bēizi zài nǎr?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_6_2",
+            "LevelId": "L_ZH_6",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "桌子上有什么？zhuōzi shàng yǒu shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_6_3",
+            "LevelId": "L_ZH_6",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "桌子上有汉语书吗？zhuōzi shàng yǒu hànyǔ shū ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_7_1",
+            "LevelId": "L_ZH_7",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢喝哪国茶？nǐ xǐhuān hē nǎ guó chá?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_7_2",
+            "LevelId": "L_ZH_7",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "哪种茶好喝？nǎ zhǒng chá hǎohē?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_7_3",
+            "LevelId": "L_ZH_7",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你什么时候喝茶？nǐ shénme shíhou hē chá?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_7_4",
+            "LevelId": "L_ZH_7",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你和谁喝茶？nǐ hé shéi hē chá?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_8_1",
+            "LevelId": "L_ZH_8",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢做什么？nǐ xǐhuān zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_8_2",
+            "LevelId": "L_ZH_8",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么喜欢？wèishénme xǐhuān?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_8_3",
+            "LevelId": "L_ZH_8",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你什么时候看电影/看电视/看书？nǐ shénme shíhou kàn diànyǐng / kàn diànshì / kàn shū?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_9_1",
+            "LevelId": "L_ZH_9",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你几点起床？nǐ jǐ diǎn qǐchuáng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_9_2",
+            "LevelId": "L_ZH_9",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你早上做什么？nǐ zǎoshang zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_9_3",
+            "LevelId": "L_ZH_9",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你早上/中午/晚上几点吃饭？在哪儿吃？nǐ zǎoshang / zhōngwǔ / wǎnshang jǐ diǎn chīfàn? zài nǎr chī?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_9_4",
+            "LevelId": "L_ZH_9",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "晚上做什么？wǎnshang zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_9_5",
+            "LevelId": "L_ZH_9",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你几点睡觉？nǐ jǐ diǎn shuìjiào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_10_1",
+            "LevelId": "L_ZH_10",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢吃什么？nǐ xǐhuān chī shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_10_2",
+            "LevelId": "L_ZH_10",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你会做什么菜？nǐ huì zuò shénme cài?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_10_3",
+            "LevelId": "L_ZH_10",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你家谁做饭？nǐ jiā shéi zuòfàn?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_10_4",
+            "LevelId": "L_ZH_10",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你在哪儿吃？nǐ zài nǎr chī?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_10_5",
+            "LevelId": "L_ZH_10",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你饭后吃水果吗？nǐ fànhòu chī shuǐguǒ ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_11_1",
+            "LevelId": "L_ZH_11",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你经常去哪儿买东西？nǐ jīngcháng qù nǎr mǎi dōngxi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_11_2",
+            "LevelId": "L_ZH_11",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢买什么？nǐ xǐhuān mǎi shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_11_3",
+            "LevelId": "L_ZH_11",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你什么时候去买东西？nǐ shénme shíhou qù mǎi dōngxi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_11_4",
+            "LevelId": "L_ZH_11",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你喜欢和谁去买东西？nǐ xǐhuān hé shéi qù mǎi dōngxi?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_12_1",
+            "LevelId": "L_ZH_12",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "今天几月几号？jīntiān jǐ yuè jǐ hào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_12_2",
+            "LevelId": "L_ZH_12",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "现在几点？xiànzài jǐ diǎn?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_12_3",
+            "LevelId": "L_ZH_12",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你几点起床/睡觉/吃早饭/午饭？nǐ jǐ diǎn qǐchuáng / shuìjiào / chī zǎofàn / chī wǔfàn?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_12_4",
+            "LevelId": "L_ZH_12",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你爸爸/妈妈的生日是几月几号？nǐ bàba / māma de shēngrì shì jǐ yuè jǐ hào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_13_1",
+            "LevelId": "L_ZH_13",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "今天天气怎么样？jīntiān tiānqì zěnmeyàng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_13_2",
+            "LevelId": "L_ZH_13",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么天气？nǐ xǐhuān shénme tiānqì?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_13_3",
+            "LevelId": "L_ZH_13",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "下雨天你做什么？xiàyǔ tiān nǐ zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_14_1",
+            "LevelId": "L_ZH_14",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你会开车吗？nǐ huì kāichē ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_14_2",
+            "LevelId": "L_ZH_14",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你怎么去学校/北京/…？nǐ zěnme qù xuéxiào/ Běijīng/…?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_14_3",
+            "LevelId": "L_ZH_14",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "要多长时间？yào duō cháng shíjiān?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_14_4",
+            "LevelId": "L_ZH_14",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你为什么不开车来学校？nǐ wèishénme bù kāichē lái xuéxiào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_15_1",
+            "LevelId": "L_ZH_15",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢看电影吗？nǐ xǐhuān kàn diànyǐng ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_15_2",
+            "LevelId": "L_ZH_15",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢哪国电影？nǐ xǐhuān nǎ guó diànyǐng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_15_3",
+            "LevelId": "L_ZH_15",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你和谁一起看电影？nǐ hé shéi yìqǐ kàn diànyǐng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_16_1",
+            "LevelId": "L_ZH_16",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢运动吗？nǐ xǐhuān yùndòng ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_16_2",
+            "LevelId": "L_ZH_16",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么运动？nǐ xǐhuān shénme yùndòng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_16_3",
+            "LevelId": "L_ZH_16",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你什么时候去运动？nǐ shénme shíhou qù yùndòng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_16_4",
+            "LevelId": "L_ZH_16",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你为什么喜欢运动？nǐ wèishénme xǐhuān yùndòng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_17_1",
+            "LevelId": "L_ZH_17",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你做什么工作？nǐ zuò shénme gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_17_2",
+            "LevelId": "L_ZH_17",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你的工作忙吗？nǐ de gōngzuò máng ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_17_3",
+            "LevelId": "L_ZH_17",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你每天几点开始工作？nǐ měitiān jǐ diǎn kāishǐ gōngzuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_17_4",
+            "LevelId": "L_ZH_17",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你每天几点回家？nǐ měitiān jǐ diǎn huí jiā?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_17_5",
+            "LevelId": "L_ZH_17",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你喜欢你的工作吗？nǐ xǐhuān nǐ de gōngzuò ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_18_1",
+            "LevelId": "L_ZH_18",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你什么时候开始学习汉语？nǐ shénme shíhou kāishǐ xuéxí hànyǔ?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_18_2",
+            "LevelId": "L_ZH_18",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你觉得汉语难吗？nǐ juéde hànyǔ nán ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_18_3",
+            "LevelId": "L_ZH_18",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你为什么学汉语？nǐ wèishénme xué hànyǔ?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_19_1",
+            "LevelId": "L_ZH_19",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "请问李老师在吗？qǐngwèn lǐ lǎoshī zài ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_19_2",
+            "LevelId": "L_ZH_19",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "请问你找李老师有什么事情吗？qǐngwèn nǐ zhǎo lǐ lǎoshī yǒu shénme shìqing ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_19_3",
+            "LevelId": "L_ZH_19",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你有老师/李月的电话吗？nǐ yǒu lǎoshī / lǐ yuè de diànhuà ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_19_4",
+            "LevelId": "L_ZH_19",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "他/她的电话是多少？tā de diànhuà shì duōshao?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_20_1",
+            "LevelId": "L_ZH_20",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢旅游吗？nǐ xǐhuān lǚyóu ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_20_2",
+            "LevelId": "L_ZH_20",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你去过中国吗？nǐ qùguo zhōngguó ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_20_3",
+            "LevelId": "L_ZH_20",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你去过哪儿旅游？nǐ qùguo nǎr lǚyóu?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_20_4",
+            "LevelId": "L_ZH_20",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "你觉得北京几月最漂亮？nǐ juéde běijīng jǐ yuè zuì piàoliang?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_20_5",
+            "LevelId": "L_ZH_20",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "你和谁去旅游？nǐ hé shéi qù lǚyóu?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_21_1",
+            "LevelId": "L_ZH_21",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "星期天你做什么？xīngqītiān nǐ zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_21_2",
+            "LevelId": "L_ZH_21",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你和谁一起？nǐ hé shéi yìqǐ?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_21_3",
+            "LevelId": "L_ZH_21",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "星期天你觉得怎么样？xīngqītiān nǐ juéde zěnmeyàng?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_22_1",
+            "LevelId": "L_ZH_22",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的生日是几月几号？nǐ de shēngrì shì jǐ yuè jǐ hào?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_22_2",
+            "LevelId": "L_ZH_22",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你生日的时候经常做什么？nǐ shēngrì de shíhou jīngcháng zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_22_3",
+            "LevelId": "L_ZH_22",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢过生日吗？为什么？nǐ xǐhuān guò shēngrì ma? wèishénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_22_4",
+            "LevelId": "L_ZH_22",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "朋友的生日，你送给他什么？péngyou de shēngrì, nǐ sòng gěi tā shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_23_1",
+            "LevelId": "L_ZH_23",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天几点上课？nǐ měitiān jǐ diǎn shàng kè?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_23_2",
+            "LevelId": "L_ZH_23",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你今天有什么课？nǐ jīntiān yǒu shénme kè?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_23_3",
+            "LevelId": "L_ZH_23",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢上课吗？nǐ xǐhuan shàng kè ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_1",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的汉语老师是哪国人？nǐ de hànyǔ lǎoshī shì nǎ guó rén?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_2",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "他今年多大？tā jīnnián duō dà?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_3",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你们是从什么时候认识的？nǐmen shì cóng shénme shíhou rènshi de?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_4",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "他/她的工作忙吗？tā de gōngzuò máng ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_5",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "他/她喜欢做什么？tā xǐhuān zuò shénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_24_6",
+            "LevelId": "L_ZH_24",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "他/她经常帮助学生学汉语吗？tā jīngcháng bāngzhù xuéshēng xué hànyǔ ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_25_1",
+            "LevelId": "L_ZH_25",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你怎么了？nǐ zěnme le?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_25_2",
+            "LevelId": "L_ZH_25",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你去看医生了吗？nǐ qù kàn yīshēng le ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_25_3",
+            "LevelId": "L_ZH_25",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "生病的时候我们要怎么做？shēngbìng de shíhou wǒmen yào zěnme zuò?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_26_1",
+            "LevelId": "L_ZH_26",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你可以帮我吗？nǐ kěyǐ bāng wǒ ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_26_2",
+            "LevelId": "L_ZH_26",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "请问，你可以帮我买一杯咖啡/一本书吗？qǐngwèn, nǐ kěyǐ bāng wǒ mǎi yì bēi kāfēi / yì běn shū ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_26_3",
+            "LevelId": "L_ZH_26",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "别人帮你的时候，你怎么说？biérén bāng nǐ de shíhou, nǐ zěnme shuō?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_27_1",
+            "LevelId": "L_ZH_27",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你最喜欢/不喜欢什么颜色？nǐ zuì xǐhuān / bù xǐhuān shénme yánsè?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_27_2",
+            "LevelId": "L_ZH_27",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你有红色/粉色/黑色/白色的手表/手机/电脑吗？nǐ yǒu hóngsè / fěnsè / hēisè / báisè de shǒubiǎo / shǒujī / diànnǎo ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_27_3",
+            "LevelId": "L_ZH_27",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "红色的手表比黑色的手表贵吗？hóngsè de shǒubiǎo bǐ hēisè de shǒubiǎo guì ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_28_1",
+            "LevelId": "L_ZH_28",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "这儿离学校/公司/商店远吗？zhèr lí xuéxiào / gōngsī / shāngdiàn yuǎn ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_28_2",
+            "LevelId": "L_ZH_28",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "从你家到学校/公司/商店要多长时间？cóng nǐ jiā dào xuéxiào / gōngsī / shāngdiàn yào duō cháng shíjiān?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_28_3",
+            "LevelId": "L_ZH_28",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你怎么去学校？为什么？nǐ zěnme qù xuéxiào? wèishénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_1",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "请问，你会写汉字吗？qǐngwèn, nǐ huì xiě hànzì ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_2",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你写汉字写得好吗？nǐ xiě hànzì xiě de hǎo ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_3",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得写汉字难不难？nǐ juéde xiě hànzì nán bu nán?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_4",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 4,
+            "SublevelTitle": "为什么？wèishénme?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_5",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 5,
+            "SublevelTitle": "今天的汉字你写完了吗？jīntiān de hànzì nǐ xiě wán le ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_29_6",
+            "LevelId": "L_ZH_29",
+            "SubLevelNumber": 6,
+            "SublevelTitle": "这个汉字你会写吗？zhè ge hànzì nǐ huì xiě ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_30_1",
+            "LevelId": "L_ZH_30",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "请问，学校/医院/宾馆在哪儿？qǐngwèn, xuéxiào / yīyuàn / bīnguǎn zài nǎr?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_30_2",
+            "LevelId": "L_ZH_30",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "从这儿怎么去学校/商店？cóng zhèr zěnme qù xuéxiào / shāngdiàn?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_30_3",
+            "LevelId": "L_ZH_30",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "离这儿远吗？lí zhèr yuǎn ma?",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_31_1",
+            "LevelId": "L_ZH_31",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你现在有什么学习计划？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_31_2",
+            "LevelId": "L_ZH_31",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你一般怎么学习？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_31_3",
+            "LevelId": "L_ZH_31",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得学习难吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_32_1",
+            "LevelId": "L_ZH_32",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的周末一般怎么过？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_32_2",
+            "LevelId": "L_ZH_32",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你周末常和谁一起？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_32_3",
+            "LevelId": "L_ZH_32",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得周末重要吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_33_1",
+            "LevelId": "L_ZH_33",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你去过哪些地方？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_33_2",
+            "LevelId": "L_ZH_33",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你在那儿做了什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_33_3",
+            "LevelId": "L_ZH_33",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢旅行吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_34_1",
+            "LevelId": "L_ZH_34",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得学习中文难在哪里？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_34_2",
+            "LevelId": "L_ZH_34",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你怎么解决这个问题？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_34_3",
+            "LevelId": "L_ZH_34",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你现在有进步吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_35_1",
+            "LevelId": "L_ZH_35",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的梦想是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_35_2",
+            "LevelId": "L_ZH_35",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_35_3",
+            "LevelId": "L_ZH_35",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你现在做什么准备？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_36_1",
+            "LevelId": "L_ZH_36",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天用手机多长时间？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_36_2",
+            "LevelId": "L_ZH_36",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你常用手机做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_36_3",
+            "LevelId": "L_ZH_36",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得用手机多好吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_37_1",
+            "LevelId": "L_ZH_37",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你平时怎么保持健康？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_37_2",
+            "LevelId": "L_ZH_37",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你常运动吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_37_3",
+            "LevelId": "L_ZH_37",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得健康重要吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_38_1",
+            "LevelId": "L_ZH_38",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你有压力吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_38_2",
+            "LevelId": "L_ZH_38",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你怎么放松？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_38_3",
+            "LevelId": "L_ZH_38",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "压力多好吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_39_1",
+            "LevelId": "L_ZH_39",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天上网吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_39_2",
+            "LevelId": "L_ZH_39",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你上网做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_39_3",
+            "LevelId": "L_ZH_39",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得上网好吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_40_1",
+            "LevelId": "L_ZH_40",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你喜欢看书吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_40_2",
+            "LevelId": "L_ZH_40",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你看什么书？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_40_3",
+            "LevelId": "L_ZH_40",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你多久看一次？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_41_1",
+            "LevelId": "L_ZH_41",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得学习和生活容易安排吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_41_2",
+            "LevelId": "L_ZH_41",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你怎么安排时间？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_41_3",
+            "LevelId": "L_ZH_41",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得休息重要吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_42_1",
+            "LevelId": "L_ZH_42",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你现在的爱好和以前一样吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_42_2",
+            "LevelId": "L_ZH_42",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么会有变化？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_42_3",
+            "LevelId": "L_ZH_42",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得有爱好重要吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_43_1",
+            "LevelId": "L_ZH_43",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的同学怎么样？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_43_2",
+            "LevelId": "L_ZH_43",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你常和同学做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_43_3",
+            "LevelId": "L_ZH_43",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢和同学一起学习吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_44_1",
+            "LevelId": "L_ZH_44",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你最喜欢的老师是谁？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_44_2",
+            "LevelId": "L_ZH_44",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "老师上课时你一般做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_44_3",
+            "LevelId": "L_ZH_44",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得老师重要吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_45_1",
+            "LevelId": "L_ZH_45",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的房间大吗？有什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_45_2",
+            "LevelId": "L_ZH_45",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢你的房间吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_45_3",
+            "LevelId": "L_ZH_45",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你平时在房间做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_46_1",
+            "LevelId": "L_ZH_46",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天几点睡觉？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_46_2",
+            "LevelId": "L_ZH_46",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你觉得你的作息规律吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_46_3",
+            "LevelId": "L_ZH_46",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得早睡早起好吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_47_1",
+            "LevelId": "L_ZH_47",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天按时吃饭吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_47_2",
+            "LevelId": "L_ZH_47",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢在家吃还是在外面吃？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_47_3",
+            "LevelId": "L_ZH_47",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_48_1",
+            "LevelId": "L_ZH_48",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你多久去一次超市？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_48_2",
+            "LevelId": "L_ZH_48",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你一般买什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_48_3",
+            "LevelId": "L_ZH_48",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢一个人去还是和朋友一起去？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_49_1",
+            "LevelId": "L_ZH_49",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你平时用什么交通工具？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_49_2",
+            "LevelId": "L_ZH_49",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么选择这种方式？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_49_3",
+            "LevelId": "L_ZH_49",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得交通方便吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_50_1",
+            "LevelId": "L_ZH_50",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "天气会影响你的心情吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_50_2",
+            "LevelId": "L_ZH_50",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么天气？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_50_3",
+            "LevelId": "L_ZH_50",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "不同天气你会做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_51_1",
+            "LevelId": "L_ZH_51",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你最近看了什么电影？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_51_2",
+            "LevelId": "L_ZH_51",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你觉得这部电影怎么样？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_51_3",
+            "LevelId": "L_ZH_51",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢在家看还是去电影院？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_52_1",
+            "LevelId": "L_ZH_52",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你每天听音乐吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_52_2",
+            "LevelId": "L_ZH_52",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么类型的音乐？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_52_3",
+            "LevelId": "L_ZH_52",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "听音乐对你有什么帮助？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_53_1",
+            "LevelId": "L_ZH_53",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你平时常运动吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_53_2",
+            "LevelId": "L_ZH_53",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么运动？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_53_3",
+            "LevelId": "L_ZH_53",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "运动对你有什么好处？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_54_1",
+            "LevelId": "L_ZH_54",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你有什么好的学习方法？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_54_2",
+            "LevelId": "L_ZH_54",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢一个人学习还是和别人一起？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_54_3",
+            "LevelId": "L_ZH_54",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_55_1",
+            "LevelId": "L_ZH_55",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得学中文最重要的是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_55_2",
+            "LevelId": "L_ZH_55",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你每天怎么练习中文？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_55_3",
+            "LevelId": "L_ZH_55",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你想学到什么水平？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_56_1",
+            "LevelId": "L_ZH_56",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你有什么好习惯？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_56_2",
+            "LevelId": "L_ZH_56",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你有什么坏习惯？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_56_3",
+            "LevelId": "L_ZH_56",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你想改变吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_57_1",
+            "LevelId": "L_ZH_57",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得朋友重要吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_57_2",
+            "LevelId": "L_ZH_57",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_57_3",
+            "LevelId": "L_ZH_57",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你喜欢什么样的朋友？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_58_1",
+            "LevelId": "L_ZH_58",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的学校生活怎么样？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_58_2",
+            "LevelId": "L_ZH_58",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你最喜欢学校的什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_58_3",
+            "LevelId": "L_ZH_58",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你最不喜欢什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_59_1",
+            "LevelId": "L_ZH_59",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你会管理时间吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_59_2",
+            "LevelId": "L_ZH_59",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你怎么管理时间？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_59_3",
+            "LevelId": "L_ZH_59",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "为什么时间管理重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_60_1",
+            "LevelId": "L_ZH_60",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你毕业以后想做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_60_2",
+            "LevelId": "L_ZH_60",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你有什么计划？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_60_3",
+            "LevelId": "L_ZH_60",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你对未来有信心吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_61_1",
+            "LevelId": "L_ZH_61",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的人生目标是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_61_2",
+            "LevelId": "L_ZH_61",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么你有这样的目标？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_61_3",
+            "LevelId": "L_ZH_61",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你现在在为这个目标做什么准备？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_62_1",
+            "LevelId": "L_ZH_62",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得什么是幸福？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_62_2",
+            "LevelId": "L_ZH_62",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你什么时候最幸福？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_62_3",
+            "LevelId": "L_ZH_62",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "钱能带来幸福吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_63_1",
+            "LevelId": "L_ZH_63",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得现在的学习压力大吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_63_2",
+            "LevelId": "L_ZH_63",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "压力大的时候你怎么调整自己？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_63_3",
+            "LevelId": "L_ZH_63",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得压力是好事还是坏事？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_64_1",
+            "LevelId": "L_ZH_64",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你选择工作时最看重什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_64_2",
+            "LevelId": "L_ZH_64",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你喜欢什么样的工作？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_64_3",
+            "LevelId": "L_ZH_64",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "工资重要吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_65_1",
+            "LevelId": "L_ZH_65",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得什么样的人适合做朋友？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_65_2",
+            "LevelId": "L_ZH_65",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "朋友之间最重要的是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_65_3",
+            "LevelId": "L_ZH_65",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "如果和朋友发生矛盾，你会怎么办？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_66_1",
+            "LevelId": "L_ZH_66",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "网络对你的生活有什么影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_66_2",
+            "LevelId": "L_ZH_66",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你每天花多少时间上网？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_66_3",
+            "LevelId": "L_ZH_66",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你觉得应该限制上网时间吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_67_1",
+            "LevelId": "L_ZH_67",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得什么样的生活方式最健康？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_67_2",
+            "LevelId": "L_ZH_67",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你平时做得到吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_67_3",
+            "LevelId": "L_ZH_67",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "为什么现代人越来越重视健康？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_68_1",
+            "LevelId": "L_ZH_68",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得不同国家的文化差异大吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_68_2",
+            "LevelId": "L_ZH_68",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你遇到过文化差异吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_68_3",
+            "LevelId": "L_ZH_68",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你怎么看待这些差异？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_69_1",
+            "LevelId": "L_ZH_69",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你为什么学习外语？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_69_2",
+            "LevelId": "L_ZH_69",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "学习外语有什么好处？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_69_3",
+            "LevelId": "L_ZH_69",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "学习外语最重要的是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_70_1",
+            "LevelId": "L_ZH_70",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你觉得时间重要吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_70_2",
+            "LevelId": "L_ZH_70",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你平时会浪费时间吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_70_3",
+            "LevelId": "L_ZH_70",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你如何更好地利用时间？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_71_1",
+            "LevelId": "L_ZH_71",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你希望未来的自己是什么样的？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_71_2",
+            "LevelId": "L_ZH_71",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你觉得实现目标容易吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_71_3",
+            "LevelId": "L_ZH_71",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你最担心未来的什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_72_1",
+            "LevelId": "L_ZH_72",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为成功的标准是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_72_2",
+            "LevelId": "L_ZH_72",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "每个人的成功标准一样吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_72_3",
+            "LevelId": "L_ZH_72",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你如何评价一个成功的人？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_73_1",
+            "LevelId": "L_ZH_73",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "教育对一个人有什么影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_73_2",
+            "LevelId": "L_ZH_73",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "学校教育和自学哪个更重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_73_3",
+            "LevelId": "L_ZH_73",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "现在的教育有什么问题？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_74_1",
+            "LevelId": "L_ZH_74",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "科技的发展给生活带来了什么变化？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_74_2",
+            "LevelId": "L_ZH_74",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "科技有没有负面影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_74_3",
+            "LevelId": "L_ZH_74",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "你怎么看未来的科技发展？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_75_1",
+            "LevelId": "L_ZH_75",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为人工智能会取代人类吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_75_2",
+            "LevelId": "L_ZH_75",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "人工智能的优点和缺点是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_75_3",
+            "LevelId": "L_ZH_75",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "我们应该如何面对人工智能？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_76_1",
+            "LevelId": "L_ZH_76",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "工作应该选择兴趣还是收入？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_76_2",
+            "LevelId": "L_ZH_76",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如果工作不喜欢，你会坚持吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_76_3",
+            "LevelId": "L_ZH_76",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "理想工作应该是什么样的？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_77_1",
+            "LevelId": "L_ZH_77",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "现代社会为什么压力越来越大？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_77_2",
+            "LevelId": "L_ZH_77",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "压力对人有什么影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_77_3",
+            "LevelId": "L_ZH_77",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "如何减少社会压力？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_78_1",
+            "LevelId": "L_ZH_78",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么人际关系很重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_78_2",
+            "LevelId": "L_ZH_78",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如何建立良好关系？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_78_3",
+            "LevelId": "L_ZH_78",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "网络关系和现实关系有什么不同？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_79_1",
+            "LevelId": "L_ZH_79",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么环境保护很重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_79_2",
+            "LevelId": "L_ZH_79",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "现在有哪些环境问题？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_79_3",
+            "LevelId": "L_ZH_79",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "个人可以做什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_80_1",
+            "LevelId": "L_ZH_80",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "文化交流有什么意义？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_80_2",
+            "LevelId": "L_ZH_80",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "文化差异会带来问题吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_80_3",
+            "LevelId": "L_ZH_80",
+            "SubLevelNumber": 3,
+            "SublevelTitle": "如何更好地进行文化交流？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_81_1",
+            "LevelId": "L_ZH_81",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为一个人应该如何不断提升自己？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_81_2",
+            "LevelId": "L_ZH_81",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "自我发展的过程中最重要的是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_82_1",
+            "LevelId": "L_ZH_82",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为机会重要还是选择重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_82_2",
+            "LevelId": "L_ZH_82",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "当机会来临时，你通常怎么做决定？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_83_1",
+            "LevelId": "L_ZH_83",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你如何看待金钱在生活中的作用？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_83_2",
+            "LevelId": "L_ZH_83",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你认为有钱就一定幸福吗？为什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_84_1",
+            "LevelId": "L_ZH_84",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "网络的发展对社会有哪些积极和消极影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_84_2",
+            "LevelId": "L_ZH_84",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你认为人们是否应该减少使用网络？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_85_1",
+            "LevelId": "L_ZH_85",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "在信息时代，阅读还有必要吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_85_2",
+            "LevelId": "L_ZH_85",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你认为应该读什么样的书？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_86_1",
+            "LevelId": "L_ZH_86",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么很多人觉得时间不够用？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_86_2",
+            "LevelId": "L_ZH_86",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如何提高时间利用效率？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_87_1",
+            "LevelId": "L_ZH_87",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "努力和天赋哪个更重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_87_2",
+            "LevelId": "L_ZH_87",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你如何看待“努力一定成功”这句话？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_88_1",
+            "LevelId": "L_ZH_88",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么团队合作越来越重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_88_2",
+            "LevelId": "L_ZH_88",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如何成为一个好的团队成员？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_89_1",
+            "LevelId": "L_ZH_89",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "失败对一个人有什么意义？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_89_2",
+            "LevelId": "L_ZH_89",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "面对失败应该怎么做？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_90_1",
+            "LevelId": "L_ZH_90",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "什么是好的学习态度？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_90_2",
+            "LevelId": "L_ZH_90",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "学习过程中最容易出现的问题是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_91_1",
+            "LevelId": "L_ZH_91",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "什么样的生活方式更健康？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_91_2",
+            "LevelId": "L_ZH_91",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "现代人的生活方式有什么问题？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_92_1",
+            "LevelId": "L_ZH_92",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么情绪管理很重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_92_2",
+            "LevelId": "L_ZH_92",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你通常如何调节自己的情绪？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_93_1",
+            "LevelId": "L_ZH_93",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "竞争和合作哪个更重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_93_2",
+            "LevelId": "L_ZH_93",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "过度竞争会带来什么问题？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_94_1",
+            "LevelId": "L_ZH_94",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为未来社会会发生哪些变化？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_94_2",
+            "LevelId": "L_ZH_94",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "人们需要具备什么能力？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_95_1",
+            "LevelId": "L_ZH_95",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "面对困难选择时，你会考虑什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_95_2",
+            "LevelId": "L_ZH_95",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "为什么道德很重要？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_96_1",
+            "LevelId": "L_ZH_96",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你认为人生的意义是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_96_2",
+            "LevelId": "L_ZH_96",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "每个人的人生意义一样吗？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_97_1",
+            "LevelId": "L_ZH_97",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "幸福和成功之间有什么关系？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_97_2",
+            "LevelId": "L_ZH_97",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如果必须选择，你会选哪个？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_98_1",
+            "LevelId": "L_ZH_98",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "为什么人应该终身学习？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_98_2",
+            "LevelId": "L_ZH_98",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你打算如何继续学习？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_99_1",
+            "LevelId": "L_ZH_99",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "自信对一个人有什么影响？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_99_2",
+            "LevelId": "L_ZH_99",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "如何建立自信？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_100_1",
+            "LevelId": "L_ZH_100",
+            "SubLevelNumber": 1,
+            "SublevelTitle": "你的人生观是什么？",
+            "MainTask": null
+        },
+        {
+            "SubLevelId": "SL_ZH_100_2",
+            "LevelId": "L_ZH_100",
+            "SubLevelNumber": 2,
+            "SublevelTitle": "你觉得什么样的人生是成功的？",
+            "MainTask": null
+        }
+    ]
+}
