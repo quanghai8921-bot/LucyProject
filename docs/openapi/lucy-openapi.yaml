@@ -1,5930 +1,712 @@
 openapi: 3.0.3
 info:
-  title: LUCY Unified API Contract
+  title: Backend API Documentation
+  description: OpenAPI contract definitions mapped from controllers.
   version: 1.0.0
-  description: 'Bộ Swagger/OpenAPI chung cho dự án LUCY. Dùng để chia API cho 6 thành viên: Auth (.NET), Payment (.NET), Content
-    & LMS (Java Spring Boot), Realtime (Node.js) và Flutter client.'
 servers:
-- url: http://localhost:8088
-  description: API Gateway hoặc reverse proxy khi tích hợp
-- url: http://localhost:5001
-  description: Auth Service - .NET Core
-- url: http://localhost:5002
-  description: Payment Service - .NET Core
-- url: http://localhost:8080
-  description: Content & LMS Service - Java Spring Boot
-- url: http://localhost:3001
-  description: Realtime Service - Node.js
-tags:
-- name: Auth - Bảo
-  description: Đăng ký, đăng nhập, phân quyền, xét duyệt role.
-- name: Admin
-  description: Quản trị user, duyệt mentor/creator, xem giao dịch.
-- name: LMS - Vinh
-  description: Người học, lộ trình học, progress, quiz, nội dung đã mua.
-- name: Mentor - Kim
-  description: Tạo phòng, lên lịch, tài liệu, quiz, quản lý học viên.
-- name: Creator - Đạt
-  description: Live chuyên sâu, recording, podcast, nội dung trả phí.
-- name: Payment - Linh
-  description: Ví, nạp tiền, donate, quà, mua content/live, rút tiền.
-- name: Realtime - Hải
-  description: Agora token, join/leave room, mic, giơ tay, chat, record.
-- name: Internal APIs
-  description: API nội bộ giữa các service.
+  - url: http://localhost:8080
+    description: Local Server
+
 paths:
-  /api/auth/register:
+  # ==========================================
+  # AGORA CONTROLLER
+  # ==========================================
+  /api/agora/token:
     post:
       tags:
-      - Auth - Bảo
-      summary: Đăng ký tài khoản Lucy ẩn danh, được truy cập ngay
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthTokenResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security: []
-      servers:
-      - url: http://localhost:5001
-  /api/auth/register-mentor:
-    post:
-      tags:
-      - Auth - Bảo
-      summary: Đăng ký mentor, cần admin phê duyệt
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/MentorRegisterMultipartRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security: []
-      servers:
-      - url: http://localhost:5001
-  /api/auth/login:
-    post:
-      tags:
-      - Auth - Bảo
-      summary: Đăng nhập và nhận JWT
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
+        - Agora
+      summary: Generate Agora RT/RTT token
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthTokenResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      security: []
-      servers:
-      - url: http://localhost:5001
-  /api/auth/logout:
-    post:
-      tags:
-      - Auth - Bảo
-      summary: Đăng xuất tài khoản hiện tại
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/auth/me:
+          description: Token generated successfully
+
+  # ==========================================
+  # PAYMENT CONTROLLER
+  # ==========================================
+  /api/payment/wallet:
     get:
       tags:
-      - Auth - Bảo
-      summary: Lấy thông tin user hiện tại
+        - Payment
+      summary: Get wallet details
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfileResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/auth/my-roles:
+
+  /api/payment/transactions:
     get:
       tags:
-      - Auth - Bảo
-      summary: Lấy danh sách vai trò của user hiện tại
+        - Payment
+      summary: List transactions
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoleListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/auth/creator-upgrade-requests:
-    post:
-      tags:
-      - Auth - Bảo
-      summary: Mentor gửi yêu cầu nâng cấp lên Content Creator
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreatorUpgradeRequestCreate'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/users:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách tài khoản
-      parameters:
-      - name: keyword
-        in: query
-        required: false
-        description: Tìm theo tên/email/số điện thoại
-        schema: &id001
-          type: string
-      - name: role
-        in: query
-        required: false
-        description: LEARNER/MENTOR/CREATOR/ADMIN
-        schema: *id001
-      - name: page
-        in: query
-        required: false
-        description: Trang
-        schema:
-          type: integer
-          default: 1
-      - name: size
-        in: query
-        required: false
-        description: Số dòng
-        schema:
-          type: integer
-          default: 20
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/mentor-applications:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách hồ sơ đăng ký mentor
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: PENDING/APPROVED/REJECTED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/mentor-applications/{applicationId}/approve:
-    patch:
-      tags:
-      - Admin
-      summary: Admin duyệt hồ sơ mentor
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/mentor-applications/{applicationId}/reject:
-    patch:
-      tags:
-      - Admin
-      summary: Admin từ chối hồ sơ mentor
-      parameters:
-      - name: applicationId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/creator-upgrade-requests:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách yêu cầu nâng cấp content creator
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: PENDING/APPROVED/REJECTED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApplicationListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/creator-upgrade-requests/{requestId}/approve:
-    patch:
-      tags:
-      - Admin
-      summary: Admin duyệt content creator
-      parameters:
-      - name: requestId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/creator-upgrade-requests/{requestId}/reject:
-    patch:
-      tags:
-      - Admin
-      summary: Admin từ chối content creator
-      parameters:
-      - name: requestId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/lms/languages:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Lấy danh sách ngôn ngữ Anh/Nhật/Trung
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LanguageListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/languages/{languageId}/stages:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Lấy danh sách stage theo ngôn ngữ
-      parameters:
-      - name: languageId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/StageListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/stages/{stageId}/levels:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Lấy level theo stage
-      parameters:
-      - name: stageId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LevelListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/levels/{levelId}:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Xem chi tiết level
-      parameters:
-      - name: levelId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LevelDetailResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/levels/{levelId}/sublevels:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Lấy sublevel theo level
-      parameters:
-      - name: levelId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SubLevelListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/sublevels/{subLevelId}/questions:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Lấy câu hỏi học trong sublevel
-      parameters:
-      - name: subLevelId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuestionListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/rooms/available:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Người học xem phòng đang mở hoặc đã lên lịch
-      parameters:
-      - name: languageId
-        in: query
-        required: false
-        description: Lọc theo ngôn ngữ
-        schema: *id001
-      - name: levelId
-        in: query
-        required: false
-        description: Lọc theo level
-        schema: *id001
-      - name: status
-        in: query
-        required: false
-        description: OPEN/SCHEDULED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/rooms/{roomId}/join:
-    post:
-      tags:
-      - LMS - Vinh
-      summary: Người học kiểm tra điều kiện trước khi join phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/JoinRoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/me/progress:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Xem toàn bộ tiến độ học của tôi
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProgressListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/me/progress/{languageId}:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Xem tiến độ của tôi theo ngôn ngữ
-      parameters:
-      - name: languageId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProgressListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/attendance-checks/{learningSessionId}/confirm:
-    post:
-      tags:
-      - LMS - Vinh
-      summary: Người học xác nhận còn đang học
-      parameters:
-      - name: learningSessionId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/quizzes/{quizId}/submit:
-    post:
-      tags:
-      - LMS - Vinh
-      summary: Người học nộp bài kiểm tra cuối phiên live
-      parameters:
-      - name: quizId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/QuizSubmitRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizSubmitResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/lms/me/purchased-contents:
-    get:
-      tags:
-      - LMS - Vinh
-      summary: Người học xem podcast/live trả phí đã mua
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms:
-    post:
-      tags:
-      - Mentor - Kim
-      summary: Mentor tạo phòng ngay hoặc lên lịch
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRoomRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-    get:
-      tags:
-      - Mentor - Kim
-      summary: Mentor xem danh sách phòng của mình
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: SCHEDULED/OPEN/ENDED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}:
-    get:
-      tags:
-      - Mentor - Kim
-      summary: Mentor xem chi tiết phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomDetailResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/open:
-    patch:
-      tags:
-      - Mentor - Kim
-      summary: Mentor mở phòng đã lên lịch
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/start-study:
-    patch:
-      tags:
-      - Mentor - Kim
-      summary: Mentor bấm bắt đầu học để hệ thống tính thời gian học
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/end:
-    patch:
-      tags:
-      - Mentor - Kim
-      summary: Mentor kết thúc phiên live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/materials:
-    post:
-      tags:
-      - Mentor - Kim
-      summary: Mentor upload tài liệu học cho phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/UploadMaterialMultipartRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MaterialResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/participants:
-    get:
-      tags:
-      - Mentor - Kim
-      summary: Mentor xem học viên trong phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ParticipantListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/quizzes:
-    post:
-      tags:
-      - Mentor - Kim
-      summary: Mentor tạo bài kiểm tra cuối phiên live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateQuizRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/quizzes/{quizId}/questions:
-    post:
-      tags:
-      - Mentor - Kim
-      summary: Mentor thêm câu hỏi vào quiz
-      parameters:
-      - name: quizId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AddQuizQuestionRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizQuestionResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/mentor/rooms/{roomId}/quiz-results:
-    get:
-      tags:
-      - Mentor - Kim
-      summary: Mentor xem kết quả quiz của học viên
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizResultListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/rooms:
-    post:
-      tags:
-      - Creator - Đạt
-      summary: Content Creator tạo live chuyên sâu
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCreatorRoomRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-    get:
-      tags:
-      - Creator - Đạt
-      summary: Creator xem danh sách live của mình
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: SCHEDULED/OPEN/ENDED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/rooms/{roomId}/open:
-    patch:
-      tags:
-      - Creator - Đạt
-      summary: Creator mở live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/rooms/{roomId}/end:
-    patch:
-      tags:
-      - Creator - Đạt
-      summary: Creator kết thúc live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/recordings:
-    get:
-      tags:
-      - Creator - Đạt
-      summary: Creator xem danh sách bản ghi live
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/contents:
-    post:
-      tags:
-      - Creator - Đạt
-      summary: Creator tạo podcast/live trả phí
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreatePaidContentRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-    get:
-      tags:
-      - Creator - Đạt
-      summary: Creator xem danh sách nội dung trả phí của mình
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/contents/{contentId}/publish:
-    patch:
-      tags:
-      - Creator - Đạt
-      summary: Publish nội dung trả phí
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/contents/{contentId}/unpublish:
-    patch:
-      tags:
-      - Creator - Đạt
-      summary: Ẩn nội dung trả phí
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/payment/wallets/me:
-    get:
-      tags:
-      - Payment - Linh
-      summary: Xem ví của tôi
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/wallets/me/transactions:
-    get:
-      tags:
-      - Payment - Linh
-      summary: Xem lịch sử giao dịch ví của tôi
-      parameters:
-      - name: type
-        in: query
-        required: false
-        description: TOPUP/DONATE/GIFT/PURCHASE/WITHDRAW
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletTransactionListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/top-up-orders:
-    post:
-      tags:
-      - Payment - Linh
-      summary: Tạo đơn nạp tiền vào ví
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateTopUpOrderRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TopUpOrderResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/top-up-orders/{topUpOrderId}/confirm:
-    patch:
-      tags:
-      - Payment - Linh
-      summary: Xác nhận nạp tiền thành công
-      parameters:
-      - name: topUpOrderId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConfirmTopUpRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/donations:
-    post:
-      tags:
-      - Payment - Linh
-      summary: Donate tiền cho mentor/creator trong phòng
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DonationRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DonationResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
+
   /api/payment/gifts:
     get:
       tags:
-      - Payment - Linh
-      summary: Lấy danh sách quà ảo
+        - Payment
+      summary: List gifts
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GiftListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/gifts/send:
+
+  /api/payment/deposit:
     post:
       tags:
-      - Payment - Linh
-      summary: Gửi quà ảo cho mentor/creator
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SendGiftRequest'
+        - Payment
+      summary: Create top-up order
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GiftTransactionResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/contents/{contentId}/purchase:
+        '200':
+          description: Order created
+
+  /api/payment/purchase/content:
     post:
       tags:
-      - Payment - Linh
-      summary: Mua podcast hoặc nội dung trả phí
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
+        - Payment
+      summary: Purchase paid content
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PurchaseResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/rooms/{roomId}/purchase-ticket:
+        '200':
+          description: Content purchased
+
+  /api/payment/purchase/live:
     post:
       tags:
-      - Payment - Linh
-      summary: Mua vé vào live trả phí
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
+        - Payment
+      summary: Purchase live room ticket
       responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LiveTicketResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/withdraw-requests:
+        '200':
+          description: Ticket purchased
+
+  /api/payment/donate:
     post:
       tags:
-      - Payment - Linh
-      summary: Mentor/Creator gửi yêu cầu rút tiền
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateWithdrawRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawRequestResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/payment/withdraw-requests/me:
-    get:
-      tags:
-      - Payment - Linh
-      summary: Xem yêu cầu rút tiền của tôi
+        - Payment
+      summary: Donate gifts
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawRequestListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/transactions:
-    get:
-      tags:
-      - Payment - Linh
-      summary: Admin xem toàn bộ lịch sử giao dịch
-      parameters:
-      - name: userId
-        in: query
-        required: false
-        description: Lọc theo user
-        schema: *id001
-      - name: type
-        in: query
-        required: false
-        description: Lọc theo loại giao dịch
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletTransactionListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/withdraw-requests:
-    get:
-      tags:
-      - Payment - Linh
-      summary: Admin xem yêu cầu rút tiền
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: PENDING/APPROVED/REJECTED
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawRequestListResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/withdraw-requests/{withdrawRequestId}/approve:
-    patch:
-      tags:
-      - Payment - Linh
-      summary: Admin duyệt rút tiền
-      parameters:
-      - name: withdrawRequestId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawRequestResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/withdraw-requests/{withdrawRequestId}/reject:
-    patch:
-      tags:
-      - Payment - Linh
-      summary: Admin từ chối rút tiền
-      parameters:
-      - name: withdrawRequestId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WithdrawRequestResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/realtime/agora-token:
+          description: Gift donated
+
+  /api/payment/transfer:
     post:
       tags:
-      - Realtime - Hải
-      summary: Cấp Agora token để join audio room
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AgoraTokenRequest'
+        - Payment
+      summary: Transfer money (placeholder/implementations)
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AgoraTokenResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/join:
+          description: Money transferred
+
+  /api/payment/withdraw:
     post:
       tags:
-      - Realtime - Hải
-      summary: Realtime join phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
+        - Payment
+      summary: Request withdrawal
+      responses:
+        '200':
+          description: Withdrawal requested
+
+  /api/payment/settings/momo:
+    get:
+      tags:
+        - Payment
+      summary: Get MoMo receiver settings (non-admin)
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/leave:
+
+  /api/payment/admin/settings/momo:
+    get:
+      tags:
+        - Payment Admin
+      summary: Get MoMo setting
+      responses:
+        '200':
+          description: OK
     post:
       tags:
-      - Realtime - Hải
-      summary: Realtime rời phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
+        - Payment Admin
+      summary: Save MoMo setting
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/mic/on:
+          description: Settings saved
+
+  /api/payment/admin/settings/momo/qr:
     post:
       tags:
-      - Realtime - Hải
-      summary: Bật mic
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
+        - Payment Admin
+      summary: Upload MoMo QR code image
+      responses:
+        '200':
+          description: QR uploaded
+
+  /api/payment/admin/topup-orders:
+    get:
+      tags:
+        - Payment Admin
+      summary: List top-up orders
       responses:
         '200':
           description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/mic/off:
+
+  /api/payment/admin/topup-orders/{topUpOrderId}/approve:
     post:
       tags:
-      - Realtime - Hải
-      summary: Tắt mic
+        - Payment Admin
+      summary: Approve top-up
       parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/hand-raise:
-    post:
-      tags:
-      - Realtime - Hải
-      summary: Giơ tay xin phát biểu
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/hand-lower:
-    post:
-      tags:
-      - Realtime - Hải
-      summary: Hạ tay
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/record/start:
-    post:
-      tags:
-      - Realtime - Hải
-      summary: Creator bắt đầu record live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/realtime/rooms/{roomId}/record/stop:
-    post:
-      tags:
-      - Realtime - Hải
-      summary: Creator dừng record live
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeRoomActionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/internal/learning-events/session-ended:
-    post:
-      tags:
-      - Internal APIs
-      summary: Node gọi Java khi người học kết thúc session/sublevel
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LearningSessionEndedRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LearningSessionEndedResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/internal/realtime/donation-events:
-    post:
-      tags:
-      - Internal APIs
-      summary: Payment gọi Node để bắn hiệu ứng donate/gift realtime
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RealtimeDonationEventRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/internal/creator/recordings/completed:
-    post:
-      tags:
-      - Internal APIs
-      summary: Node gọi Java khi record live xong
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RecordingCompletedRequest'
-      responses:
-        '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/internal/contents/{contentId}:
-    get:
-      tags:
-      - Internal APIs
-      summary: Payment hỏi Java thông tin content trước khi trừ tiền
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        description: ''
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
-          description: Forbidden
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/users/{userId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết tài khoản
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfileResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/users/{userId}/lock:
-    patch:
-      tags:
-      - Admin
-      summary: Admin khóa tài khoản người dùng
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/users/{userId}/unlock:
-    patch:
-      tags:
-      - Admin
-      summary: Admin mở khóa tài khoản người dùng
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/users/{userId}/roles:
-    patch:
-      tags:
-      - Admin
-      summary: Admin cập nhật vai trò của người dùng
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateUserRolesRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserProfileResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/roles:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách vai trò trong hệ thống
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoleListResponse'
-      servers:
-      - url: http://localhost:5001
-  /api/admin/lms/import-docx:
-    post:
-      tags:
-      - Admin
-      summary: Admin upload 8 file DOCX nội dung học
-      requestBody:
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/ImportDocxMultipartRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportDocxBatchResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/import-docx/scan-default-files:
-    post:
-      tags:
-      - Admin
-      summary: Admin chạy import 8 file DOCX mặc định trong service Java
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportDocxBatchResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/import-docx/history:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem lịch sử import DOCX
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportDocxHistoryListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/import-docx/history/{importId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết một lần import DOCX
-      parameters:
-      - name: importId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ImportDocxHistoryResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/progress:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem tiến độ học viên
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProgressListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/progress/{userId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem tiến độ học của một học viên
-      parameters:
-      - name: userId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProgressListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/learning-sessions:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem learning sessions
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LearningSessionListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/learning-sessions/{sessionId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết learning session
-      parameters:
-      - name: sessionId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/LearningSessionResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/attendance-checks:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem attendance checks
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AttendanceCheckListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/quiz-attempts:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem quiz attempts
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizResultListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/lms/quiz-attempts/{attemptId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết quiz attempt
-      parameters:
-      - name: attemptId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizResultResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/rooms:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách phòng mentor
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/rooms/{roomId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết phòng mentor
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomDetailResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/rooms/{roomId}/force-close:
-    patch:
-      tags:
-      - Admin
-      summary: Admin đóng phòng mentor bị lỗi
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RoomResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/materials:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem tài liệu mentor upload
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/MaterialListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/quizzes:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem quiz mentor gắn vào phòng
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/mentor/quizzes/{quizId}/results:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem kết quả quiz mentor
-      parameters:
-      - name: quizId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/QuizResultListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/contents:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem nội dung creator
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/contents/{contentId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết nội dung creator
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/contents/{contentId}/hide:
-    patch:
-      tags:
-      - Admin
-      summary: Admin ẩn nội dung creator vi phạm
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/contents/{contentId}/restore:
-    patch:
-      tags:
-      - Admin
-      summary: Admin khôi phục nội dung creator
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/recordings:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem recording từ creator
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingListResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/creator/recordings/{recordingId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết recording từ creator
-      parameters:
-      - name: recordingId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/admin/payment/wallets:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem danh sách ví
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletListResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/wallets/{walletId}:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem chi tiết ví
-      parameters:
-      - name: walletId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/WalletResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/settings:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem cấu hình payment
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaymentSettingsResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/settings/withdraw-fee:
-    patch:
-      tags:
-      - Admin
-      summary: Admin cấu hình phần trăm phí rút tiền
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UpdateWithdrawFeeRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaymentSettingsResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/admin/payment/revenue-summary:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem thống kê doanh thu
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RevenueSummaryResponse'
-      servers:
-      - url: http://localhost:5002
-  /api/creator/recordings/{recordingId}:
-    get:
-      tags:
-      - Creator - Đạt
-      summary: Creator xem chi tiết bản ghi live
-      parameters:
-      - name: recordingId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RecordingResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/creator/contents/{contentId}:
-    get:
-      tags:
-      - Creator - Đạt
-      summary: Creator xem chi tiết nội dung trả phí
-      parameters:
-      - name: contentId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaidContentResponse'
-      servers:
-      - url: http://localhost:8080
-  /api/realtime/rooms/{roomId}/messages:
-    get:
-      tags:
-      - Realtime - Hải
-      summary: Lấy tin nhắn realtime hiện có trong phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RealtimeMessageListResponse'
-      servers:
-      - url: http://localhost:3001
-    post:
-      tags:
-      - Realtime - Hải
-      summary: Gửi tin nhắn realtime trong phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SendRealtimeMessageRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RealtimeMessageResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/admin/realtime/rooms-online:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem các phòng realtime đang online
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RealtimeRoomStateListResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/admin/realtime/rooms/{roomId}/state:
-    get:
-      tags:
-      - Admin
-      summary: Admin xem trạng thái realtime của một phòng
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RealtimeRoomStateResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/admin/realtime/socket-status:
-    get:
-      tags:
-      - Admin
-      summary: Admin debug trạng thái socket
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SocketStatusResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/admin/realtime/rooms/{roomId}/force-close:
-    post:
-      tags:
-      - Admin
-      summary: Admin force close phòng realtime
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema: *id001
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AdminDecisionRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RealtimeRoomStateResponse'
-      servers:
-      - url: http://localhost:3001
-  /api/internal/notifications/room-created:
-    post:
-      tags:
-      - Internal APIs
-      summary: Java gọi notification service khi mentor/creator tạo phòng
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RoomNotificationRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      servers:
-      - url: http://localhost:8088
-  /api/internal/notifications/room-opened:
-    post:
-      tags:
-      - Internal APIs
-      summary: Java gọi notification service khi phòng lên lịch được mở
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RoomNotificationRequest'
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponse'
-      servers:
-      - url: http://localhost:8088
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  schemas:
-    ApiResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: Success
-    ErrorResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        message:
-          type: string
-          example: Invalid request
-        errorCode:
-          type: string
-          example: VALIDATION_ERROR
-        details:
-          type: object
-          additionalProperties: true
-    RegisterRequest:
-      type: object
-      required:
-      - fullName
-      - phoneNumber
-      - email
-      - password
-      properties:
-        fullName:
-          type: string
-          example: Nguyen Van A
-        birthDate:
-          type: string
-          format: date
-          example: '2004-01-01'
-        phoneNumber:
-          type: string
-          example: 0900000000
-        email:
-          type: string
-          format: email
-          example: learner@gmail.com
-        password:
-          type: string
-          format: password
-          example: '123456'
-        avatarPersonaUrl:
-          type: string
-          example: https://cdn.lucy/avatar/cat.png
-    MentorRegisterMultipartRequest:
-      type: object
-      required:
-      - fullName
-      - phoneNumber
-      - email
-      - password
-      - languageId
-      properties:
-        fullName:
-          type: string
-        birthDate:
-          type: string
-          format: date
-        phoneNumber:
-          type: string
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-        languageId:
-          type: string
-          example: LANG_ENG
-        experienceDescription:
-          type: string
-        certificateFile:
-          type: string
-          format: binary
-    LoginRequest:
-      type: object
-      required:
-      - email
-      - password
-      properties:
-        email:
-          type: string
-          format: email
-          example: learner@gmail.com
-        password:
-          type: string
-          format: password
-          example: '123456'
-    User:
-      type: object
-      properties:
-        userId:
-          type: string
-          example: USR_001
-        fullName:
-          type: string
-          example: Nguyen Van A
-        phoneNumber:
-          type: string
-          example: 0900000000
-        email:
-          type: string
-          format: email
-        avatarPersonaUrl:
-          type: string
-        isActive:
-          type: boolean
-          example: true
-        createdAt:
-          type: string
-          format: date-time
-    Role:
-      type: object
-      properties:
-        roleCode:
-          type: string
-          example: LEARNER
-        roleName:
-          type: string
-          example: Lucy ẩn danh
-    AuthTokenResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: Login successfully
-        data:
-          type: object
-          properties:
-            accessToken:
-              type: string
-              example: eyJhbGciOiJIUzI1NiIs...
-            tokenType:
-              type: string
-              example: Bearer
-            user:
-              $ref: '#/components/schemas/User'
-            roles:
-              type: array
-              items:
-                $ref: '#/components/schemas/Role'
-    UserProfileResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            user:
-              $ref: '#/components/schemas/User'
-            roles:
-              type: array
-              items:
-                $ref: '#/components/schemas/Role'
-    RoleListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Role'
-    UserListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-        page:
-          type: integer
-        size:
-          type: integer
-        total:
-          type: integer
-    ApplicationResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-        data:
-          $ref: '#/components/schemas/Application'
-    Application:
-      type: object
-      properties:
-        applicationId:
-          type: string
-          example: APP_001
-        userId:
-          type: string
-          example: USR_001
-        type:
-          type: string
-          example: MENTOR
-        status:
-          type: string
-          example: PENDING
-        rejectReason:
-          type: string
-        submittedAt:
-          type: string
-          format: date-time
-    ApplicationListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Application'
-    CreatorUpgradeRequestCreate:
-      type: object
-      properties:
-        reason:
-          type: string
-          example: Tôi muốn tạo podcast tiếng Anh chuyên sâu
-        evidenceUrl:
-          type: string
-          example: https://...
-    AdminDecisionRequest:
-      type: object
-      properties:
-        reason:
-          type: string
-          example: Đủ điều kiện
-    Language:
-      type: object
-      properties:
-        languageId:
-          type: string
-          example: LANG_ENG
-        languageName:
-          type: string
-          example: English
-    Stage:
-      type: object
-      properties:
-        stageId:
-          type: string
-          example: STAGE_ENG_1
-        languageId:
-          type: string
-          example: LANG_ENG
-        stageNumber:
-          type: integer
-          example: 1
-        cefrStart:
-          type: string
-          example: A1
-        cefrEnd:
-          type: string
-          example: A2
-        levelStart:
-          type: integer
-          example: 1
-        levelEnd:
-          type: integer
-          example: 30
-        completionOutcome:
-          type: string
-    Level:
-      type: object
-      properties:
-        levelId:
-          type: string
-          example: LEVEL_ENG_001
-        stageId:
-          type: string
-          example: STAGE_ENG_1
-        levelNumber:
-          type: integer
-          example: 1
-        levelTitle:
-          type: string
-          example: Survival Speaking
-        levelDescription:
-          type: string
-    SubLevel:
-      type: object
-      properties:
-        subLevelId:
-          type: string
-          example: SUB_ENG_001_01
-        levelId:
-          type: string
-          example: LEVEL_ENG_001
-        subLevelNumber:
-          type: integer
-          example: 1
-        sublevelTitle:
-          type: string
-          example: Warm-up
-        mainTask:
-          type: string
-        promptHint:
-          type: string
-        subDurationMins:
-          type: integer
-          example: 10
-    Question:
-      type: object
-      properties:
-        questionId:
-          type: string
-          example: Q_001
-        subLevelId:
-          type: string
-          example: SUB_ENG_001_01
-        questionNumber:
-          type: integer
-          example: 1
-        questionType:
-          type: string
-          example: SPEAKING_PROMPT
-        questionText:
-          type: string
-          example: What is your name?
-        translation:
-          type: string
-          example: Tên của bạn là gì?
-    LanguageListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Language'
-    StageListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Stage'
-    LevelListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Level'
-    LevelDetailResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Level'
-    SubLevelListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/SubLevel'
-    QuestionListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Question'
-    Room:
-      type: object
-      properties:
-        roomId:
-          type: string
-          example: ROOM_001
-        hostUserId:
-          type: string
-          example: USR_MENTOR_001
-        hostRole:
-          type: string
-          example: MENTOR
-        languageId:
-          type: string
-          example: LANG_ENG
-        levelId:
-          type: string
-          example: LEVEL_ENG_001
-        roomTitle:
-          type: string
-          example: Level 1 - Survival Speaking
-        roomType:
-          type: string
-          example: MENTOR_CLASS
-        accessType:
-          type: string
-          example: FREE
-        priceAmount:
-          type: number
-          format: double
-          example: 0
-        scheduledStartAt:
-          type: string
-          format: date-time
-        openedAt:
-          type: string
-          format: date-time
-        studyStartedAt:
-          type: string
-          format: date-time
-        endedAt:
-          type: string
-          format: date-time
-        roomStatus:
-          type: string
-          example: SCHEDULED
-        agoraChannelName:
-          type: string
-          example: lucy_room_001
-    CreateRoomRequest:
-      type: object
-      required:
-      - languageId
-      - levelId
-      - roomTitle
-      properties:
-        languageId:
-          type: string
-          example: LANG_ENG
-        levelId:
-          type: string
-          example: LEVEL_ENG_001
-        roomTitle:
-          type: string
-          example: Level 1 - Survival Speaking
-        roomDescription:
-          type: string
-        scheduledStartAt:
-          type: string
-          format: date-time
-        openNow:
-          type: boolean
-          example: false
-    CreateCreatorRoomRequest:
-      type: object
-      required:
-      - languageId
-      - roomTitle
-      properties:
-        languageId:
-          type: string
-          example: LANG_ENG
-        levelId:
-          type: string
-          example: LEVEL_ENG_010
-        roomTitle:
-          type: string
-          example: Advanced speaking with creator
-        roomDescription:
-          type: string
-        accessType:
-          type: string
-          example: PAID
-        priceAmount:
-          type: number
-          example: 99000
-        scheduledStartAt:
-          type: string
-          format: date-time
-        openNow:
-          type: boolean
-          example: false
-    RoomResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Room'
-    RoomListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Room'
-    RoomDetailResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          allOf:
-          - $ref: '#/components/schemas/Room'
-          properties:
-            subLevels:
-              type: array
-              items:
-                $ref: '#/components/schemas/SubLevel'
-            materials:
-              type: array
-              items:
-                $ref: '#/components/schemas/Material'
-    JoinRoomResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        message:
-          type: string
-        data:
-          type: object
-          properties:
-            canJoin:
-              type: boolean
-            room:
-              $ref: '#/components/schemas/Room'
-            reason:
-              type: string
-              example: Phòng này sẽ mở 2026-05-28 20:00, bạn chưa thể join
-    Material:
-      type: object
-      properties:
-        materialId:
-          type: string
-          example: MAT_001
-        roomId:
-          type: string
-        fileName:
-          type: string
-          example: slide.pdf
-        fileUrl:
-          type: string
-          example: https://storage/slide.pdf
-        fileType:
-          type: string
-          example: application/pdf
-        uploadedAt:
-          type: string
-          format: date-time
-    UploadMaterialMultipartRequest:
-      type: object
-      required:
-      - file
-      properties:
-        file:
-          type: string
-          format: binary
-        visibleToLearners:
-          type: boolean
-          example: true
-    MaterialResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Material'
-    Participant:
-      type: object
-      properties:
-        participantId:
-          type: string
-        roomId:
-          type: string
-        userId:
-          type: string
-        joinedAt:
-          type: string
-          format: date-time
-        leftAt:
-          type: string
-          format: date-time
-        totalActiveSeconds:
-          type: integer
-          example: 480
-        micStatus:
-          type: string
-          example: 'OFF'
-        handRaiseStatus:
-          type: string
-          example: NONE
-    ParticipantListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Participant'
-    Progress:
-      type: object
-      properties:
-        progressId:
-          type: string
-        userId:
-          type: string
-        languageId:
-          type: string
-        levelId:
-          type: string
-        currentSubLevelId:
-          type: string
-        completedSubLevelCount:
-          type: integer
-          example: 4
-        progressPercent:
-          type: number
-          example: 66.67
-        status:
-          type: string
-          example: IN_PROGRESS
-    ProgressListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Progress'
-    CreateQuizRequest:
-      type: object
-      required:
-      - quizTitle
-      - passingScorePercent
-      properties:
-        quizTitle:
-          type: string
-          example: Final check Level 1
-        passingScorePercent:
-          type: number
-          example: 80
-    Quiz:
-      type: object
-      properties:
-        quizId:
-          type: string
-        roomId:
-          type: string
-        levelId:
-          type: string
-        quizTitle:
-          type: string
-        passingScorePercent:
-          type: number
-        quizStatus:
-          type: string
-          example: DRAFT
-    QuizResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Quiz'
-    AddQuizQuestionRequest:
-      type: object
-      required:
-      - questionText
-      - questionType
-      - questionOrder
-      properties:
-        questionText:
-          type: string
-          example: Choose the correct greeting.
-        questionType:
-          type: string
-          example: MULTIPLE_CHOICE
-        questionOrder:
-          type: integer
-          example: 1
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/QuizOptionInput'
-    QuizOptionInput:
-      type: object
-      properties:
-        optionText:
-          type: string
-          example: Hello
-        isCorrect:
-          type: boolean
-          example: true
-        optionOrder:
-          type: integer
-          example: 1
-    QuizQuestion:
-      type: object
-      properties:
-        roomQuizQuestionId:
-          type: string
-        quizId:
-          type: string
-        questionText:
-          type: string
-        questionType:
-          type: string
-        questionOrder:
-          type: integer
-        options:
-          type: array
-          items:
-            $ref: '#/components/schemas/QuizOption'
-    QuizOption:
-      type: object
-      properties:
-        optionId:
-          type: string
-        optionText:
-          type: string
-        isCorrect:
-          type: boolean
-        optionOrder:
-          type: integer
-    QuizQuestionResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/QuizQuestion'
-    QuizSubmitRequest:
-      type: object
-      required:
-      - answers
-      properties:
-        answers:
-          type: array
-          items:
-            $ref: '#/components/schemas/QuizAnswerInput'
-    QuizAnswerInput:
-      type: object
-      required:
-      - roomQuizQuestionId
-      properties:
-        roomQuizQuestionId:
-          type: string
-        selectedOptionId:
-          type: string
-        answerText:
-          type: string
-    QuizSubmitResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            attemptId:
-              type: string
-            scorePercent:
-              type: number
-              example: 85
-            isPassed:
-              type: boolean
-              example: true
-    QuizResult:
-      type: object
-      properties:
-        attemptId:
-          type: string
-        quizId:
-          type: string
-        userId:
-          type: string
-        scorePercent:
-          type: number
-        isPassed:
-          type: boolean
-        submittedAt:
-          type: string
-          format: date-time
-    QuizResultListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/QuizResult'
-    Wallet:
-      type: object
-      properties:
-        walletId:
-          type: string
-        userId:
-          type: string
-        balance:
-          type: number
-          example: 150000
-        currencyCode:
-          type: string
-          example: VND
-        walletStatus:
-          type: string
-          example: ACTIVE
-    WalletResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Wallet'
-    WalletTransaction:
-      type: object
-      properties:
-        walletTransactionId:
-          type: string
-        userId:
-          type: string
-        relatedUserId:
-          type: string
-        transactionType:
-          type: string
-          example: DONATE
-        direction:
-          type: string
-          example: OUT
-        amount:
-          type: number
-          example: 50000
-        balanceBefore:
-          type: number
-        balanceAfter:
-          type: number
-        descriptionText:
-          type: string
-        transactionStatus:
-          type: string
-          example: SUCCESS
-        createdAt:
-          type: string
-          format: date-time
-    WalletTransactionListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/WalletTransaction'
-    CreateTopUpOrderRequest:
-      type: object
-      required:
-      - amount
-      - paymentProvider
-      properties:
-        amount:
-          type: number
-          example: 100000
-        paymentProvider:
-          type: string
-          example: VNPAY
-    TopUpOrder:
-      type: object
-      properties:
-        topUpOrderId:
-          type: string
-        userId:
-          type: string
-        amount:
-          type: number
-        paymentProvider:
-          type: string
-        externalTransactionCode:
-          type: string
-        orderStatus:
-          type: string
-          example: PENDING
-        paidAt:
-          type: string
-          format: date-time
-    TopUpOrderResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/TopUpOrder'
-    ConfirmTopUpRequest:
-      type: object
-      properties:
-        externalTransactionCode:
-          type: string
-          example: VNPAY_ABC123
-    DonationRequest:
-      type: object
-      required:
-      - toUserId
-      - amount
-      properties:
-        toUserId:
-          type: string
-          example: USR_MENTOR_001
-        roomId:
-          type: string
-          example: ROOM_001
-        amount:
-          type: number
-          example: 50000
-        messageText:
-          type: string
-          example: Cảm ơn mentor
-    DonationResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            donationId:
-              type: string
-            amount:
-              type: number
-            fromUserId:
-              type: string
-            toUserId:
-              type: string
-    Gift:
-      type: object
-      properties:
-        giftId:
-          type: string
-        giftName:
-          type: string
-          example: Rose
-        priceAmount:
-          type: number
-          example: 10000
-        iconUrl:
-          type: string
-        isActive:
-          type: boolean
-    GiftListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Gift'
-    SendGiftRequest:
-      type: object
-      required:
-      - giftId
-      - toUserId
-      - quantity
-      properties:
-        giftId:
-          type: string
-        toUserId:
-          type: string
-        roomId:
-          type: string
-        quantity:
-          type: integer
-          example: 1
-    GiftTransactionResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            giftTransactionId:
-              type: string
-            totalAmount:
-              type: number
-    CreateWithdrawRequest:
-      type: object
-      required:
-      - amount
-      - bankName
-      - bankAccountNumber
-      - bankAccountName
-      properties:
-        amount:
-          type: number
-          example: 100000
-        bankName:
-          type: string
-          example: Vietcombank
-        bankAccountNumber:
-          type: string
-          example: 0123456789
-        bankAccountName:
-          type: string
-          example: NGUYEN VAN A
-    WithdrawRequest:
-      type: object
-      properties:
-        withdrawRequestId:
-          type: string
-        userId:
-          type: string
-        amount:
-          type: number
-        bankName:
-          type: string
-        requestStatus:
-          type: string
-          example: PENDING
-        rejectReason:
-          type: string
-        requestedAt:
-          type: string
-          format: date-time
-    WithdrawRequestResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/WithdrawRequest'
-    WithdrawRequestListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/WithdrawRequest'
-    Recording:
-      type: object
-      properties:
-        recordingId:
-          type: string
-        roomId:
-          type: string
-        creatorUserId:
-          type: string
-        audioUrl:
-          type: string
-        durationSeconds:
-          type: integer
-        recordingStatus:
-          type: string
-          example: COMPLETED
-    RecordingResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/Recording'
-    RecordingListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Recording'
-    PaidContent:
-      type: object
-      properties:
-        contentId:
-          type: string
-        creatorUserId:
-          type: string
-        roomId:
-          type: string
-        recordingId:
-          type: string
-        contentType:
-          type: string
-          example: PODCAST
-        title:
-          type: string
-          example: English speaking podcast 1
-        descriptionText:
-          type: string
-        thumbnailUrl:
-          type: string
-        audioUrl:
-          type: string
-        priceAmount:
-          type: number
-          example: 99000
-        contentStatus:
-          type: string
-          example: PUBLISHED
-        publishedAt:
-          type: string
-          format: date-time
-    CreatePaidContentRequest:
-      type: object
-      required:
-      - contentType
-      - title
-      - priceAmount
-      properties:
-        roomId:
-          type: string
-        recordingId:
-          type: string
-        contentType:
-          type: string
-          example: PODCAST
-        title:
-          type: string
-        descriptionText:
-          type: string
-        thumbnailUrl:
-          type: string
-        audioUrl:
-          type: string
-        priceAmount:
-          type: number
-          example: 99000
-    PaidContentResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/PaidContent'
-    PaidContentListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/PaidContent'
-    PurchaseResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            purchaseId:
-              type: string
-            contentId:
-              type: string
-            buyerUserId:
-              type: string
-            sellerUserId:
-              type: string
-            priceAmount:
-              type: number
-    LiveTicketResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            ticketId:
-              type: string
-            roomId:
-              type: string
-            userId:
-              type: string
-            ticketStatus:
-              type: string
-              example: ACTIVE
-    AgoraTokenRequest:
-      type: object
-      required:
-      - roomId
-      - userId
-      properties:
-        roomId:
-          type: string
-          example: ROOM_001
-        userId:
-          type: string
-          example: USR_001
-        role:
-          type: string
-          example: publisher
-    AgoraTokenResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            appId:
-              type: string
-            channelName:
-              type: string
-            uid:
-              type: string
-            token:
-              type: string
-            expiresInSeconds:
-              type: integer
-              example: 3600
-    RealtimeRoomActionRequest:
-      type: object
-      properties:
-        userId:
-          type: string
-          example: USR_001
-        deviceId:
-          type: string
-          example: device_abc
-        metadata:
-          type: object
-          additionalProperties: true
-    LearningSessionEndedRequest:
-      type: object
-      required:
-      - userId
-      - roomId
-      - levelId
-      - subLevelId
-      - durationSeconds
-      - validLearningSeconds
-      properties:
-        userId:
-          type: string
-        roomId:
-          type: string
-        levelId:
-          type: string
-        subLevelId:
-          type: string
-        durationSeconds:
-          type: integer
-          example: 520
-        validLearningSeconds:
-          type: integer
-          example: 480
-        attendanceAskedCount:
-          type: integer
-          example: 5
-        attendanceConfirmCount:
-          type: integer
-          example: 4
-    LearningSessionEndedResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            learningSessionId:
-              type: string
-            isPassed:
-              type: boolean
-            progressPercent:
-              type: number
-            canUpgradeLevel:
-              type: boolean
-    RealtimeDonationEventRequest:
-      type: object
-      required:
-      - roomId
-      - fromUserId
-      - toUserId
-      - amount
-      properties:
-        roomId:
-          type: string
-        fromUserId:
-          type: string
-        toUserId:
-          type: string
-        amount:
-          type: number
-        giftId:
-          type: string
-        messageText:
-          type: string
-        eventType:
-          type: string
-          example: DONATION
-    RecordingCompletedRequest:
-      type: object
-      required:
-      - roomId
-      - creatorUserId
-      - audioUrl
-      - durationSeconds
-      properties:
-        roomId:
-          type: string
-        creatorUserId:
-          type: string
-        audioUrl:
-          type: string
-          example: https://storage/recording.mp3
-        durationSeconds:
-          type: integer
-          example: 3600
-    UpdateUserRolesRequest:
-      type: object
-      required:
-      - roleCodes
-      properties:
-        roleCodes:
-          type: array
-          items:
+        - name: topUpOrderId
+          in: path
+          required: true
+          schema:
             type: string
-          example:
-          - LEARNER
-          - MENTOR
-    ImportDocxMultipartRequest:
-      type: object
-      required:
-      - files
-      properties:
-        files:
-          type: array
-          items:
+      responses:
+        '200':
+          description: Top-up approved
+
+  /api/payment/admin/topup-orders/{topUpOrderId}/reject:
+    post:
+      tags:
+        - Payment Admin
+      summary: Reject top-up
+      parameters:
+        - name: topUpOrderId
+          in: path
+          required: true
+          schema:
             type: string
-            format: binary
-          description: 8 file DOCX Anh/Nhật/Trung dùng để import nội dung học.
-        replaceExisting:
-          type: boolean
-          example: false
-    ImportDocxFileResult:
-      type: object
-      properties:
-        fileName:
-          type: string
-          example: Eng - STAGE 1 (LEVELS 1-30).docx
-        success:
-          type: boolean
-          example: true
-        languageId:
-          type: string
-          example: LANG_ENG
-        importedLevelCount:
-          type: integer
-          example: 30
-        importedQuestionCount:
-          type: integer
-          example: 180
-        errorMessage:
-          type: string
-    ImportDocxHistory:
-      type: object
-      properties:
-        importId:
-          type: string
-          example: IMP_001
-        startedAt:
-          type: string
-          format: date-time
-        finishedAt:
-          type: string
-          format: date-time
-        totalFiles:
-          type: integer
-          example: 8
-        successFiles:
-          type: integer
-          example: 8
-        failedFiles:
-          type: integer
-          example: 0
-        status:
-          type: string
-          example: SUCCESS
-        files:
-          type: array
-          items:
-            $ref: '#/components/schemas/ImportDocxFileResult'
-    ImportDocxBatchResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/ImportDocxHistory'
-    ImportDocxHistoryResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/ImportDocxHistory'
-    ImportDocxHistoryListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ImportDocxHistory'
-    LearningSession:
-      type: object
-      properties:
-        learningSessionId:
-          type: string
-          example: LS_001
-        userId:
-          type: string
-        roomId:
-          type: string
-        levelId:
-          type: string
-        subLevelId:
-          type: string
-        startedAt:
-          type: string
-          format: date-time
-        endedAt:
-          type: string
-          format: date-time
-        durationSeconds:
-          type: integer
-          example: 520
-        validLearningSeconds:
-          type: integer
-          example: 480
-        isPassed:
-          type: boolean
-          example: true
-    LearningSessionResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/LearningSession'
-    LearningSessionListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/LearningSession'
-    AttendanceCheck:
-      type: object
-      properties:
-        attendanceCheckId:
-          type: string
-          example: AC_001
-        learningSessionId:
-          type: string
-        userId:
-          type: string
-        askedAt:
-          type: string
-          format: date-time
-        confirmedAt:
-          type: string
-          format: date-time
-        checkStatus:
-          type: string
-          example: CONFIRMED
-    AttendanceCheckListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/AttendanceCheck'
-    QuizResultResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/QuizResult'
-    QuizListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Quiz'
-    MaterialListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Material'
-    WalletListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Wallet'
-    PaymentSettings:
-      type: object
-      properties:
-        withdrawFeePercent:
-          type: number
-          example: 5
-        currencyCode:
-          type: string
-          example: VND
-        minWithdrawAmount:
-          type: number
-          example: 100000
-        updatedAt:
-          type: string
-          format: date-time
-    PaymentSettingsResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/PaymentSettings'
-    UpdateWithdrawFeeRequest:
-      type: object
-      required:
-      - withdrawFeePercent
-      properties:
-        withdrawFeePercent:
-          type: number
-          minimum: 0
-          maximum: 100
-          example: 5
-    RevenueSummary:
-      type: object
-      properties:
-        totalTopUpAmount:
-          type: number
-          example: 5000000
-        totalDonationAmount:
-          type: number
-          example: 1200000
-        totalGiftAmount:
-          type: number
-          example: 800000
-        totalContentPurchaseAmount:
-          type: number
-          example: 2000000
-        totalLiveTicketAmount:
-          type: number
-          example: 1500000
-        totalWithdrawFeeAmount:
-          type: number
-          example: 250000
-        fromDate:
-          type: string
-          format: date
-        toDate:
-          type: string
-          format: date
-    RevenueSummaryResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/RevenueSummary'
-    SendRealtimeMessageRequest:
-      type: object
-      required:
-      - userId
-      - messageText
-      properties:
-        userId:
-          type: string
-          example: USR_001
-        messageText:
-          type: string
-          example: Hello everyone
-        clientMessageId:
-          type: string
-          example: msg-local-001
-    RealtimeMessage:
-      type: object
-      properties:
-        messageId:
-          type: string
-          example: MSG_001
-        roomId:
-          type: string
-        userId:
-          type: string
-        messageText:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-    RealtimeMessageResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/RealtimeMessage'
-    RealtimeMessageListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/RealtimeMessage'
-    RealtimeRoomState:
-      type: object
-      properties:
-        roomId:
-          type: string
-        status:
-          type: string
-          example: ONLINE
-        participantCount:
-          type: integer
-          example: 12
-        participants:
-          type: array
-          items:
-            $ref: '#/components/schemas/Participant'
-        micStates:
-          type: object
-          additionalProperties:
-            type: boolean
-        handRaiseStates:
-          type: object
-          additionalProperties:
-            type: boolean
-        messageCount:
-          type: integer
-          example: 24
-        closedAt:
-          type: string
-          format: date-time
-    RealtimeRoomStateResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          $ref: '#/components/schemas/RealtimeRoomState'
-    RealtimeRoomStateListResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/RealtimeRoomState'
-    SocketStatusResponse:
-      type: object
-      properties:
-        success:
-          type: boolean
-        data:
-          type: object
-          properties:
-            roomCount:
-              type: integer
-              example: 3
-            onlineRoomCount:
-              type: integer
-              example: 2
-            socketCount:
-              type: integer
-              example: 48
-            participantCount:
-              type: integer
-              example: 40
-    RoomNotificationRequest:
-      type: object
-      required:
-      - roomId
-      - roomTitle
-      - ownerUserId
-      - targetLanguageId
-      properties:
-        roomId:
-          type: string
-        roomTitle:
-          type: string
-        ownerUserId:
-          type: string
-        targetLanguageId:
-          type: string
-          example: LANG_ENG
-        scheduledStartAt:
-          type: string
-          format: date-time
-        notificationType:
-          type: string
-          example: ROOM_CREATED
-security:
-- bearerAuth: []
+      responses:
+        '200':
+          description: Top-up rejected
+
+  /api/payment/admin/withdraw-requests:
+    get:
+      tags:
+        - Payment Admin
+      summary: List withdrawal requests
+      responses:
+        '200':
+          description: OK
+
+  /api/payment/admin/withdraw/approve/{withdrawRequestId}:
+    post:
+      tags:
+        - Payment Admin
+      summary: Approve withdrawal
+      parameters:
+        - name: withdrawRequestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Withdrawal approved
+
+  /api/payment/admin/withdraw/reject/{withdrawRequestId}:
+    post:
+      tags:
+        - Payment Admin
+      summary: Reject withdrawal
+      parameters:
+        - name: withdrawRequestId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Withdrawal rejected
+
+  # ==========================================
+  # ROOM CONTROLLER
+  # ==========================================
+  /api/mentor/rooms:
+    post:
+      tags:
+        - Mentor Room
+      summary: Create room
+      responses:
+        '201':
+          description: Room created
+    get:
+      tags:
+        - Mentor Room
+      summary: List rooms
+      responses:
+        '200':
+          description: OK
+
+  /api/mentor/rooms/mentor/{hostUserId}:
+    get:
+      tags:
+        - Mentor Room
+      summary: List rooms hosted by mentor
+      parameters:
+        - name: hostUserId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  /api/mentor/rooms/{roomId}/end:
+    post:
+      tags:
+        - Mentor Room
+      summary: End a room session
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room session ended
+
+  /api/mentor/rooms/{roomId}/participants:
+    get:
+      tags:
+        - Mentor Room
+      summary: Get list of participants in room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  /api/mentor/rooms/{roomId}/open:
+    post:
+      tags:
+        - Mentor Room
+      summary: Open room session
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room opened
+
+  /api/mentor/rooms/{roomId}/sublevels/{subLevelId}/complete:
+    post:
+      tags:
+        - Mentor Room
+      summary: Mark sub-level complete
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: subLevelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sub-level completed
+
+  # ==========================================
+  # LEARNER ROOM CONTROLLER
+  # ==========================================
+  /api/learner/rooms/{roomId}/join:
+    post:
+      tags:
+        - Learner Room
+      summary: Join a room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Joined room
+
+  /api/learner/rooms/{roomId}/leave:
+    post:
+      tags:
+        - Learner Room
+      summary: Leave a room
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Left room
+
+  /api/learner/rooms/{roomId}/mic:
+    patch:
+      tags:
+        - Learner Room
+      summary: Toggle microphone
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Microphone toggled
+
+  /api/learner/rooms/{roomId}/hand-raise:
+    patch:
+      tags:
+        - Learner Room
+      summary: Toggle hand raise status
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Hand raise status toggled
+
+  /api/learner/rooms/{roomId}/participants:
+    get:
+      tags:
+        - Learner Room
+      summary: List participants
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # PINNED MATERIAL CONTROLLER
+  # ==========================================
+  /api/mentor/rooms/{roomId}/pinned-materials:
+    get:
+      tags:
+        - Pinned Material
+      summary: List pinned materials
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - Pinned Material
+      summary: Upload/Pin a material
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: Material pinned
+
+  /api/mentor/rooms/{roomId}/pinned-materials/{pinnedMaterialId}:
+    delete:
+      tags:
+        - Pinned Material
+      summary: Unpin a material
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: pinnedMaterialId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Material unpinned
+
+  # ==========================================
+  # CREATOR CONTENT CONTROLLER
+  # ==========================================
+  /api/creator/contents:
+    get:
+      tags:
+        - Creator Content
+      summary: List/Search creator contents
+      responses:
+        '200':
+          description: OK
+    post:
+      tags:
+        - Creator Content
+      summary: Create/Publish paid content
+      responses:
+        '201':
+          description: Content created
+
+  /api/creator/contents/videos:
+    post:
+      tags:
+        - Creator Content
+      summary: Upload video file
+      responses:
+        '201':
+          description: Video uploaded
+    get:
+      tags:
+        - Creator Content
+      summary: Get public videos
+      responses:
+        '200':
+          description: OK
+
+  /api/creator/contents/creator/{creatorUserId}/videos:
+    get:
+      tags:
+        - Creator Content
+      summary: List creator's video materials
+      parameters:
+        - name: creatorUserId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  # ==========================================
+  # AUTH / USER CONTROLLERS
+  # ==========================================
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Anonymous/Quick register
+      responses:
+        '200':
+          description: Registered successfully
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      responses:
+        '200':
+          description: Logged in successfully
+
+  /api/auth/register-mentor:
+    post:
+      tags:
+        - Auth
+      summary: Submit mentor application
+      responses:
+        '200':
+          description: Application submitted
+
+  /api/auth/register-creator:
+    post:
+      tags:
+        - Auth
+      summary: Submit creator application
+      responses:
+        '200':
+          description: Application submitted
+
+  /api/auth/profile:
+    get:
+      tags:
+        - Profile
+      summary: Get user profile
+      responses:
+        '200':
+          description: OK
+    put:
+      tags:
+        - Profile
+      summary: Update user profile
+      responses:
+        '200':
+          description: Profile updated
+
+  /api/auth/profile/avatar:
+    post:
+      tags:
+        - Profile
+      summary: Upload avatar image
+      responses:
+        '200':
+          description: Avatar uploaded
+
+  /api/auth/admin/users:
+    get:
+      tags:
+        - Admin User
+      summary: List all users
+      responses:
+        '200':
+          description: OK
+
+  /api/auth/admin/users/assign-role:
+    post:
+      tags:
+        - Admin User
+      summary: Assign role to user
+      responses:
+        '200':
+          description: Role assigned
+
+  /api/auth/admin/mentor-applications:
+    get:
+      tags:
+        - Admin Mentor Application
+      summary: List mentor applications
+      responses:
+        '200':
+          description: OK
+
+  /api/auth/admin/mentor-applications/{applicationId}/approve:
+    post:
+      tags:
+        - Admin Mentor Application
+      summary: Approve application
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application approved
+
+  /api/auth/admin/mentor-applications/{applicationId}/reject:
+    post:
+      tags:
+        - Admin Mentor Application
+      summary: Reject application
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application rejected
+
+  /api/auth/admin/creator-applications:
+    get:
+      tags:
+        - Admin Creator Application
+      summary: List creator applications
+      responses:
+        '200':
+          description: OK
+
+  /api/auth/admin/creator-applications/{applicationId}/approve:
+    post:
+      tags:
+        - Admin Creator Application
+      summary: Approve application
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application approved
+
+  /api/auth/admin/creator-applications/{applicationId}/reject:
+    post:
+      tags:
+        - Admin Creator Application
+      summary: Reject application
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Application rejected
+
+  # ==========================================
+  # LEARNING CONTENT CONTROLLER
+  # ==========================================
+  /api/content/topics:
+    get:
+      tags:
+        - Learning Content
+      summary: Get topics
+      responses:
+        '200':
+          description: OK
+
+  /api/content/topics/{topicId}/stages:
+    get:
+      tags:
+        - Learning Content
+      summary: Get stages under a topic
+      parameters:
+        - name: topicId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  /api/content/stages/{stageId}/levels:
+    get:
+      tags:
+        - Learning Content
+      summary: Get levels under a stage
+      parameters:
+        - name: stageId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+
+  /api/content/levels/{levelId}/details:
+    get:
+      tags:
+        - Learning Content
+      summary: Get level details (including sub-levels and materials)
+      parameters:
+        - name: levelId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK

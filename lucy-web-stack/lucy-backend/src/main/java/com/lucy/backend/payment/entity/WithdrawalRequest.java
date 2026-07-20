@@ -37,9 +37,7 @@ public class WithdrawalRequest {
     @Column(name = "RejectReason", length = 255)
     private String rejectReason;
 
-    @Column(name = "RequestedAt", nullable = false)
+    @Column(name = "RequestedAt", updatable = false)
     private LocalDateTime requestedAt = LocalDateTime.now();
 
-    @Column(name = "ReviewedAt")
-    private LocalDateTime reviewedAt;
 }

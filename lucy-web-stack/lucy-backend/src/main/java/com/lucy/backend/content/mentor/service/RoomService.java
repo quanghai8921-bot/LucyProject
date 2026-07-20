@@ -1,20 +1,15 @@
 package com.lucy.backend.content.mentor.service;
 
 import com.lucy.backend.content.content.model.LearningLevel;
-import com.lucy.backend.content.content.model.LevelGroup;
 import com.lucy.backend.content.content.model.SubLevel;
 import com.lucy.backend.content.content.repository.LearningLevelRepository;
-import com.lucy.backend.content.content.repository.LevelGroupRepository;
 import com.lucy.backend.content.content.repository.SubLevelRepository;
 import com.lucy.backend.content.learner.repository.RoomParticipantRepository;
 import com.lucy.backend.content.mentor.dto.CreateMentorRoomRequest;
-import com.lucy.backend.content.mentor.dto.RoomStudyPlanDto;
 import com.lucy.backend.content.mentor.entity.Room;
 import com.lucy.backend.content.mentor.entity.RoomSubLevel;
-import com.lucy.backend.content.mentor.entity.LiveRecording;
 import com.lucy.backend.content.mentor.repository.RoomRepository;
 import com.lucy.backend.content.mentor.repository.RoomSubLevelRepository;
-import com.lucy.backend.content.mentor.repository.LiveRecordingRepository;
 import com.lucy.backend.content.mentor.repository.PinnedMaterialRepository;
 import com.lucy.backend.content.content.repository.LanguageRepository;
 import com.lucy.backend.content.content.repository.StageRepository;
@@ -22,22 +17,13 @@ import com.lucy.backend.content.content.model.Language;
 import com.lucy.backend.content.content.model.Stage;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import com.lucy.backend.auth.repository.AvatarPersonaRepository;
 import com.lucy.backend.content.learner.dto.RoomParticipantDto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 public class RoomService {
@@ -47,9 +33,7 @@ public class RoomService {
     private final AvatarPersonaRepository avatarPersonaRepository;
     private final RoomSubLevelRepository roomSubLevelRepository;
     private final LearningLevelRepository learningLevelRepository;
-    private final LevelGroupRepository levelGroupRepository;
     private final SubLevelRepository subLevelRepository;
-    private final LiveRecordingRepository liveRecordingRepository;
     private final LanguageRepository languageRepository;
     private final StageRepository stageRepository;
     private final PinnedMaterialRepository pinnedMaterialRepository;
@@ -60,9 +44,7 @@ public class RoomService {
             AvatarPersonaRepository avatarPersonaRepository,
             RoomSubLevelRepository roomSubLevelRepository,
             LearningLevelRepository learningLevelRepository,
-            LevelGroupRepository levelGroupRepository,
             SubLevelRepository subLevelRepository,
-            LiveRecordingRepository liveRecordingRepository,
             LanguageRepository languageRepository,
             StageRepository stageRepository,
             PinnedMaterialRepository pinnedMaterialRepository) {
@@ -71,9 +53,7 @@ public class RoomService {
         this.avatarPersonaRepository = avatarPersonaRepository;
         this.roomSubLevelRepository = roomSubLevelRepository;
         this.learningLevelRepository = learningLevelRepository;
-        this.levelGroupRepository = levelGroupRepository;
         this.subLevelRepository = subLevelRepository;
-        this.liveRecordingRepository = liveRecordingRepository;
         this.languageRepository = languageRepository;
         this.stageRepository = stageRepository;
         this.pinnedMaterialRepository = pinnedMaterialRepository;
@@ -84,8 +64,6 @@ public class RoomService {
         String realLanguageId = null;
         String levelId = null;
 
-        // 🌟 CHỈ GIẢI QUYẾT NGÔN NGỮ & CẤP ĐỘ NẾU KHÔNG PHẢI PHÒNG TỰ DO (Có truyền
-        // languageId)
         if (request.getLanguageId() != null && !request.getLanguageId().isBlank()) {
             Language lang = languageRepository.findByLanguageNameIgnoreCase(request.getLanguageId())
                     .orElseThrow(() -> new IllegalArgumentException("Language not found: " + request.getLanguageId()));
@@ -282,47 +260,4 @@ public class RoomService {
         }
     }
 
-    @Transactional
-    public LiveRecording startRecording(String roomId) {
-        Room room = roomRepository.findById(roomId)
-                .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
-
-        LiveRecording recording = new LiveRecording(
-                UUID.randomUUID().toString(),
-                roomId,
-                room.getHostUserId(),
-                "PROCESSING",
-                LocalDateTime.now());
-        return liveRecordingRepository.save(recording);
-    }
-
-    @Transactional
-    public ResponseEntity<Resource> stopRecording(String roomId) {
-        LiveRecording recording = liveRecordingRepository.findByRoomIdAndRecordingStatus(roomId, "PROCESSING")
-                .orElseThrow(() -> new IllegalArgumentException("No active recording found for room: " + roomId));
-
-        recording.setRecordingStatus("COMPLETED");
-        recording.setCompletedAt(LocalDateTime.now());
-
-        long minutes = java.time.Duration.between(recording.getCreatedAt(), recording.getCompletedAt()).toMinutes();
-        recording.setDurationMinutes((int) minutes);
-
-        // Mock generating an actual media file in bytes (e.g. a small string pretending
-        // to be a file)
-        String mockFileData = "Live Recording Session for Room " + roomId + " by User " + recording.getCreatorUserId()
-                + "\nDuration: " + minutes + " minutes.\n[VIDEO CONTENT BYTE STREAM MOCK]";
-        byte[] fileBytes = mockFileData.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-
-        // Generate a URL or just assume it is stored locally
-        recording.setAudioUrl("/uploads/records/" + recording.getRecordingId() + ".mp4");
-        liveRecordingRepository.save(recording);
-
-        ByteArrayResource resource = new ByteArrayResource(fileBytes);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"Live_Record_" + recording.getRecordingId() + ".mp4\"")
-                .contentLength(fileBytes.length)
-                .contentType(MediaType.parseMediaType("video/mp4"))
-                .body(resource);
-    }
 }

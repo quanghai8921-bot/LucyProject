@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
 import { Card } from '../components/Card';
 
-type TabType = 
-  | 'USERS' 
-  | 'MENTOR_APPS' 
-  | 'CREATOR_APPS' 
-  | 'WALLET' 
-  | 'WITHDRAW_REQS' 
-  | 'TOPUP_REQS' 
+type TabType =
+  | 'USERS'
+  | 'MENTOR_APPS'
+  | 'CREATOR_APPS'
+  | 'WALLET'
+  | 'WITHDRAW_REQS'
+  | 'TOPUP_REQS'
   | 'PAYMENT_CONFIG';
 
 export const AdminUsersScreen: React.FC = () => {
@@ -42,8 +42,8 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchSystemUsers = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/admin/users', { 
-        headers: { 'Authorization': `Bearer ${token}` } 
+      const res = await fetch('http://localhost:8081/api/admin/users', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -57,8 +57,8 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchMentorApps = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/admin/mentor-applications', { 
-        headers: { 'Authorization': `Bearer ${token}` } 
+      const res = await fetch('http://localhost:8081/api/admin/mentor-applications', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -72,8 +72,8 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchCreatorApps = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/admin/creator-applications', { 
-        headers: { 'Authorization': `Bearer ${token}` } 
+      const res = await fetch('http://localhost:8081/api/admin/creator-applications', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       if (res.ok) {
         const data = await res.json();
@@ -87,11 +87,11 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchTopups = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/payment/admin/topup-orders', { 
-        headers: { 
+      const res = await fetch('http://localhost:8081/api/payment/admin/topup-orders', {
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
-        } 
+          'X-User-Id': currentUser?.id || 'Uadmin'
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -105,11 +105,11 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchWithdraws = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/payment/admin/withdraw-requests', { 
-        headers: { 
+      const res = await fetch('http://localhost:8081/api/payment/admin/withdraw-requests', {
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
-        } 
+          'X-User-Id': currentUser?.id || 'Uadmin'
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -123,11 +123,11 @@ export const AdminUsersScreen: React.FC = () => {
   const fetchAdminWallet = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch('http://localhost:8081/api/payment/wallet', { 
-        headers: { 
+      const res = await fetch('http://localhost:8081/api/payment/wallet', {
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
-        } 
+          'X-User-Id': currentUser?.id || 'Uadmin'
+        }
       });
       if (res.ok) {
         const data = await res.json();
@@ -142,7 +142,7 @@ export const AdminUsersScreen: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo', {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'X-User-Id': currentUser?.id || 'Uadmin'
         }
@@ -161,7 +161,7 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
           'X-User-Id': currentUser?.id || 'Uadmin'
@@ -193,7 +193,7 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo/qr', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'X-User-Id': currentUser?.id || 'Uadmin'
         },
@@ -216,9 +216,9 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/topup-orders/${id}/approve`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
+          'X-User-Id': currentUser?.id || 'Uadmin'
         }
       });
       if (res.ok) {
@@ -240,10 +240,10 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/topup-orders/${id}/reject`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
+          'X-User-Id': currentUser?.id || 'Uadmin'
         },
         body: JSON.stringify({ reason })
       });
@@ -263,9 +263,9 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/withdraw/approve/${id}`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
+          'X-User-Id': currentUser?.id || 'Uadmin'
         }
       });
       if (res.ok) {
@@ -286,10 +286,10 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/withdraw/reject/${id}`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'X-User-Id': currentUser?.id || 'Uadmin' 
+          'X-User-Id': currentUser?.id || 'Uadmin'
         },
         body: JSON.stringify({ rejectReason: reason })
       });
@@ -315,7 +315,7 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/admin/mentor-applications/${id}/${action}`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -343,7 +343,7 @@ export const AdminUsersScreen: React.FC = () => {
       const token = localStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/admin/creator-applications/${id}/${action}`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
@@ -443,7 +443,7 @@ export const AdminUsersScreen: React.FC = () => {
 
       {/* Main Content */}
       <div style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
-        
+
         {activeTab === 'USERS' && (
           <div style={fadeInStyle}>
             <h1 style={headerStyle}>Người dùng hệ thống</h1>
@@ -479,7 +479,7 @@ export const AdminUsersScreen: React.FC = () => {
           <div style={fadeInStyle}>
             <h1 style={headerStyle}>Đơn đăng ký Mentor</h1>
             <p style={subHeaderStyle}>Xét duyệt các đơn xin trở thành Mentor (Dữ liệu thật từ DB)</p>
-            
+
             <div style={{ display: 'flex', gap: '8px', marginBottom: '24px' }}>
               <button onClick={() => setFilterStatus('PENDING')} style={{ padding: '8px 16px', background: filterStatus === 'PENDING' ? 'var(--primary)' : 'transparent', color: filterStatus === 'PENDING' ? '#fff' : 'var(--text-secondary)', border: `1px solid ${filterStatus === 'PENDING' ? 'var(--primary)' : 'var(--input-border)'}`, borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Đơn chờ xác nhận</button>
               <button onClick={() => setFilterStatus('PROCESSED')} style={{ padding: '8px 16px', background: filterStatus === 'PROCESSED' ? '#10b981' : 'transparent', color: filterStatus === 'PROCESSED' ? '#fff' : 'var(--text-secondary)', border: `1px solid ${filterStatus === 'PROCESSED' ? '#10b981' : 'var(--input-border)'}`, borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Đơn đã duyệt</button>
@@ -497,7 +497,7 @@ export const AdminUsersScreen: React.FC = () => {
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Mã đơn: {app.applicationId}</p>
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Ngôn ngữ: {app.languageId || 'N/A'}</p>
                       {app.certificateUrl && (
-                        <p style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '14px' }}><a href={app.certificateUrl} target="_blank" rel="noreferrer" style={{color: 'var(--primary)'}}>Xem chứng chỉ</a></p>
+                        <p style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '14px' }}><a href={app.certificateUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Xem chứng chỉ</a></p>
                       )}
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Ngày gửi: {app.submittedAt ? new Date(app.submittedAt).toLocaleString() : 'N/A'}</p>
                       <p style={{ margin: 0, fontSize: '14px' }}>Trạng thái: <span style={{ color: app.status === 'PENDING' ? '#fbbf24' : (app.status === 'APPROVED' ? '#10b981' : '#f43f5e'), fontWeight: 'bold' }}>{app.status}</span></p>
@@ -540,7 +540,7 @@ export const AdminUsersScreen: React.FC = () => {
                       <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>{app.fullName || app.userId}</h3>
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Mã đơn: {app.applicationId}</p>
                       {app.certificateUrl && (
-                        <p style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '14px' }}><a href={app.certificateUrl} target="_blank" rel="noreferrer" style={{color: 'var(--primary)'}}>Xem chứng chỉ / Kênh Youtube</a></p>
+                        <p style={{ margin: '0 0 4px 0', color: 'var(--primary)', fontSize: '14px' }}><a href={app.certificateUrl} target="_blank" rel="noreferrer" style={{ color: 'var(--primary)' }}>Xem chứng chỉ / Kênh Youtube</a></p>
                       )}
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Ngày gửi: {app.submittedAt ? new Date(app.submittedAt).toLocaleString() : 'N/A'}</p>
                       <p style={{ margin: 0, fontSize: '14px' }}>Trạng thái: <span style={{ color: app.status === 'PENDING' ? '#fbbf24' : (app.status === 'APPROVED' ? '#10b981' : '#f43f5e'), fontWeight: 'bold' }}>{app.status}</span></p>
@@ -638,6 +638,12 @@ export const AdminUsersScreen: React.FC = () => {
                   <div key={idx} style={{ ...cardStyle, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)' }}>Mã nạp: {order.topUpOrderId}</h3>
+
+                      {/* 🌟 ĐÃ THÊM: Dòng hiển thị Mã người dùng (User ID) */}
+                      <p style={{ margin: '0 0 6px 0', color: 'var(--primary)', fontSize: '14px', fontWeight: 'bold' }}>
+                        👤 User ID: {order.userId || order.userIdToUse || 'N/A'}
+                      </p>
+
                       <p style={{ margin: '0 0 4px 0', color: '#10b981', fontSize: '18px', fontWeight: 'bold' }}>+{Number(order.amount).toLocaleString()} Xu</p>
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Phương thức: {order.paymentProvider || 'Chuyển khoản'}</p>
                       <p style={{ margin: '0 0 4px 0', color: 'var(--text-secondary)', fontSize: '14px' }}>Mã GD ngoài: {order.externalTransactionCode || 'N/A'}</p>
@@ -660,25 +666,25 @@ export const AdminUsersScreen: React.FC = () => {
           <div style={fadeInStyle}>
             <h1 style={headerStyle}>Cấu hình thanh toán</h1>
             <p style={subHeaderStyle}>Thiết lập tài khoản ngân hàng / ví điện tử nhận tiền nạp từ học viên</p>
-            
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '32px' }}>
               <div style={cardStyle}>
                 <h3 style={{ color: 'var(--text-primary)', marginTop: 0, marginBottom: '24px' }}>Thông tin tài khoản (MoMo/Bank)</h3>
-                
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
                     <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Số điện thoại / STK</label>
-                    <input type="text" placeholder="Ví dụ: 0912345678" style={inputStyle} value={momoConfig.receiverPhone || ''} onChange={(e) => setMomoConfig({...momoConfig, receiverPhone: e.target.value})} />
+                    <input type="text" placeholder="Ví dụ: 0912345678" style={inputStyle} value={momoConfig.receiverPhone || ''} onChange={(e) => setMomoConfig({ ...momoConfig, receiverPhone: e.target.value })} />
                   </div>
                   <div>
                     <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Tên chủ tài khoản</label>
-                    <input type="text" placeholder="Ví dụ: NGUYEN VAN A" style={inputStyle} value={momoConfig.receiverName || ''} onChange={(e) => setMomoConfig({...momoConfig, receiverName: e.target.value})} />
+                    <input type="text" placeholder="Ví dụ: NGUYEN VAN A" style={inputStyle} value={momoConfig.receiverName || ''} onChange={(e) => setMomoConfig({ ...momoConfig, receiverName: e.target.value })} />
                   </div>
                   <div>
                     <label style={{ display: 'block', color: 'var(--text-secondary)', fontSize: '14px', marginBottom: '8px' }}>Cú pháp nạp (Ví dụ: NAPXU {`{USER_ID}`})</label>
-                    <input type="text" placeholder="Ví dụ: NAPXU {USER_ID}" style={inputStyle} value={momoConfig.transferContentTemplate || ''} onChange={(e) => setMomoConfig({...momoConfig, transferContentTemplate: e.target.value})} />
+                    <input type="text" placeholder="Ví dụ: NAPXU {USER_ID}" style={inputStyle} value={momoConfig.transferContentTemplate || ''} onChange={(e) => setMomoConfig({ ...momoConfig, transferContentTemplate: e.target.value })} />
                   </div>
-                  
+
                   <button onClick={saveMomoConfig} style={{ ...approveBtnStyle, alignSelf: 'flex-start', marginTop: '16px' }}>Lưu cấu hình</button>
                 </div>
               </div>

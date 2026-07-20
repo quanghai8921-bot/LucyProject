@@ -201,27 +201,66 @@ export const LearnerHome: React.FC = () => {
   const handleJoinRoom = async (room: any) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`http://localhost:8081/api/learner/rooms/${room.roomId}/join`, {
+      const currentUserId = profile?.userId || profile?.id || currentUser?.id;
+
+      // 1. Kiểm tra xem phòng có thu phí hay không
+      const isFree = !room.priceAmount || room.priceAmount === 0;
+
+      if (!isFree) {
+        const confirmPurchase = window.confirm(
+          `Phòng "${room.roomTitle || room.roomId}" yêu cầu vé vào cửa với giá ${room.priceAmount} Xu. Bạn có muốn thanh toán để mua vé tham gia không?`
+        );
+        if (!confirmPurchase) return;
+
+        // 2. Gọi API mua trực tiếp vé phòng Live: POST /api/payment/purchase/live
+        const payRes = await fetch('http://localhost:8081/api/payment/purchase/live', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ roomId: room.roomId })
+        });
+
+        const payData = await payRes.json();
+
+        // Xử lý trường hợp thanh toán thất bại (Ví dụ: Không đủ tiền trong ví)
+        if (!payRes.ok || payData.isSuccess === false) {
+          alert(payData.message || "Thanh toán mua vé thất bại. Vui lòng nạp thêm Xu vào tài khoản!");
+          return;
+        }
+
+        alert("Thanh toán mua vé thành công!");
+        // Cập nhật lại số dư ví hiển thị trên giao diện
+        fetchProfile();
+      }
+
+      // 3. Tiến hành tham gia phòng sau khi đã có vé (hoặc phòng miễn phí)
+      const joinRes = await fetch(`http://localhost:8081/api/learner/rooms/${room.roomId}/join`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ userId: currentUser?.id || profile?.userId || '' })
+        body: JSON.stringify({ userId: currentUserId })
       });
-      if (res.ok) {
+
+      if (joinRes.ok) {
         navigate(`/live-room/${room.roomId}`, {
           state: {
             roomTitle: room.roomTitle || `Phòng học ${room.roomId}`,
-            languageId: room.languageId,
-            levelNumber: room.levelNumber
+            languageId: room.languageName || room.languageId,
+            levelNumber: room.levelNumber,
+            roomType: room.roomType
           }
         });
       } else {
-        alert("Không thể tham gia phòng");
+        const joinData = await joinRes.json();
+        alert(joinData.message || "Không thể tham gia phòng");
       }
     } catch (err) {
-      alert("Lỗi kết nối");
+      console.error("Lỗi tham gia phòng:", err);
+      alert("Lỗi kết nối hệ thống.");
     }
   };
 
@@ -410,55 +449,78 @@ export const LearnerHome: React.FC = () => {
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-                {filteredRooms.map((room, idx) => (
-                  <div key={idx} style={{
-                    padding: '24px',
-                    borderRadius: '16px',
-                    background: 'var(--card-color)',
-                    boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    cursor: 'pointer'
-                  }}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                      {/* Với tự do không hiện level number và title */}
-                      {langTab === 'Free' || !room.languageId ? (
-                        <span style={{ padding: '4px 10px', background: '#F1F5F9', color: '#475569', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
-                          ✨ Phòng Tự do
+                {filteredRooms.map((room, idx) => {
+                  // 🌟 Kiểm tra phòng có thu phí Xu hay không
+                  const isPaidRoom = room.priceAmount && room.priceAmount > 0;
+
+                  return (
+                    <div key={idx} style={{
+                      padding: '24px',
+                      borderRadius: '16px',
+                      background: 'var(--card-color)',
+                      boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03)',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      cursor: 'pointer'
+                    }}
+                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
+                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                        {/* Tag Ngôn ngữ / Tự do */}
+                        {langTab === 'Free' || !room.languageId ? (
+                          <span style={{ padding: '4px 10px', background: '#F1F5F9', color: '#475569', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
+                            ✨ Phòng Tự do
+                          </span>
+                        ) : (
+                          <span style={{ padding: '4px 10px', background: 'rgba(100, 195, 165, 0.15)', color: 'var(--primary-dark)', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
+                            {room.languageName || 'Ngoại ngữ'} • Level {room.levelNumber || 1}
+                          </span>
+                        )}
+
+                        {/* 🌟 1. ĐÃ THÊM: Tag Giá Xu / Miễn phí ở góc trên phải */}
+                        <span style={{
+                          padding: '4px 10px',
+                          background: isPaidRoom ? '#FEF3C7' : '#D1FAE5',
+                          color: isPaidRoom ? '#D97706' : '#065F46',
+                          borderRadius: '12px',
+                          fontSize: '0.75rem',
+                          fontWeight: 700
+                        }}>
+                          {isPaidRoom ? `${room.priceAmount} Xu` : 'Miễn phí'}
                         </span>
-                      ) : (
-                        <span style={{ padding: '4px 10px', background: 'rgba(100, 195, 165, 0.15)', color: 'var(--primary-dark)', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
-                          {room.languageName || 'Ngoại ngữ'} • Level {room.levelNumber || 1}
-                        </span>
-                      )}
+                      </div>
+
+                      <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '1.25rem', lineHeight: '1.4' }}>
+                        {room.roomTitle || 'Phòng học ' + room.roomId}
+                      </h3>
+                      <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ padding: '4px', background: 'var(--bg-gradient-mid)', borderRadius: '50%', display: 'inline-block' }}>👨‍🏫</span>
+                        Giảng viên: <strong style={{ color: 'var(--text-primary)' }}>{room.hostUserName || 'Đang cập nhật'}</strong>
+                      </p>
+
+                      {/* 🌟 2. ĐÃ SỬA: Nút bấm tự động đổi màu và chữ nếu phòng có tính phí */}
+                      <button onClick={() => handleJoinRoom(room)} style={{
+                        padding: '12px 20px',
+                        background: isPaidRoom
+                          ? 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)'
+                          : 'var(--primary)',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '10px',
+                        cursor: 'pointer',
+                        width: '100%',
+                        fontWeight: 'bold',
+                        fontSize: '1rem',
+                        boxShadow: isPaidRoom
+                          ? '0 4px 6px -1px rgba(217, 119, 6, 0.3)'
+                          : '0 4px 6px -1px rgba(100, 195, 165, 0.4)',
+                        transition: 'all 0.2s'
+                      }}>
+                        {isPaidRoom ? `Mua vé vào phòng (${room.priceAmount} Xu)` : 'Tham gia ngay'}
+                      </button>
                     </div>
-
-                    <h3 style={{ margin: '0 0 8px 0', color: 'var(--text-primary)', fontSize: '1.25rem', lineHeight: '1.4' }}>
-                      {room.roomTitle || 'Phòng học ' + room.roomId}
-                    </h3>
-                    <p style={{ margin: '0 0 24px 0', color: 'var(--text-secondary)', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ padding: '4px', background: 'var(--bg-gradient-mid)', borderRadius: '50%', display: 'inline-block' }}>👨‍🏫</span>
-                      Giảng viên: <strong style={{ color: 'var(--text-primary)' }}>{room.hostUserName || 'Đang cập nhật'}</strong>
-                    </p>
-
-                    <button onClick={() => handleJoinRoom(room)} style={{
-                      padding: '12px 20px',
-                      background: 'var(--primary)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      width: '100%',
-                      fontWeight: 'bold',
-                      fontSize: '1rem',
-                      boxShadow: '0 4px 6px -1px rgba(100, 195, 165, 0.4)'
-                    }}>
-                      Tham gia ngay
-                    </button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
 

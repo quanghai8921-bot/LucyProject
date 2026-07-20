@@ -235,16 +235,27 @@ export const LiveRoomScreen: React.FC = () => {
         // Fetch Level Content if languageId and levelNumber exist
         if (languageId && levelNumber) {
           try {
-            const contentRes = await fetch(`http://localhost:8081/api/v1/content/level-details?languageName=${languageId}&levelNumber=${levelNumber}`, {
+            // Đảm bảo truyền đúng tên ngôn ngữ (ví dụ: Japanese)
+            const langParam = encodeURIComponent(languageId);
+            const contentRes = await fetch(`http://localhost:8081/api/v1/content/level-details?languageName=${langParam}&levelNumber=${levelNumber}`, {
               headers: { 'Authorization': `Bearer ${token}` }
             });
+
             if (contentRes.ok) {
               const contentData = await contentRes.json();
-              setLevelContent(contentData);
+              // 🌟 GIẢI BỌC DỮ LIỆU: Kiểm tra nếu có contentData.data thì lấy contentData.data
+              const actualData = contentData.data || contentData;
+
+              console.log("Dữ liệu Level chi tiết nhận được:", actualData);
+              setLevelContent(actualData);
+            } else {
+              console.warn("Không tìm thấy dữ liệu bài học cho level này");
             }
           } catch (e) {
             console.error("Failed to fetch level details", e);
           }
+        } else {
+          console.warn("Thiếu thông tin languageId hoặc levelNumber từ location.state:", { languageId, levelNumber });
         }
 
         // Ensure user is joined in DB (especially for StrictMode double-mounts)
@@ -644,9 +655,22 @@ export const LiveRoomScreen: React.FC = () => {
         }));
       }
 
-      navigate('/mentor');
+      // Điều hướng chính xác theo vai trò
+      navigate(getBackRoute());
     } catch (err) {
       console.error("End room error", err);
+    }
+  };
+
+  const getBackRoute = () => {
+    const isCreator = dbRole.includes('creator') || localRole.toLowerCase().includes('creator') || (location.state as any)?.roomType === 'CREATOR_CLASS';
+
+    if (isCreator) {
+      return '/creator'; // Nếu là Creator thì quay về trang Content Creator
+    } else if (isMentor) {
+      return '/mentor';  // Nếu là Mentor thì quay về trang Mentor
+    } else {
+      return '/learner'; // Học viên quay về trang Learner
     }
   };
 
@@ -660,11 +684,9 @@ export const LiveRoomScreen: React.FC = () => {
       await rtcClientRef.current.leave();
     }
     await handleLeaveRoom();
-    if (isMentor) {
-      navigate('/mentor');
-    } else {
-      navigate(-1);
-    }
+
+    // Điều hướng chính xác theo vai trò thay vì hardcode /mentor
+    navigate(getBackRoute());
   };
 
   const sendMessage = (e: React.FormEvent) => {
@@ -729,14 +751,27 @@ export const LiveRoomScreen: React.FC = () => {
           {/* Level Content Section */}
           {levelContent && (
             <div style={{ background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)' }}>
-              <h3 style={{ margin: '0 0 16px 0', color: 'var(--primary, #10B981)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              {/* Dòng Tiêu đề Level: Cả Mentor lẫn Learner đều thấy */}
+              <h3 style={{
+                margin: isMentor ? '0 0 16px 0' : '0', // Nếu là Learner thì không tạo margin-bottom dư thừa
+                color: 'var(--primary, #10B981)',
+                fontSize: '1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+              }}>
                 <span>Level {levelContent.levelNumber}: {levelContent.levelTitle}</span>
-                <span style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: 'normal' }}>
-                  Bài {currentSubLevelIndex + 1} / {levelContent.subLevels?.length || 0}
-                </span>
+
+                {/* Chỉ Mentor mới thấy số bài học X/Y */}
+                {isMentor && (
+                  <span style={{ fontSize: '0.9rem', color: '#64748B', fontWeight: 'normal' }}>
+                    Bài {currentSubLevelIndex + 1} / {levelContent.subLevels?.length || 0}
+                  </span>
+                )}
               </h3>
 
-              {levelContent.subLevels && levelContent.subLevels[currentSubLevelIndex] && (
+              {/* 🌟 CHỈ HIỂN THỊ CHI TIẾT BÀI HỌC VÀ NÚT CHUYỂN BÀI CHO GIẢNG VIÊN (MENTOR) */}
+              {isMentor && levelContent.subLevels && levelContent.subLevels[currentSubLevelIndex] && (
                 <div style={{ background: '#F8FAFC', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
                   <h4 style={{ margin: '0 0 8px 0', color: '#334155', fontSize: '1.1rem' }}>
                     {levelContent.subLevels[currentSubLevelIndex].subLevelTitle}

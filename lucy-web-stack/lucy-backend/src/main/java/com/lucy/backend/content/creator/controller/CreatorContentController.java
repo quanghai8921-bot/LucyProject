@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/creator/contents")
-@CrossOrigin(origins = "*") // Đảm bảo React gọi API không bị chặn CORS
 public class CreatorContentController {
 
     private final CreatorContentService creatorContentService;

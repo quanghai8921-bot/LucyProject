@@ -25,9 +25,6 @@ public class TopUpOrder {
     @Column(name = "PaymentProvider", length = 50)
     private String paymentProvider;
 
-    @Column(name = "ExternalTransactionCode", length = 100)
-    private String externalTransactionCode;
-
     @Column(name = "OrderStatus", length = 30, nullable = false)
     private String orderStatus = "PENDING";
 

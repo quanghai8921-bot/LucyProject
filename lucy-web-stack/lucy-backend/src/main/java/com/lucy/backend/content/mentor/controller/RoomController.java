@@ -1,13 +1,9 @@
 package com.lucy.backend.content.mentor.controller;
 
 import com.lucy.backend.content.mentor.dto.CreateMentorRoomRequest;
-import com.lucy.backend.content.mentor.dto.RoomStudyPlanDto;
 import com.lucy.backend.content.mentor.entity.Room;
 import com.lucy.backend.content.mentor.entity.RoomSubLevel;
-import com.lucy.backend.content.mentor.entity.LiveRecording;
 import com.lucy.backend.content.mentor.service.RoomService;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,13 +54,4 @@ public class RoomController {
         return roomService.completeSubLevel(roomId, subLevelId);
     }
 
-    @PostMapping("/{roomId}/record/start")
-    public LiveRecording startRecord(@PathVariable String roomId) {
-        return roomService.startRecording(roomId);
-    }
-
-    @PostMapping("/{roomId}/record/stop")
-    public ResponseEntity<Resource> stopRecord(@PathVariable String roomId) {
-        return roomService.stopRecording(roomId);
-    }
 }

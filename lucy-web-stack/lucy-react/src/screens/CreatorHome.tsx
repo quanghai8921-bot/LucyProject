@@ -107,7 +107,7 @@ export const CreatorHome: React.FC = () => {
 
   const fetchPaidContents = async (userId: string, token: string) => {
     try {
-      const response = await fetch('http://localhost:8081/api/creator/contents?creatorUserId=${userId}', {
+      const response = await fetch(`http://localhost:8081/api/creator/contents?creatorUserId=${userId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (response.ok) {
@@ -314,7 +314,7 @@ export const CreatorHome: React.FC = () => {
                 transition: 'background 0.2s'
               }}
             >
-              Nội dung trả phí (Paid Contents)
+              Nội dung sáng tạo (Contents)
             </button>
           </nav>
         </div>
@@ -605,7 +605,7 @@ export const CreatorHome: React.FC = () => {
           <section style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
             <div>
               <h2 style={{ marginTop: 0, alignItems: 'center', gap: '8px', color: 'var(--text-primary)', borderBottom: '2px solid var(--primary)', paddingBottom: '12px', display: 'inline-flex' }}>
-                <Layers size={24} color="var(--primary)" /> Danh sách nội dung trả phí
+                <Layers size={24} color="var(--primary)" /> Danh sách nội dung sáng tạo
               </h2>
 
               {paidContents.length === 0 ? (

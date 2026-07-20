@@ -39,7 +39,6 @@ import java.time.LocalDateTime;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 @Service
 public class PaymentServiceImpl implements IPaymentService {
@@ -59,19 +58,19 @@ public class PaymentServiceImpl implements IPaymentService {
     private final ContentPurchaseRepository contentPurchaseRepository;
     private final Path uploadRoot = Path.of("uploads");
 
-    public PaymentServiceImpl(WalletRepository walletRepository, 
-                              TopUpOrderRepository topUpOrderRepository,
-                              WithdrawalRequestRepository withdrawalRequestRepository,
-                              PaymentSettingRepository paymentSettingRepository,
-                              GiftRepository giftRepository,
-                              RoomRepository roomRepository,
-                              AvatarPersonaRepository avatarPersonaRepository,
-                              UserRoleRepository userRoleRepository,
-                              DonationRepository donationRepository,
-                              WalletTransactionRepository walletTransactionRepository,
-                              LiveAccessTicketRepository liveAccessTicketRepository,
-                              PaidContentRepository paidContentRepository,
-                              ContentPurchaseRepository contentPurchaseRepository) {
+    public PaymentServiceImpl(WalletRepository walletRepository,
+            TopUpOrderRepository topUpOrderRepository,
+            WithdrawalRequestRepository withdrawalRequestRepository,
+            PaymentSettingRepository paymentSettingRepository,
+            GiftRepository giftRepository,
+            RoomRepository roomRepository,
+            AvatarPersonaRepository avatarPersonaRepository,
+            UserRoleRepository userRoleRepository,
+            DonationRepository donationRepository,
+            WalletTransactionRepository walletTransactionRepository,
+            LiveAccessTicketRepository liveAccessTicketRepository,
+            PaidContentRepository paidContentRepository,
+            ContentPurchaseRepository contentPurchaseRepository) {
         this.walletRepository = walletRepository;
         this.topUpOrderRepository = topUpOrderRepository;
         this.withdrawalRequestRepository = withdrawalRequestRepository;
@@ -149,7 +148,7 @@ public class PaymentServiceImpl implements IPaymentService {
         }
         setting.setUpdatedAt(LocalDateTime.now());
         paymentSettingRepository.save(setting);
-        
+
         Map<String, Object> res = new HashMap<>();
         res.put("isSuccess", true);
         res.put("data", setting);
@@ -159,13 +158,15 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     public Object uploadMomoQrAsync(MultipartFile file) {
         try {
-            if (file == null || file.isEmpty()) throw new RuntimeException("File is empty");
+            if (file == null || file.isEmpty())
+                throw new RuntimeException("File is empty");
             Files.createDirectories(uploadRoot);
-            String originalName = file.getOriginalFilename() == null ? "qr.png" : Path.of(file.getOriginalFilename()).getFileName().toString();
+            String originalName = file.getOriginalFilename() == null ? "qr.png"
+                    : Path.of(file.getOriginalFilename()).getFileName().toString();
             String storedName = UUID.randomUUID() + "_" + originalName.replaceAll("[^a-zA-Z0-9._-]", "_");
             Path target = uploadRoot.resolve(storedName).normalize();
             file.transferTo(target);
-            
+
             // Generate a simple url, assumes static serving of /uploads folder in Spring
             String url = "/uploads/" + storedName;
             Map<String, Object> res = new HashMap<>();
@@ -195,17 +196,17 @@ public class PaymentServiceImpl implements IPaymentService {
             err.put("message", "Order not found or not pending");
             return err;
         }
-        
+
         order.setOrderStatus("PAID");
         order.setPaidAt(LocalDateTime.now());
         topUpOrderRepository.save(order);
-        
+
         Wallet wallet = walletRepository.findById(order.getWalletId()).orElse(null);
         if (wallet != null) {
             wallet.setBalance(wallet.getBalance().add(order.getAmount()));
             walletRepository.save(wallet);
         }
-        
+
         Map<String, Object> res = new HashMap<>();
         res.put("isSuccess", true);
         return res;
@@ -242,7 +243,8 @@ public class PaymentServiceImpl implements IPaymentService {
         }
 
         // Check if already purchased
-        List<ContentPurchase> existingPurchases = contentPurchaseRepository.findByBuyerUserIdOrderByPurchasedAtDesc(buyerUserId);
+        List<ContentPurchase> existingPurchases = contentPurchaseRepository
+                .findByBuyerUserIdOrderByPurchasedAtDesc(buyerUserId);
         boolean alreadyPurchased = existingPurchases.stream().anyMatch(p -> p.getContentId().equals(contentId));
         if (alreadyPurchased) {
             Map<String, Object> res = new HashMap<>();
@@ -311,13 +313,12 @@ public class PaymentServiceImpl implements IPaymentService {
 
         // Save ContentPurchase
         ContentPurchase purchase = new ContentPurchase(
-            UUID.randomUUID().toString(),
-            contentId,
-            buyerUserId,
-            content.getCreatorUserId(),
-            amount,
-            LocalDateTime.now()
-        );
+                UUID.randomUUID().toString(),
+                contentId,
+                buyerUserId,
+                content.getCreatorUserId(),
+                amount,
+                LocalDateTime.now());
         contentPurchaseRepository.save(purchase);
 
         Map<String, Object> res = new HashMap<>();
@@ -332,11 +333,13 @@ public class PaymentServiceImpl implements IPaymentService {
 
     @Override
     public Object donateAsync(String fromUserId, DonateRequest request) {
-        System.out.println("DEBUG: donateAsync - fromUserId: " + fromUserId + ", request amount: " + request.getAmount());
+        System.out
+                .println("DEBUG: donateAsync - fromUserId: " + fromUserId + ", request amount: " + request.getAmount());
         Wallet fromWallet = (Wallet) getOrCreateWalletAsync(fromUserId);
         System.out.println("DEBUG: fromWallet balance: " + fromWallet.getBalance());
         if (fromWallet.getBalance().compareTo(request.getAmount()) < 0) {
-            System.out.println("DEBUG: Insufficient balance! wallet balance " + fromWallet.getBalance() + " is less than request amount " + request.getAmount());
+            System.out.println("DEBUG: Insufficient balance! wallet balance " + fromWallet.getBalance()
+                    + " is less than request amount " + request.getAmount());
             Map<String, Object> err = new HashMap<>();
             err.put("isSuccess", false);
             err.put("message", "Số dư không đủ");
@@ -408,7 +411,7 @@ public class PaymentServiceImpl implements IPaymentService {
         // Log Donation to donations table
         BigDecimal giftPrice = totalAmount;
         int qty = request.getQuantity() != null ? request.getQuantity() : 1;
-        
+
         Gift giftObj = giftRepository.findById(request.getGiftId()).orElse(null);
         if (giftObj != null) {
             giftPrice = giftObj.getPriceAmount();
@@ -499,17 +502,16 @@ public class PaymentServiceImpl implements IPaymentService {
             err.put("message", "Request not found or not pending");
             return err;
         }
-        
+
         req.setRequestStatus("APPROVED");
-        req.setReviewedAt(LocalDateTime.now());
         withdrawalRequestRepository.save(req);
-        
+
         Wallet wallet = walletRepository.findById(req.getWalletId()).orElse(null);
         if (wallet != null) {
             wallet.setBalance(wallet.getBalance().subtract(req.getAmount()));
             walletRepository.save(wallet);
         }
-        
+
         Map<String, Object> res = new HashMap<>();
         res.put("isSuccess", true);
         return res;
@@ -521,7 +523,6 @@ public class PaymentServiceImpl implements IPaymentService {
         if (req != null && "PENDING".equals(req.getRequestStatus())) {
             req.setRequestStatus("REJECTED");
             req.setRejectReason(rejectReason);
-            req.setReviewedAt(LocalDateTime.now());
             withdrawalRequestRepository.save(req);
         }
         Map<String, Object> res = new HashMap<>();

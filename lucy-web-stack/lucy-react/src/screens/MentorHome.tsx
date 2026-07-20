@@ -270,7 +270,7 @@ export const MentorHome: React.FC = () => {
                         <button onClick={() => navigate(`/live-room/${room.roomId}`, {
                           state: {
                             roomTitle: room.roomTitle,
-                            languageId: room.languageId,
+                            languageId: room.languageName || room.languageId,
                             levelNumber: room.levelNumber,
                             isMentor: true
                           }
