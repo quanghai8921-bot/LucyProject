@@ -84,6 +84,7 @@ public class RoomService {
                 request.getScheduledStartAt(),
                 request.getRoomStatus() != null ? request.getRoomStatus() : "SCHEDULED");
 
+        enrichRoom(room);
         Room saved = roomRepository.save(room);
 
         // 🌟 Chỉ tạo lộ trình chương trình học phụ nếu phòng này có cấp độ (Dạy ngoại
@@ -156,7 +157,13 @@ public class RoomService {
 
     public List<Room> getAllRooms() {
         List<Room> rooms = roomRepository.findAll();
-        rooms.forEach(this::enrichRoom);
+        rooms.forEach(room -> {
+            enrichRoom(room);
+            // 🌟 Nếu trong DB chưa có levelNumber thì tự động update lưu lại vào DB
+            if (room.getLevelNumber() != null) {
+                roomRepository.save(room);
+            }
+        });
         return rooms;
     }
 

@@ -2,10 +2,13 @@ package com.lucy.backend.content.learner.service;
 
 import com.lucy.backend.content.learner.dto.LearnerRoomDto;
 import com.lucy.backend.content.learner.dto.RoomParticipantDto;
+import com.lucy.backend.content.learner.entity.LearningSession;
 import com.lucy.backend.content.learner.entity.RoomParticipant;
+import com.lucy.backend.content.learner.repository.LearningSessionRepository;
 import com.lucy.backend.content.learner.repository.RoomParticipantRepository;
 import com.lucy.backend.auth.repository.AvatarPersonaRepository;
 import com.lucy.backend.content.content.repository.LanguageRepository;
+import com.lucy.backend.content.content.repository.LearningLevelRepository;
 import com.lucy.backend.content.mentor.entity.Room;
 import com.lucy.backend.content.mentor.repository.RoomRepository;
 import org.springframework.stereotype.Service;
@@ -30,16 +33,21 @@ public class LearnerRoomService {
     private final RoomParticipantRepository participantRepository;
     private final AvatarPersonaRepository avatarPersonaRepository;
     private final LanguageRepository languageRepository;
+    private final LearningSessionRepository learningSessionRepository;
+    private final LearningLevelRepository learningLevelRepository;
 
     public LearnerRoomService(
             RoomRepository roomRepository,
             RoomParticipantRepository participantRepository,
             AvatarPersonaRepository avatarPersonaRepository,
-            LanguageRepository languageRepository) {
+            LanguageRepository languageRepository, LearningSessionRepository learningSessionRepository,
+            LearningLevelRepository learningLevelRepository) {
         this.roomRepository = roomRepository;
         this.participantRepository = participantRepository;
         this.avatarPersonaRepository = avatarPersonaRepository;
         this.languageRepository = languageRepository;
+        this.learningSessionRepository = learningSessionRepository;
+        this.learningLevelRepository = learningLevelRepository;
     }
 
     public List<LearnerRoomDto> getAvailableRooms() {
@@ -69,6 +77,32 @@ public class LearnerRoomService {
         Room room = getRoom(roomId);
         if (!canLearnerJoin(room)) {
             throw new ResponseStatusException(BAD_REQUEST, "Room is not open for learners.");
+        }
+
+        // 🌟 3. BỔ SUNG: Kiểm tra Level của Học viên so với Level của Phòng
+        LearningSession session = learningSessionRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST,
+                        "Không tìm thấy thông tin Trình độ/Level của học viên."));
+
+        // Lấy level phòng (nếu null thì mặc định 1)
+        int roomLevel = 1;
+        if (room.getLevelId() != null) {
+            roomLevel = learningLevelRepository.findById(room.getLevelId())
+                    .map(lvl -> lvl.getLevelNumber() != null ? lvl.getLevelNumber() : 1)
+                    .orElse(1);
+        }
+        int userLevel;
+
+        try {
+            userLevel = Integer.parseInt(session.getLevelNumber());
+        } catch (NumberFormatException e) {
+            userLevel = 1; // Mặc định nếu lưu dạng chuỗi không hợp lệ
+        }
+
+        if (userLevel != roomLevel) {
+            throw new ResponseStatusException(BAD_REQUEST,
+                    String.format("Bạn chỉ có thể tham gia phòng thuộc Level %d (Level hiện tại của bạn: %d).",
+                            roomLevel, userLevel));
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -133,11 +167,14 @@ public class LearnerRoomService {
                 participantRepository.countByRoomIdAndParticipantStatus(room.getRoomId(), JOINED));
         String languageName = languageRepository.findLanguageNameByLanguageId(room.getLanguageId());
         dto.setLanguageName(languageName);
-        if (room.getLevelNumber() != null) {
-            dto.setLevelNumber(room.getLevelNumber());
+        // 🌟 Đảm bảo giữ nguyên LevelNumber từ đối tượng Room nếu có
+        if (room.getLevelId() != null) {
+            learningLevelRepository.findById(room.getLevelId())
+                    .ifPresent(lvl -> dto.setLevelNumber(lvl.getLevelNumber()));
         } else {
             dto.setLevelNumber(1);
         }
+
         return dto;
     }
 

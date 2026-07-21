@@ -32,7 +32,7 @@ public class LearnerRoomDto {
         this.levelId = room.getLevelId();
         this.languageId = room.getLanguageId();
         this.levelNumber = room.getLevelNumber();
-        // this.languageName = room.getLanguageName();
+        this.languageName = room.getLanguageName();
         this.roomTitle = room.getRoomTitle();
         this.roomType = room.getRoomType();
         this.accessType = room.getAccessType();

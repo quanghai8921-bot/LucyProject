@@ -19,6 +19,9 @@ export const LearnerHome: React.FC = () => {
   const [mainTab, setMainTab] = useState<'mentor' | 'creator'>('mentor');
   const [langTab, setLangTab] = useState<'English' | 'Japanese' | 'Chinese' | 'Free'>('English');
   const [mediaTab, setMediaTab] = useState<'video' | 'audio'>('video');
+  const [levelSort, setLevelSort] = useState<'none' | 'asc' | 'desc'>('none');
+  const [podcastFilter, setPodcastFilter] = useState<'all' | 'free' | 'paid'>('all');
+  const [videoFilter, setVideoFilter] = useState<'all' | 'free' | 'paid'>('all');
 
   const fetchProfile = async () => {
     try {
@@ -118,20 +121,6 @@ export const LearnerHome: React.FC = () => {
   };
 
   useEffect(() => {
-    const initData = async () => {
-      const pData = await fetchProfile();
-      fetchAvatar();
-      fetchCreatorContents();
-
-      const currentUserId = pData?.userId || pData?.id || currentUser?.id;
-      if (currentUserId) {
-        fetchRoomsData(currentUserId);
-        fetchPurchasedContents(currentUserId);
-      }
-    };
-
-    initData();
-  }, []); useEffect(() => {
     let intervalId: any;
 
     const initData = async () => {
@@ -212,7 +201,7 @@ export const LearnerHome: React.FC = () => {
         );
         if (!confirmPurchase) return;
 
-        // 2. Gọi API mua trực tiếp vé phòng Live: POST /api/payment/purchase/live
+        // 2. Gọi API mua trực tiếp vé phòng Live
         const payRes = await fetch('http://localhost:8081/api/payment/purchase/live', {
           method: 'POST',
           headers: {
@@ -224,18 +213,16 @@ export const LearnerHome: React.FC = () => {
 
         const payData = await payRes.json();
 
-        // Xử lý trường hợp thanh toán thất bại (Ví dụ: Không đủ tiền trong ví)
         if (!payRes.ok || payData.isSuccess === false) {
           alert(payData.message || "Thanh toán mua vé thất bại. Vui lòng nạp thêm Xu vào tài khoản!");
           return;
         }
 
         alert("Thanh toán mua vé thành công!");
-        // Cập nhật lại số dư ví hiển thị trên giao diện
         fetchProfile();
       }
 
-      // 3. Tiến hành tham gia phòng sau khi đã có vé (hoặc phòng miễn phí)
+      // 3. Tiến hành tham gia phòng
       const joinRes = await fetch(`http://localhost:8081/api/learner/rooms/${room.roomId}/join`, {
         method: 'POST',
         headers: {
@@ -244,6 +231,8 @@ export const LearnerHome: React.FC = () => {
         },
         body: JSON.stringify({ userId: currentUserId })
       });
+
+      const joinData = await joinRes.json(); // 🌟 LẤY DỮ LIỆU PHẢN HỒI
 
       if (joinRes.ok) {
         navigate(`/live-room/${room.roomId}`, {
@@ -255,8 +244,8 @@ export const LearnerHome: React.FC = () => {
           }
         });
       } else {
-        const joinData = await joinRes.json();
-        alert(joinData.message || "Không thể tham gia phòng");
+        // 🌟 HIỂN THỊ CHÍNH XÁC THÔNG BÁO LỖI LEVEL HOẶC PHÒNG ĐẦY TỪ BACKEND
+        alert(joinData.message || "Không thể tham gia phòng!");
       }
     } catch (err) {
       console.error("Lỗi tham gia phòng:", err);
@@ -279,13 +268,35 @@ export const LearnerHome: React.FC = () => {
     }
   });
 
+  // Sort rooms by level number
+  const sortedFilteredRooms = [...filteredRooms].sort((a: any, b: any) => {
+    if (levelSort === 'asc') {
+      return (a.levelNumber || 1) - (b.levelNumber || 1);
+    } else if (levelSort === 'desc') {
+      return (b.levelNumber || 1) - (a.levelNumber || 1);
+    }
+    return 0; // Default (keep original order from backend)
+  });
+
   // Filter creator contents by type
   const filteredContents = paidContents.filter((content: any) => {
     const type = content.contentType?.toUpperCase() || '';
     if (mediaTab === 'video') {
-      return type.includes('VIDEO');
+      if (!type.includes('VIDEO')) return false;
+      if (videoFilter === 'free') {
+        return type.includes('FREE');
+      } else if (videoFilter === 'paid') {
+        return type.includes('PAID');
+      }
+      return true;
     } else {
-      return type.includes('PODCAST');
+      if (!type.includes('PODCAST')) return false;
+      if (podcastFilter === 'free') {
+        return type.includes('FREE');
+      } else if (podcastFilter === 'paid') {
+        return type.includes('PAID');
+      }
+      return true;
     }
   });
 
@@ -341,6 +352,15 @@ export const LearnerHome: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div style={{
+            padding: '2px 8px',
+            background: 'rgba(255,255,255,0.2)',
+            borderRadius: '10px',
+            fontSize: '0.8rem',
+            fontWeight: 600
+          }}>
+            Level {profile?.levelNumber || "Không tìm thấy"}
+          </div>
           <div
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', transition: 'background 0.2s' }}
             onClick={() => navigate('/learner-profile')}
@@ -438,18 +458,70 @@ export const LearnerHome: React.FC = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
               <h2 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '1.5rem' }}>Phòng học đang mở</h2>
-              <span style={{ padding: '6px 12px', background: 'rgba(100, 195, 165, 0.2)', color: 'var(--primary-dark)', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600 }}>
-                {filteredRooms.length} phòng khả dụng
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', background: 'white', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '2px' }}>
+                  <button
+                    onClick={() => setLevelSort('none')}
+                    style={{
+                      padding: '6px 12px',
+                      background: levelSort === 'none' ? 'var(--primary)' : 'transparent',
+                      color: levelSort === 'none' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Mặc định
+                  </button>
+                  <button
+                    onClick={() => setLevelSort('asc')}
+                    style={{
+                      padding: '6px 12px',
+                      background: levelSort === 'asc' ? 'var(--primary)' : 'transparent',
+                      color: levelSort === 'asc' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Level: Thấp ➔ Cao
+                  </button>
+                  <button
+                    onClick={() => setLevelSort('desc')}
+                    style={{
+                      padding: '6px 12px',
+                      background: levelSort === 'desc' ? 'var(--primary)' : 'transparent',
+                      color: levelSort === 'desc' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Level: Cao ➔ Thấp
+                  </button>
+                </div>
+                <span style={{ padding: '6px 12px', background: 'rgba(100, 195, 165, 0.2)', color: 'var(--primary-dark)', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600 }}>
+                  {filteredRooms.length} phòng khả dụng
+                </span>
+              </div>
             </div>
 
-            {filteredRooms.length === 0 ? (
+            {sortedFilteredRooms.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '60px', background: 'var(--card-color)', borderRadius: '16px', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)' }}>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Hiện tại không có phòng học nào đang mở.</p>
               </div>
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
-                {filteredRooms.map((room, idx) => {
+                {sortedFilteredRooms.map((room, idx) => {
                   // 🌟 Kiểm tra phòng có thu phí Xu hay không
                   const isPaidRoom = room.priceAmount && room.priceAmount > 0;
 
@@ -672,6 +744,110 @@ export const LearnerHome: React.FC = () => {
               <h2 style={{ color: 'var(--text-primary)', margin: 0, fontSize: '1.5rem' }}>
                 Nội dung {mediaTab === 'video' ? 'Video' : 'Âm thanh'} đang có
               </h2>
+              {mediaTab === 'video' && (
+                <div style={{ display: 'flex', background: 'white', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '2px', marginRight: 'auto', marginLeft: '24px' }}>
+                  <button
+                    onClick={() => setVideoFilter('all')}
+                    style={{
+                      padding: '6px 12px',
+                      background: videoFilter === 'all' ? 'var(--primary)' : 'transparent',
+                      color: videoFilter === 'all' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Tất cả
+                  </button>
+                  <button
+                    onClick={() => setVideoFilter('free')}
+                    style={{
+                      padding: '6px 12px',
+                      background: videoFilter === 'free' ? 'var(--primary)' : 'transparent',
+                      color: videoFilter === 'free' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Miễn phí (VIDEO_FREE)
+                  </button>
+                  <button
+                    onClick={() => setVideoFilter('paid')}
+                    style={{
+                      padding: '6px 12px',
+                      background: videoFilter === 'paid' ? 'var(--primary)' : 'transparent',
+                      color: videoFilter === 'paid' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Trả phí (VIDEO_PAID)
+                  </button>
+                </div>
+              )}
+              {mediaTab === 'audio' && (
+                <div style={{ display: 'flex', background: 'white', border: '1px solid #E2E8F0', borderRadius: '10px', padding: '2px', marginRight: 'auto', marginLeft: '24px' }}>
+                  <button
+                    onClick={() => setPodcastFilter('all')}
+                    style={{
+                      padding: '6px 12px',
+                      background: podcastFilter === 'all' ? 'var(--primary)' : 'transparent',
+                      color: podcastFilter === 'all' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Tất cả
+                  </button>
+                  <button
+                    onClick={() => setPodcastFilter('free')}
+                    style={{
+                      padding: '6px 12px',
+                      background: podcastFilter === 'free' ? 'var(--primary)' : 'transparent',
+                      color: podcastFilter === 'free' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Miễn phí (PODCAST_FREE)
+                  </button>
+                  <button
+                    onClick={() => setPodcastFilter('paid')}
+                    style={{
+                      padding: '6px 12px',
+                      background: podcastFilter === 'paid' ? 'var(--primary)' : 'transparent',
+                      color: podcastFilter === 'paid' ? 'white' : 'var(--text-secondary)',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    Trả phí (PODCAST_PAID)
+                  </button>
+                </div>
+              )}
               <span style={{ padding: '6px 12px', background: 'rgba(100, 195, 165, 0.2)', color: 'var(--primary-dark)', borderRadius: '20px', fontSize: '0.875rem', fontWeight: 600 }}>
                 {filteredContents.length} tài nguyên khả dụng
               </span>

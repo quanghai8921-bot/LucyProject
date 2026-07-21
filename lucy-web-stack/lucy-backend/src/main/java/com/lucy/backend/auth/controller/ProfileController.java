@@ -6,6 +6,8 @@ import com.lucy.backend.auth.entity.AvatarPersona;
 import com.lucy.backend.auth.entity.User;
 import com.lucy.backend.auth.repository.AvatarPersonaRepository;
 import com.lucy.backend.auth.repository.UserRepository;
+import com.lucy.backend.content.learner.entity.LearningSession;
+import com.lucy.backend.content.learner.repository.LearningSessionRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +20,14 @@ public class ProfileController {
 
     private final UserRepository userRepository;
     private final AvatarPersonaRepository avatarPersonaRepository;
+    private final LearningSessionRepository learningSessionRepository; // 🌟 1. Inject thêm Repository
 
-    public ProfileController(UserRepository userRepository, AvatarPersonaRepository avatarPersonaRepository) {
+    public ProfileController(UserRepository userRepository,
+            AvatarPersonaRepository avatarPersonaRepository,
+            LearningSessionRepository learningSessionRepository) { // 🌟 2. Thêm vào Constructor
         this.userRepository = userRepository;
         this.avatarPersonaRepository = avatarPersonaRepository;
+        this.learningSessionRepository = learningSessionRepository;
     }
 
     private String getCurrentUserId() {
@@ -32,11 +38,11 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> getProfile() {
         String userId = getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow();
-        
+
         ProfileDto dto = new ProfileDto();
         dto.setUserId(user.getUserId());
         dto.setFullName(user.getFullName());
-        
+
         Optional<AvatarPersona> personaOpt = avatarPersonaRepository.findById(userId);
         if (personaOpt.isPresent()) {
             dto.setDisplayName(personaOpt.get().getDisplayName());
@@ -44,7 +50,14 @@ public class ProfileController {
         } else {
             dto.setDisplayName(user.getFullName()); // Fallback
         }
-        
+
+        // 🌟 3. Bổ sung lấy LevelNumber từ bảng LearningSessions
+        String levelNumber = learningSessionRepository.findByUserId(userId)
+                .map(LearningSession::getLevelNumber)
+                .orElse("1"); // Mặc định Level 1 nếu không tìm thấy bản ghi
+
+        dto.setLevelNumber(levelNumber); // Gán vào DTO
+
         return ResponseEntity.ok(dto);
     }
 
@@ -52,43 +65,52 @@ public class ProfileController {
     public ResponseEntity<ProfileDto> updateProfile(@RequestBody ProfileUpdateDto updateDto) {
         String userId = getCurrentUserId();
         User user = userRepository.findById(userId).orElseThrow();
-        
+
         AvatarPersona persona = avatarPersonaRepository.findById(userId)
                 .orElseGet(() -> {
                     AvatarPersona p = new AvatarPersona();
                     p.setUserId(userId);
                     return p;
                 });
-                
+
         persona.setDisplayName(updateDto.getDisplayName());
         if (updateDto.getAvatarUrl() != null) {
             persona.setAvatarUrl(updateDto.getAvatarUrl());
         }
         avatarPersonaRepository.save(persona);
-        
+
         ProfileDto dto = new ProfileDto();
         dto.setUserId(user.getUserId());
         dto.setFullName(user.getFullName());
         dto.setDisplayName(persona.getDisplayName());
         dto.setAvatarUrl(persona.getAvatarUrl());
-        
+
+        // 🌟 4. Bổ sung gán LevelNumber khi cập nhật thông tin
+        String levelNumber = learningSessionRepository.findByUserId(userId)
+                .map(LearningSession::getLevelNumber)
+                .orElse("1");
+
+        dto.setLevelNumber(levelNumber);
+
         return ResponseEntity.ok(dto);
     }
 
     @PostMapping("/avatar")
-    public ResponseEntity<String> uploadAvatar(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+    public ResponseEntity<String> uploadAvatar(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         try {
             String uploadsDir = "uploads/avatars/";
             java.io.File dir = new java.io.File(uploadsDir);
-            if (!dir.exists()) dir.mkdirs();
-            
+            if (!dir.exists())
+                dir.mkdirs();
+
             String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
             java.nio.file.Path path = java.nio.file.Paths.get(uploadsDir + filename);
             java.nio.file.Files.write(path, file.getBytes());
-            
+
             // update db directly here or return URL
             String avatarUrl = "http://localhost:8081/" + uploadsDir + filename;
-            
+
             String userId = getCurrentUserId();
             AvatarPersona persona = avatarPersonaRepository.findById(userId)
                     .orElseGet(() -> {
@@ -98,7 +120,7 @@ public class ProfileController {
                     });
             persona.setAvatarUrl(avatarUrl);
             avatarPersonaRepository.save(persona);
-            
+
             return ResponseEntity.ok(avatarUrl);
         } catch (Exception e) {
             e.printStackTrace();
