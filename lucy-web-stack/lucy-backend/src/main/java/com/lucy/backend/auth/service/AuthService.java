@@ -8,6 +8,8 @@ import com.lucy.backend.auth.entity.UserRole;
 import com.lucy.backend.auth.repository.UserRepository;
 import com.lucy.backend.auth.repository.UserRoleRepository;
 import com.lucy.backend.auth.security.JwtUtil;
+import com.lucy.backend.content.learner.entity.LearningSession;
+import com.lucy.backend.content.learner.repository.LearningSessionRepository;
 import com.lucy.backend.auth.entity.MentorApplication;
 import com.lucy.backend.auth.entity.ContentCreatorApplication;
 import com.lucy.backend.auth.repository.MentorApplicationRepository;
@@ -32,6 +34,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final MentorApplicationRepository mentorAppRepo;
     private final ContentCreatorApplicationRepository creatorAppRepo;
+    private final LearningSessionRepository learningSessionRepository;
     // 🌟 1. Inject thêm JavaMailSender để gửi Email thực tế
     private final JavaMailSender mailSender;
 
@@ -61,7 +64,7 @@ public class AuthService {
     public AuthService(UserRepository userRepository, UserRoleRepository userRoleRepository,
             PasswordEncoder passwordEncoder, JwtUtil jwtUtil,
             MentorApplicationRepository mentorAppRepo, ContentCreatorApplicationRepository creatorAppRepo,
-            JavaMailSender mailSender) {
+            JavaMailSender mailSender, LearningSessionRepository learningSessionRepository) {
         this.userRepository = userRepository;
         this.userRoleRepository = userRoleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -69,6 +72,7 @@ public class AuthService {
         this.mentorAppRepo = mentorAppRepo;
         this.creatorAppRepo = creatorAppRepo;
         this.mailSender = mailSender; // Gán đối tượng gửi mail
+        this.learningSessionRepository = learningSessionRepository;
     }
 
     // 🌟 5. Cập nhật BƯỚC 1: Sinh mã, giới hạn 5 phút và gửi Email thực tế về hòm
@@ -121,6 +125,10 @@ public class AuthService {
 
     // 🌟 7. Cập nhật BƯỚC 3: Lưu mật khẩu mới và xóa Token bảo mật
     public void resetPassword(String email, String key, String newPassword) {
+        // Ràng buộc mật khẩu tối thiểu 8 ký tự
+        if (newPassword == null || newPassword.trim().length() < 8) {
+            throw new RuntimeException("Mật khẩu mới phải có tối thiểu 8 ký tự.");
+        }
         // Tái thẩm định mã xác nhận và thời gian hết hạn
         verifyForgotPasswordKey(email, key);
 
@@ -177,6 +185,9 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        if (request.getPassword() == null || request.getPassword().trim().length() < 8) {
+            throw new RuntimeException("Mật khẩu phải có tối thiểu 8 ký tự.");
+        }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email đã tồn tại");
         }
@@ -192,6 +203,16 @@ public class AuthService {
         role.setUserId(user.getUserId());
         role.setRoleId(request.getRole() != null ? request.getRole() : "R002"); // default role learner = 1
         userRoleRepository.save(role);
+
+        // 🌟 NẾU LÀ HỌC VIÊN (Learner - R002), TỰ ĐỘNG TẠO RECORD MẶC ĐỊNH LEVEL 1
+        if ("R002".equals(role.getRoleId())) {
+            LearningSession session = new LearningSession(
+                    UUID.randomUUID().toString(),
+                    user.getUserId(),
+                    "1" // Mặc định Level 1
+            );
+            learningSessionRepository.save(session);
+        }
 
         List<String> roles = List.of(role.getRoleId());
 
