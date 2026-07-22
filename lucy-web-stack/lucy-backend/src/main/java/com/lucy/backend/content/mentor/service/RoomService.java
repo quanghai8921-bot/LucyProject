@@ -19,6 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.lucy.backend.auth.repository.AvatarPersonaRepository;
 import com.lucy.backend.content.learner.dto.RoomParticipantDto;
+import com.lucy.backend.content.learner.entity.LearningSession;
+import com.lucy.backend.content.learner.entity.RoomParticipant;
+import com.lucy.backend.content.learner.repository.LearningSessionRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -37,6 +40,7 @@ public class RoomService {
     private final LanguageRepository languageRepository;
     private final StageRepository stageRepository;
     private final PinnedMaterialRepository pinnedMaterialRepository;
+    private final LearningSessionRepository learningSessionRepository;
 
     public RoomService(
             RoomRepository roomRepository,
@@ -47,7 +51,8 @@ public class RoomService {
             SubLevelRepository subLevelRepository,
             LanguageRepository languageRepository,
             StageRepository stageRepository,
-            PinnedMaterialRepository pinnedMaterialRepository) {
+            PinnedMaterialRepository pinnedMaterialRepository,
+            LearningSessionRepository learningSessionRepository) {
         this.roomRepository = roomRepository;
         this.participantRepository = participantRepository;
         this.avatarPersonaRepository = avatarPersonaRepository;
@@ -57,6 +62,7 @@ public class RoomService {
         this.languageRepository = languageRepository;
         this.stageRepository = stageRepository;
         this.pinnedMaterialRepository = pinnedMaterialRepository;
+        this.learningSessionRepository = learningSessionRepository;
     }
 
     @Transactional
@@ -191,6 +197,11 @@ public class RoomService {
 
     @Transactional
     public Room endRoom(String roomId) {
+        return endRoom(roomId, false);
+    }
+
+    @Transactional
+    public Room endRoom(String roomId, boolean endLevel) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Room not found: " + roomId));
         room.setRoomStatus("ENDED");
@@ -199,10 +210,31 @@ public class RoomService {
         // Delete all pinned materials for this room when ending
         pinnedMaterialRepository.deleteByRoomId(roomId);
 
+        if (endLevel) {
+            List<RoomParticipant> participants = participantRepository.findByRoomId(roomId);
+            if (participants != null) {
+                List<String> userIds = participants.stream()
+                        .map(RoomParticipant::getUserId)
+                        .distinct()
+                        .toList();
+                for (String userId : userIds) {
+                    learningSessionRepository.findByUserId(userId).ifPresent(session -> {
+                        try {
+                            int currentLevel = Integer.parseInt(session.getLevelNumber());
+                            session.setLevelNumber(String.valueOf(currentLevel + 1));
+                            learningSessionRepository.save(session);
+                        } catch (NumberFormatException e) {
+                            // ignore invalid formats
+                        }
+                    });
+                }
+            }
+        }
+
         Room saved = roomRepository.save(room);
         enrichRoom(saved);
         return saved;
-    }
+     }
 
     public Room openRoom(String roomId) {
         Room room = roomRepository.findById(roomId)
