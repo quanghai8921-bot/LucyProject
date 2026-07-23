@@ -34,8 +34,10 @@ public class RoomController {
     }
 
     @PostMapping("/{roomId}/end")
-    public Room endRoom(@PathVariable String roomId) {
-        return roomService.endRoom(roomId);
+    public Room endRoom(
+            @PathVariable String roomId,
+            @RequestParam(value = "endLevel", required = false, defaultValue = "false") boolean endLevel) {
+        return roomService.endRoom(roomId, endLevel);
     }
 
     @GetMapping("/{roomId}/participants")

@@ -21,7 +21,7 @@ export const MentorHome: React.FC = () => {
   useEffect(() => {
     const initData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
           navigate('/login');
           return;
@@ -81,7 +81,7 @@ export const MentorHome: React.FC = () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const actualUserId = profile?.userId || profile?.id || currentUser?.id;
       const actualRole = profile?.role || profile?.roles?.[0] || currentUser?.role || 'R003';
 
@@ -144,9 +144,10 @@ export const MentorHome: React.FC = () => {
 
   const endRoom = async (room: any) => {
     if (!window.confirm("Bạn có chắc chắn muốn kết thúc phòng này? Hành động này không thể hoàn tác.")) return;
+    const endLevel = window.confirm("Bạn có muốn kết thúc và nâng LEVEL cho các học viên có trạng thái JOINED trong phòng luôn không?\n- Chọn OK: Kết thúc phòng & Nâng level.\n- Chọn Cancel: Chỉ kết thúc phòng.");
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8081/api/mentor/rooms/${room.roomId}/end`, {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(`http://localhost:8081/api/mentor/rooms/${room.roomId}/end?endLevel=${endLevel}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -162,7 +163,7 @@ export const MentorHome: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     navigate('/login');
   };
 
@@ -177,7 +178,7 @@ export const MentorHome: React.FC = () => {
         color: 'white',
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
       }}>
-        <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy Mentor</h1>
+        <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div
             style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', padding: '4px 8px', borderRadius: '8px', transition: 'background 0.2s' }}

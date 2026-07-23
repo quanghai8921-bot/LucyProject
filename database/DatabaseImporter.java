@@ -42,8 +42,6 @@ public class DatabaseImporter {
             System.out.println("Xóa dữ liệu cũ...");
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute("SET FOREIGN_KEY_CHECKS = 0;");
-                stmt.execute("DELETE FROM QuestionContent;");
-                stmt.execute("DELETE FROM Questions;");
                 stmt.execute("DELETE FROM SubLevel;");
                 stmt.execute("DELETE FROM Levels;");
                 stmt.execute("DELETE FROM LevelGroups;");
@@ -182,46 +180,7 @@ public class DatabaseImporter {
                     }
                 }
                 
-                // 6. Bảng Questions
-                if (root.has("Questions")) {
-                    String sql = "INSERT IGNORE INTO Questions (QuestionId, SubLevelId, QuestionNumber, QuestionType, MaxScore) VALUES (?, ?, ?, ?, ?)";
-                    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                        for (JsonNode node : root.get("Questions")) {
-                            String newQuestionId = getOrGenerateUuid(fileName, node.path("QuestionId").asText(null));
-                            String newSubLevelId = getOrGenerateUuid(fileName, node.path("SubLevelId").asText(null));
 
-                            pstmt.setString(1, newQuestionId);
-                            pstmt.setString(2, newSubLevelId);
-                            pstmt.setObject(3,
-                                    node.path("QuestionNumber").isNull() ? null : node.path("QuestionNumber").asInt(),
-                                    Types.INTEGER);
-                            pstmt.setString(4, node.path("QuestionType").isNull() ? null : node.path("QuestionType").asText());
-                            pstmt.setObject(5, node.path("MaxScore").isNull() ? null : node.path("MaxScore").asInt(), Types.INTEGER);
-                            pstmt.addBatch();
-                        }
-                        pstmt.executeBatch();
-                    }
-                }
-                
-                // 7. Bảng QuestionContent
-                if (root.has("QuestionContent")) {
-                    String sql = "INSERT IGNORE INTO QuestionContent (ContentId, QuestionId, LanguageId, QuestionText, Hint) VALUES (?, ?, ?, ?, ?)";
-                    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                        for (JsonNode node : root.get("QuestionContent")) {
-                            String newContentId = getOrGenerateUuid(fileName, node.path("ContentId").asText(null));
-                            String newQuestionId = getOrGenerateUuid(fileName, node.path("QuestionId").asText(null));
-                            String newLangId = getOrGenerateUuid(fileName, node.path("LanguageId").asText(null));
-
-                            pstmt.setString(1, newContentId);
-                            pstmt.setString(2, newQuestionId);
-                            pstmt.setString(3, newLangId);
-                            pstmt.setString(4, node.path("QuestionText").isNull() ? null : node.path("QuestionText").asText());
-                            pstmt.setString(5, node.path("Hint").isNull() ? null : node.path("Hint").asText());
-                            pstmt.addBatch();
-                        }
-                        pstmt.executeBatch();
-                    }
-                }
             }
 
             conn.commit();

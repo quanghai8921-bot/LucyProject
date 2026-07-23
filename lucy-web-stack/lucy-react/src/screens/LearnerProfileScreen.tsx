@@ -24,7 +24,7 @@ export const LearnerProfileScreen: React.FC = () => {
 
   const fetchProfileData = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       // Fetch profile
       const profRes = await fetch('http://localhost:8081/api/user/profile', {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -75,7 +75,7 @@ export const LearnerProfileScreen: React.FC = () => {
     e.preventDefault();
     setIsUpdating(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/user/profile', {
         method: 'PUT',
         headers: {
@@ -103,7 +103,7 @@ export const LearnerProfileScreen: React.FC = () => {
     if (!file) return;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const formData = new FormData();
       formData.append('file', file);
 
@@ -132,7 +132,7 @@ export const LearnerProfileScreen: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/settings/momo', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -162,7 +162,7 @@ export const LearnerProfileScreen: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/deposit', {
         method: 'POST',
         headers: {
@@ -205,7 +205,7 @@ export const LearnerProfileScreen: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/withdraw', {
         method: 'POST',
         headers: {

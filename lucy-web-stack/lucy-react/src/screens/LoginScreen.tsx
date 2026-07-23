@@ -34,8 +34,8 @@ export const LoginScreen: React.FC = () => {
         else if (roleVal === 'R004' || roleVal === 4) { targetRole = 'creator'; path = '/creator'; }
 
         setCurrentRole(targetRole);
-        localStorage.setItem('currentRole', targetRole);
-        localStorage.setItem('token', payload.token || result.token || '');
+        sessionStorage.setItem('currentRole', targetRole);
+        sessionStorage.setItem('token', payload.token || result.token || '');
         setCurrentUser({ id: payload.userId || 'U002', fullName: email.split('@')[0], email, role: payload.role || (payload.roles && payload.roles[0]) || 'R002' });
 
         navigate(path);

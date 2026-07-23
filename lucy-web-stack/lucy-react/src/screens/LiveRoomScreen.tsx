@@ -43,7 +43,7 @@ export const LiveRoomScreen: React.FC = () => {
   const [chatInput, setChatInput] = useState("");
 
   const stateMentor = (location.state as any)?.isMentor;
-  const localRole = localStorage.getItem('currentRole') || '';
+  const localRole = sessionStorage.getItem('currentRole') || '';
   // Lấy chính xác chuỗi Role từ Database trả về thông qua API Profile hoặc Context
   const dbRole = String(profile?.role || profile?.roleId || currentUser?.role || '').toLowerCase();
   // Xác định nghiêm ngặt nếu DB định danh là Học viên (learner, r001, r002)
@@ -171,7 +171,7 @@ export const LiveRoomScreen: React.FC = () => {
         break;
       case 'ROOM_ENDED':
         const stateMentor1 = (location.state as any)?.isMentor;
-        const localRole1 = localStorage.getItem('currentRole');
+        const localRole1 = sessionStorage.getItem('currentRole');
         const roleStr1 = JSON.stringify({ currentRole, localRole1, role1: currentUser?.role, role2: profile?.roles }).toLowerCase();
         const isMentorRole = stateMentor1 || roleStr1.includes('r003') || roleStr1.includes('mentor') || roleStr1.includes('creator');
         if (!isMentorRole) {
@@ -193,7 +193,7 @@ export const LiveRoomScreen: React.FC = () => {
 
     const initRoom = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
 
         // Fetch Profile
         const profileRes = await fetch(`http://localhost:8081/api/user/profile`, {
@@ -372,7 +372,7 @@ export const LiveRoomScreen: React.FC = () => {
 
   const fetchPinnedMaterials = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/mentor/rooms/${roomId}/pinned-materials`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -389,7 +389,7 @@ export const LiveRoomScreen: React.FC = () => {
     e.preventDefault();
     if (!pinFile || !newPinTitle.trim()) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const formData = new FormData();
       formData.append("file", pinFile);
       formData.append("title", newPinTitle);
@@ -420,7 +420,7 @@ export const LiveRoomScreen: React.FC = () => {
 
   const handleUnpinMaterial = async (materialId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/mentor/rooms/${roomId}/pinned-materials/${materialId}`, {
         method: 'DELETE',
         headers: {
@@ -445,8 +445,8 @@ export const LiveRoomScreen: React.FC = () => {
   const fetchParticipants = async () => {
     try {
       const stateMentor2 = (location.state as any)?.isMentor;
-      const token = localStorage.getItem('token');
-      const localRole2 = localStorage.getItem('currentRole');
+      const token = sessionStorage.getItem('token');
+      const localRole2 = sessionStorage.getItem('currentRole');
       const roleStr2 = JSON.stringify({ currentRole, localRole2, role1: currentUser?.role, role2: profile?.role, role3: profile?.roleId, role4: profile?.roles }).toLowerCase();
       const isMentor = stateMentor2 || roleStr2.includes('r003') || roleStr2.includes('mentor') || roleStr2.includes('creator');
       const url = isMentor
@@ -467,7 +467,7 @@ export const LiveRoomScreen: React.FC = () => {
 
   const handleLeaveRoom = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const currentUserId = currentUserIdRef.current || currentUser?.id || profile?.userId || profile?.id;
 
       if (currentUserId) {
@@ -503,7 +503,7 @@ export const LiveRoomScreen: React.FC = () => {
 
   const toggleMic = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const newState = !isMicOn;
 
       // Nếu chưa có localAudioTrack thì tạo và publish
@@ -551,7 +551,7 @@ export const LiveRoomScreen: React.FC = () => {
 
   const toggleHandRaise = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const newState = !isHandRaised;
       setIsHandRaised(newState);
 
@@ -591,7 +591,7 @@ export const LiveRoomScreen: React.FC = () => {
       }
 
       const totalAmount = Number(selectedGift.priceAmount) * giftQuantity;
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const finalMessage = giftMessage.trim() || `Tặng ${giftQuantity} ${selectedGift.giftName}`;
 
       const res = await fetch(`http://localhost:8081/api/payment/donate`, {
@@ -640,10 +640,11 @@ export const LiveRoomScreen: React.FC = () => {
   };
 
   const endRoom = async () => {
-    if (!window.confirm("Bạn có chắc chắn kết thúc phòng?")) return;
+    if (!window.confirm("Bạn có chắc chắn muốn kết thúc phòng này?")) return;
+    const endLevel = (isCreatorRoom || isCreatorHost) ? false : window.confirm("Bạn có muốn kết thúc và nâng LEVEL cho các học viên có trạng thái JOINED trong phòng luôn không?\n- Chọn OK: Kết thúc phòng & Nâng level.\n- Chọn Cancel: Chỉ kết thúc phòng.");
     try {
-      const token = localStorage.getItem('token');
-      await fetch(`http://localhost:8081/api/mentor/rooms/${roomId}/end`, {
+      const token = sessionStorage.getItem('token');
+      await fetch(`http://localhost:8081/api/mentor/rooms/${roomId}/end?endLevel=${endLevel}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });

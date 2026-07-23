@@ -79,30 +79,34 @@ public class LearnerRoomService {
             throw new ResponseStatusException(BAD_REQUEST, "Room is not open for learners.");
         }
 
-        // 🌟 3. BỔ SUNG: Kiểm tra Level của Học viên so với Level của Phòng
-        LearningSession session = learningSessionRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST,
-                        "Không tìm thấy thông tin Trình độ/Level của học viên."));
-
-        // Lấy level phòng (nếu null thì mặc định 1)
-        int roomLevel = 1;
+        // 🌟 3. BỔ SUNG: Kiểm tra Level của Học viên so với Level của Phòng (chỉ áp dụng nếu phòng yêu cầu Level)
         if (room.getLevelId() != null) {
-            roomLevel = learningLevelRepository.findById(room.getLevelId())
+            LearningSession session = learningSessionRepository.findByUserId(userId)
+                    .orElseGet(() -> {
+                        LearningSession newSession = new LearningSession(
+                                UUID.randomUUID().toString(),
+                                userId,
+                                "1" // Mặc định Level 1
+                        );
+                        return learningSessionRepository.save(newSession);
+                    });
+
+            int roomLevel = learningLevelRepository.findById(room.getLevelId())
                     .map(lvl -> lvl.getLevelNumber() != null ? lvl.getLevelNumber() : 1)
                     .orElse(1);
-        }
-        int userLevel;
+            int userLevel;
 
-        try {
-            userLevel = Integer.parseInt(session.getLevelNumber());
-        } catch (NumberFormatException e) {
-            userLevel = 1; // Mặc định nếu lưu dạng chuỗi không hợp lệ
-        }
+            try {
+                userLevel = Integer.parseInt(session.getLevelNumber());
+            } catch (NumberFormatException e) {
+                userLevel = 1; // Mặc định nếu lưu dạng chuỗi không hợp lệ
+            }
 
-        if (userLevel != roomLevel) {
-            throw new ResponseStatusException(BAD_REQUEST,
-                    String.format("Bạn chỉ có thể tham gia phòng thuộc Level %d (Level hiện tại của bạn: %d).",
-                            roomLevel, userLevel));
+            if (userLevel != roomLevel) {
+                throw new ResponseStatusException(BAD_REQUEST,
+                        String.format("Bạn chỉ có thể tham gia phòng thuộc Level %d (Level hiện tại của bạn: %d).",
+                                roomLevel, userLevel));
+            }
         }
 
         LocalDateTime now = LocalDateTime.now();

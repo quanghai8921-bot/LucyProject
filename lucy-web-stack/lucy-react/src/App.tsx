@@ -18,7 +18,7 @@ function App() {
   const [currentRole, setCurrentRole] = useState<string>('');
 
   useEffect(() => {
-    // Optional: Load user from localStorage if token exists
+    // Optional: Load user from sessionStorage if token exists
   }, []);
 
   return (

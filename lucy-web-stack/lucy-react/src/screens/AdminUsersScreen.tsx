@@ -41,7 +41,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchSystemUsers = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/admin/users', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -56,7 +56,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchMentorApps = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/admin/mentor-applications', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -71,7 +71,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchCreatorApps = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/admin/creator-applications', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -86,7 +86,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchTopups = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/topup-orders', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -104,7 +104,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchWithdraws = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/withdraw-requests', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -122,7 +122,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchAdminWallet = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/wallet', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -140,7 +140,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const fetchMomoConfig = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -158,7 +158,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const saveMomoConfig = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo', {
         method: 'POST',
         headers: {
@@ -190,7 +190,7 @@ export const AdminUsersScreen: React.FC = () => {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/admin/settings/momo/qr', {
         method: 'POST',
         headers: {
@@ -213,7 +213,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const approveTopup = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/topup-orders/${id}/approve`, {
         method: 'POST',
         headers: {
@@ -237,7 +237,7 @@ export const AdminUsersScreen: React.FC = () => {
     const reason = prompt("Nhập lý do từ chối (bắt buộc):");
     if (!reason) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/topup-orders/${id}/reject`, {
         method: 'POST',
         headers: {
@@ -260,7 +260,7 @@ export const AdminUsersScreen: React.FC = () => {
 
   const approveWithdraw = async (id: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/withdraw/approve/${id}`, {
         method: 'POST',
         headers: {
@@ -283,7 +283,7 @@ export const AdminUsersScreen: React.FC = () => {
     const reason = prompt("Nhập lý do từ chối (bắt buộc):");
     if (!reason) return;
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/payment/admin/withdraw/reject/${id}`, {
         method: 'POST',
         headers: {
@@ -312,7 +312,7 @@ export const AdminUsersScreen: React.FC = () => {
       payload = { reason };
     }
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/admin/mentor-applications/${id}/${action}`, {
         method: 'POST',
         headers: {
@@ -340,7 +340,7 @@ export const AdminUsersScreen: React.FC = () => {
       payload = { reason };
     }
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/admin/creator-applications/${id}/${action}`, {
         method: 'POST',
         headers: {
@@ -361,7 +361,7 @@ export const AdminUsersScreen: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     navigate('/login');
   };
 

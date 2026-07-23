@@ -32,7 +32,7 @@ export const RegisterScreen: React.FC = () => {
           return;
         }
 
-        localStorage.setItem('token', payload.token);
+        sessionStorage.setItem('token', payload.token);
         setCurrentUser({ id: payload.userId, fullName: payload.fullName, email: payload.email, role: payload.roles[0] });
         
         let targetRole = 'learner';

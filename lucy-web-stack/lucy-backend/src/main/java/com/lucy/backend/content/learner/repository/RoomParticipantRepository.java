@@ -8,18 +8,20 @@ import java.util.Optional;
 
 public interface RoomParticipantRepository extends JpaRepository<RoomParticipant, String> {
 
-    Optional<RoomParticipant> findFirstByRoomIdAndUserIdAndParticipantStatusOrderByJoinedAtDesc(
-            String roomId,
-            String userId,
-            String participantStatus);
+        Optional<RoomParticipant> findFirstByRoomIdAndUserIdAndParticipantStatusOrderByJoinedAtDesc(
+                        String roomId,
+                        String userId,
+                        String participantStatus);
 
-    Optional<RoomParticipant> findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(
-            String roomId,
-            String userId);
+        Optional<RoomParticipant> findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(
+                        String roomId,
+                        String userId);
 
-    List<RoomParticipant> findByRoomIdAndParticipantStatus(String roomId, String participantStatus);
+        List<RoomParticipant> findByRoomIdAndParticipantStatus(String roomId, String participantStatus);
 
-    Integer countByRoomIdAndParticipantStatus(String roomId, String participantStatus);
+        List<RoomParticipant> findByRoomId(String roomId);
 
-    List<RoomParticipant> findByUserIdOrderByJoinedAtDesc(String userId);
+        Integer countByRoomIdAndParticipantStatus(String roomId, String participantStatus);
+
+        List<RoomParticipant> findByUserIdOrderByJoinedAtDesc(String userId);
 }

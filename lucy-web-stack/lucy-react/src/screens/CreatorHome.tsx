@@ -27,7 +27,7 @@ export const CreatorHome: React.FC = () => {
   const [roomName, setRoomName] = useState('');
   const [roomAccessType, setRoomAccessType] = useState<'FREE' | 'PAID'>('FREE'); // Trả phí hoặc Free
   const [roomPrice, setRoomPrice] = useState('0'); // Giá xu của phòng học
-  const [roomTypeMode, setRoomTypeMode] = useState<'LANGUAGE' | 'FREE'>('LANGUAGE'); // Dạy ngoại ngữ hoặc Tự do
+  const [roomTypeMode, setRoomTypeMode] = useState<'LANGUAGE' | 'FREE'>('FREE'); // Dạy ngoại ngữ hoặc Tự do
   const [lang, setLang] = useState('English');
   const [level, setLevel] = useState('1');
 
@@ -51,7 +51,7 @@ export const CreatorHome: React.FC = () => {
   useEffect(() => {
     const initData = async () => {
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (!token) {
           navigate('/login');
           return;
@@ -124,30 +124,18 @@ export const CreatorHome: React.FC = () => {
     if (isSubmittingRoom) return;
     setIsSubmittingRoom(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const actualUserId = profile?.userId || profile?.id || currentUser?.id;
       const actualRole = profile?.role || profile?.roles?.[0] || currentUser?.role || 'R003';
-
-      if (roomTypeMode === 'LANGUAGE') {
-        const contentReq = await fetch(`http://localhost:8081/api/v1/content/level-details?languageName=${lang}&levelNumber=${level}`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!contentReq.ok) {
-          alert("Cấp độ (Level) " + level + " không tồn tại. Vui lòng kiểm tra lại.");
-          setIsSubmittingRoom(false);
-          return;
-        }
-      }
 
       // 🌟 ĐÓNG GÓI PAYLOAD THEO YÊU CẦU MỚI CỦA CREATOR
       const payload = {
         roomTitle: roomName || 'Phòng học của ' + (profile?.fullName || currentUser?.fullName || 'Creator'),
         hostUserId: actualUserId,
         hostRole: actualRole,
-        languageId: roomTypeMode === 'LANGUAGE' ? lang : null,
+        languageId: null,
         levelId: null,
-        levelNumber: roomTypeMode === 'LANGUAGE' ? parseInt(level) : null,
+        levelNumber: null,
         scheduledStartAt: new Date().toISOString().slice(0, 19),
         maxParticipants: 50,
         roomStatus: 'OPENED',
@@ -185,9 +173,10 @@ export const CreatorHome: React.FC = () => {
 
   const endRoom = async (room: any) => {
     if (!window.confirm("Bạn có chắc chắn muốn kết thúc phòng này? Hành động này không thể hoàn tác.")) return;
+    const endLevel = false; // Phòng của Creator là phòng tự do, không nâng Level của học viên theo lộ trình
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8081/api/mentor/rooms/${room.roomId}/end`, {
+      const token = sessionStorage.getItem('token');
+      const response = await fetch(`http://localhost:8081/api/mentor/rooms/${room.roomId}/end?endLevel=${endLevel}`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -208,7 +197,7 @@ export const CreatorHome: React.FC = () => {
     setIsSubmittingContent(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const actualUserId = profile?.userId || profile?.id || currentUser?.id;
 
       const finalContentType = `${contentBaseType}_${accessType}`;
@@ -256,8 +245,8 @@ export const CreatorHome: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('currentRole');
     navigate('/login');
   };
 
@@ -282,7 +271,7 @@ export const CreatorHome: React.FC = () => {
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy Creator</h1>
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy</h1>
           <nav style={{ display: 'flex', gap: '10px', marginLeft: '20px' }}>
             <button
               onClick={() => setActiveTab('rooms')}
@@ -390,46 +379,6 @@ export const CreatorHome: React.FC = () => {
                   </div>
                 )}
 
-                {/* 🌟 FORM CHỌN DẠY NGOẠI NGỮ HOẶC TỰ DO */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>Hình thức dạy</label>
-                  <div style={{ display: 'flex', gap: '24px', padding: '4px 0' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 500 }}>
-                      <input type="radio" name="roomTypeMode" checked={roomTypeMode === 'LANGUAGE'} onChange={() => setRoomTypeMode('LANGUAGE')} style={{ width: '18px', height: '18px' }} />
-                      Dạy ngoại ngữ
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 500 }}>
-                      <input type="radio" name="roomTypeMode" checked={roomTypeMode === 'FREE'} onChange={() => setRoomTypeMode('FREE')} style={{ width: '18px', height: '18px' }} />
-                      Tự do
-                    </label>
-                  </div>
-                </div>
-
-                {/* 🌟 ĐIỀU KIỆN HIỂN THỊ: CHỈ HIỆN 3 NGÔN NGỮ VÀ LEVEL KHI CHỌN "DẠY NGOẠI NGỮ" */}
-                {roomTypeMode === 'LANGUAGE' && (
-                  <>
-                    <div style={{ marginBottom: '16px' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>Ngôn ngữ</label>
-                      <select value={lang} onChange={(e: any) => setLang(e.target.value)} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', background: 'white' }}>
-                        <option value="English">Tiếng Anh</option>
-                        <option value="Japanese">Tiếng Nhật</option>
-                        <option value="Chinese">Tiếng Trung</option>
-                      </select>
-                    </div>
-                    <div style={{ marginBottom: '24px' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontWeight: 500, fontSize: '0.9rem' }}>Cấp độ (Level)</label>
-                      <input
-                        type="number"
-                        min="1"
-                        value={level}
-                        onChange={(e: any) => setLevel(e.target.value)}
-                        placeholder="Nhập cấp độ (VD: 1, 2, 3...)"
-                        style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none', background: 'white', boxSizing: 'border-box' }}
-                        required
-                      />
-                    </div>
-                  </>
-                )}
 
                 <Button type="submit" disabled={isSubmittingRoom} style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', opacity: isSubmittingRoom ? 0.7 : 1 }}>
                   <Video size={18} /> Khởi tạo Phòng

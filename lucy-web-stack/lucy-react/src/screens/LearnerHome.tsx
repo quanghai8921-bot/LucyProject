@@ -25,7 +25,7 @@ export const LearnerHome: React.FC = () => {
 
   const fetchProfile = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/user/profile`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -44,7 +44,7 @@ export const LearnerHome: React.FC = () => {
 
   const fetchAvatar = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/user/profile/avatar`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -59,7 +59,7 @@ export const LearnerHome: React.FC = () => {
 
   const fetchRoomsData = async (userId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
 
       // Fetch all available rooms
       const res = await fetch('http://localhost:8081/api/learner/rooms', {
@@ -88,7 +88,7 @@ export const LearnerHome: React.FC = () => {
 
   const fetchCreatorContents = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/creator/contents', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -105,7 +105,7 @@ export const LearnerHome: React.FC = () => {
 
   const fetchPurchasedContents = async (currUserId: string) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch(`http://localhost:8081/api/creator/contents/learner/${currUserId}/purchased`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
@@ -161,7 +161,7 @@ export const LearnerHome: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const res = await fetch('http://localhost:8081/api/payment/purchase/content', {
         method: 'POST',
         headers: {
@@ -189,7 +189,7 @@ export const LearnerHome: React.FC = () => {
 
   const handleJoinRoom = async (room: any) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       const currentUserId = profile?.userId || profile?.id || currentUser?.id;
 
       // 1. Kiểm tra xem phòng có thu phí hay không
@@ -254,8 +254,8 @@ export const LearnerHome: React.FC = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('currentRole');
     navigate('/login');
   };
 
@@ -313,7 +313,7 @@ export const LearnerHome: React.FC = () => {
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy Learner</h1>
+          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, letterSpacing: '-0.025em' }}>Lucy</h1>
           {/* Main Tabs */}
           <nav style={{ display: 'flex', gap: '10px', marginLeft: '20px' }}>
             <button
